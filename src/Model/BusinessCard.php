@@ -98,13 +98,14 @@ final class BusinessCard
         return $text !== '' ? $text : 'karte';
     }
 
-    public function generateUniqueSlug(string $base, ?int $excludeUserId = null): string
+    /** @param string[] $reservedSlugs */
+    public function generateUniqueSlug(string $base, ?int $excludeUserId = null, array $reservedSlugs = []): string
     {
         $slug = $this->slugify($base);
         $candidate = $slug;
         $suffix = 2;
 
-        while ($this->slugExists($candidate, $excludeUserId)) {
+        while ($this->slugExists($candidate, $excludeUserId) || in_array($candidate, $reservedSlugs, true)) {
             $candidate = $slug . '-' . $suffix;
             $suffix++;
         }

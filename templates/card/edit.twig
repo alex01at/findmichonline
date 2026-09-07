@@ -18,7 +18,7 @@
         {% if card and card.is_published %}
             <p class="muted-link">
                 {{ trans('card.edit.published_notice') }}
-                <a href="/c/{{ card.slug }}" target="_blank">/c/{{ card.slug }}</a>
+                <a href="/{{ card.slug }}" target="_blank">/{{ card.slug }}</a>
             </p>
         {% endif %}
 

@@ -16,7 +16,7 @@
             <p>
                 {{ trans('dashboard.status_label') }}
                 {% if card.is_published %}
-                    {{ trans('dashboard.status_published') }} <a href="/c/{{ card.slug }}" target="_blank">/c/{{ card.slug }}</a>
+                    {{ trans('dashboard.status_published') }} <a href="/{{ card.slug }}" target="_blank">/{{ card.slug }}</a>
                 {% else %}
                     {{ trans('dashboard.status_unpublished') }}
                 {% endif %}

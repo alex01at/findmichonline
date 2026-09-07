@@ -15,6 +15,13 @@ final class CardController
 {
     private const AVAILABLE_DESIGNS = ['classic', 'modern'];
 
+    // Slugs that would collide with a real application route now that
+    // cards are published at the domain root (/{slug}) instead of /c/{slug}.
+    private const RESERVED_SLUGS = [
+        'login', 'register', 'logout', 'dashboard', 'pricing', 'card',
+        'billing', 'lang', 'webhook', 'account', 'c', 'public',
+    ];
+
     private BusinessCard $cards;
 
     public function __construct(private PDO $db, private View $view, private Auth $auth, private Translator $translator)
@@ -72,9 +79,12 @@ final class CardController
         }
 
         if ($slugInput === '') {
-            $slug = $this->cards->generateUniqueSlug($displayName !== '' ? $displayName : 'karte', $userId);
+            $slug = $this->cards->generateUniqueSlug($displayName !== '' ? $displayName : 'karte', $userId, self::RESERVED_SLUGS);
         } elseif (!preg_match('/^[a-z0-9-]{3,100}$/', $slugInput)) {
             $errors[] = $this->translator->trans('card.edit.errors.slug_invalid');
+            $slug = $slugInput;
+        } elseif (in_array($slugInput, self::RESERVED_SLUGS, true)) {
+            $errors[] = $this->translator->trans('card.edit.errors.slug_taken');
             $slug = $slugInput;
         } elseif ($this->cards->slugExists($slugInput, $userId)) {
             $errors[] = $this->translator->trans('card.edit.errors.slug_taken');

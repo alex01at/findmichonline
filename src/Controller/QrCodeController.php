@@ -43,7 +43,7 @@ final class QrCodeController
             return;
         }
 
-        $cardUrl = $this->appUrl . '/c/' . $card['slug'];
+        $cardUrl = $this->appUrl . '/' . $card['slug'];
         $download = isset($_GET['download']);
         $filename = $card['slug'] . '-qrcode.' . $format;
 

@@ -58,7 +58,7 @@ return [
     'card.edit.website_label' => 'Website',
     'card.edit.address_label' => 'Address',
     'card.edit.bio_label' => 'Short bio',
-    'card.edit.slug_label' => 'Public link (kartenlink.de/c/...)',
+    'card.edit.slug_label' => 'Public link (findmichonline.com/...)',
     'card.edit.slug_placeholder' => 'auto-generated if left empty',
     'card.edit.design_label' => 'Design',
     'card.edit.design_classic' => 'Classic',
@@ -75,7 +75,7 @@ return [
     'card.edit.design_downgraded' => 'The modern design is only available on the Pro plan. "Classic" was used instead.',
 
     'card.qr.heading' => 'QR code',
-    'card.qr.hint' => 'Links to your business card at /c/{slug}',
+    'card.qr.hint' => 'Links to your business card at /{slug}',
     'card.qr.download_png' => 'Download PNG',
     'card.qr.download_svg' => 'Download SVG',
 

@@ -58,7 +58,7 @@ return [
     'card.edit.website_label' => 'Website',
     'card.edit.address_label' => 'Adresse',
     'card.edit.bio_label' => 'Kurzbeschreibung',
-    'card.edit.slug_label' => 'Öffentlicher Link (kartenlink.de/c/...)',
+    'card.edit.slug_label' => 'Öffentlicher Link (findmichonline.com/...)',
     'card.edit.slug_placeholder' => 'wird automatisch generiert, wenn leer',
     'card.edit.design_label' => 'Design',
     'card.edit.design_classic' => 'Classic',
@@ -75,7 +75,7 @@ return [
     'card.edit.design_downgraded' => 'Das moderne Design ist nur im Pro-Tarif verfügbar. Es wurde "Classic" verwendet.',
 
     'card.qr.heading' => 'QR-Code',
-    'card.qr.hint' => 'Führt zu deiner Visitenkarte unter /c/{slug}',
+    'card.qr.hint' => 'Führt zu deiner Visitenkarte unter /{slug}',
     'card.qr.download_png' => 'PNG herunterladen',
     'card.qr.download_svg' => 'SVG herunterladen',
 

@@ -80,7 +80,6 @@ $router->post('/card/edit', function () use ($card, $requireAuth) {
     $requireAuth();
     $card->save();
 });
-$router->get('/c/{slug}', fn (array $params) => $card->showPublic($params));
 
 $qrCode = new QrCodeController($db, $auth, $config['app']['url'], $translator);
 $router->get('/card/qr.png', function () use ($qrCode, $requireAuth) {
@@ -133,5 +132,10 @@ $router->get('/lang/{locale}', function (array $params) {
     header('Location: ' . $referer);
     exit;
 });
+
+// Catch-all for published business cards (findmichonline.com/{slug}).
+// Must stay the last GET route registered so every fixed route above
+// takes priority over a card slug.
+$router->get('/{slug}', fn (array $params) => $card->showPublic($params));
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
