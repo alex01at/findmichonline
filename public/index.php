@@ -54,6 +54,7 @@ $translator = new Translator($locale, dirname(__DIR__) . '/lang');
 
 $db = Database::connection($config['db']);
 $auth = new Auth($db);
+$auth->attemptRememberLogin();
 $view = new View(
     dirname(__DIR__) . '/templates',
     dirname(__DIR__) . '/var/cache/twig',

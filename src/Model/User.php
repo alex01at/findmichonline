@@ -116,6 +116,32 @@ final class User
         $stmt->execute(['password_hash' => $passwordHash, 'id' => $id]);
     }
 
+    public function setRememberToken(int $id, string $tokenHash, int $ttlSeconds): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET remember_token_hash = :hash, remember_token_expires_at = DATE_ADD(NOW(), INTERVAL :ttl SECOND) WHERE id = :id'
+        );
+        $stmt->execute(['hash' => $tokenHash, 'ttl' => $ttlSeconds, 'id' => $id]);
+    }
+
+    public function findByValidRememberTokenHash(string $tokenHash): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM users WHERE remember_token_hash = :hash AND remember_token_expires_at > NOW()'
+        );
+        $stmt->execute(['hash' => $tokenHash]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function clearRememberToken(int $id): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET remember_token_hash = NULL, remember_token_expires_at = NULL WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
     public function findByStripeCustomerId(string $customerId): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE stripe_customer_id = :customer_id');

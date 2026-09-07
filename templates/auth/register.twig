@@ -1,6 +1,6 @@
 {% extends 'layout/base.twig' %}
 
-{% block title %}Registrieren – Kartenlink{% endblock %}
+{% block title %}{{ trans('auth.register.heading') }} – Kartenlink{% endblock %}
 
 {% block body %}
     <div class="card">
@@ -22,10 +22,26 @@
             <input type="email" id="email" name="email" value="{{ old.email|default('') }}" required>
 
             <label for="password">{{ trans('auth.register.password_label') }}</label>
-            <input type="password" id="password" name="password" required minlength="8">
+            <div class="password-field">
+                <input type="password" id="password" name="password" required minlength="8"
+                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                       title="{{ trans('auth.password_requirements_hint') }}">
+                <button type="button" class="password-toggle" data-toggle-for="password" aria-label="{{ trans('auth.password_toggle_show') }}">👁</button>
+            </div>
+            <div class="password-strength" data-strength-for="password"
+                 data-label-weak="{{ trans('auth.password_strength.weak') }}"
+                 data-label-medium="{{ trans('auth.password_strength.medium') }}"
+                 data-label-strong="{{ trans('auth.password_strength.strong') }}">
+                <div class="password-strength-bar"><div class="password-strength-fill"></div></div>
+                <span class="password-strength-label"></span>
+            </div>
+            <p class="password-requirements">{{ trans('auth.password_requirements_hint') }}</p>
 
             <label for="password_confirm">{{ trans('auth.register.password_confirm_label') }}</label>
-            <input type="password" id="password_confirm" name="password_confirm" required minlength="8">
+            <div class="password-field">
+                <input type="password" id="password_confirm" name="password_confirm" required minlength="8">
+                <button type="button" class="password-toggle" data-toggle-for="password_confirm" aria-label="{{ trans('auth.password_toggle_show') }}">👁</button>
+            </div>
 
             <button type="submit">{{ trans('auth.register.submit') }}</button>
         </form>

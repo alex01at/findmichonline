@@ -23,7 +23,20 @@
             <input type="email" id="email" name="email" value="{{ target_user.email }}" required>
 
             <label for="new_password">{{ trans('admin.new_password_label') }}</label>
-            <input type="password" id="new_password" name="new_password" minlength="8" placeholder="{{ trans('admin.new_password_placeholder') }}">
+            <div class="password-field">
+                <input type="password" id="new_password" name="new_password" minlength="8" placeholder="{{ trans('admin.new_password_placeholder') }}"
+                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                       title="{{ trans('auth.password_requirements_hint') }}">
+                <button type="button" class="password-toggle" data-toggle-for="new_password" aria-label="{{ trans('auth.password_toggle_show') }}">👁</button>
+            </div>
+            <div class="password-strength" data-strength-for="new_password"
+                 data-label-weak="{{ trans('auth.password_strength.weak') }}"
+                 data-label-medium="{{ trans('auth.password_strength.medium') }}"
+                 data-label-strong="{{ trans('auth.password_strength.strong') }}">
+                <div class="password-strength-bar"><div class="password-strength-fill"></div></div>
+                <span class="password-strength-label"></span>
+            </div>
+            <p class="password-requirements">{{ trans('auth.password_requirements_hint') }}</p>
 
             <label for="plan">{{ trans('admin.table.plan') }}</label>
             <select id="plan" name="plan" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem;">

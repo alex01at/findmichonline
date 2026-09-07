@@ -9,6 +9,7 @@ use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Features;
 use Kartenlink\App\Support\LogoUploader;
+use Kartenlink\App\Support\PasswordPolicy;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\Translator;
 use Kartenlink\App\Support\View;
@@ -67,8 +68,8 @@ final class AdminController
             $errors[] = $this->translator->trans('auth.register.errors.email_taken');
         }
 
-        if (strlen($password) < 8) {
-            $errors[] = $this->translator->trans('auth.register.errors.password_too_short');
+        if (!PasswordPolicy::isValid($password)) {
+            $errors[] = $this->translator->trans('auth.register.errors.password_requirements');
         }
 
         if ($errors !== []) {
@@ -134,8 +135,8 @@ final class AdminController
             }
         }
 
-        if ($newPassword !== '' && strlen($newPassword) < 8) {
-            $errors[] = $this->translator->trans('auth.register.errors.password_too_short');
+        if ($newPassword !== '' && !PasswordPolicy::isValid($newPassword)) {
+            $errors[] = $this->translator->trans('auth.register.errors.password_requirements');
         }
 
         // An admin may not remove their own admin flag; avoids locking everyone out.

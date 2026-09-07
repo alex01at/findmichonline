@@ -25,8 +25,13 @@ return [
     'auth.register.errors.name_required' => 'Please enter your name.',
     'auth.register.errors.email_invalid' => 'Please enter a valid email address.',
     'auth.register.errors.email_taken' => 'This email address is already in use.',
-    'auth.register.errors.password_too_short' => 'Password must be at least 8 characters long.',
+    'auth.register.errors.password_requirements' => 'Password must be at least 8 characters long and include upper and lower case letters and a number.',
     'auth.register.errors.password_mismatch' => 'Passwords do not match.',
+    'auth.password_requirements_hint' => 'At least 8 characters, upper and lower case letters, and a number.',
+    'auth.password_strength.weak' => 'Weak',
+    'auth.password_strength.medium' => 'Medium',
+    'auth.password_strength.strong' => 'Strong',
+    'auth.password_toggle_show' => 'Show password',
     'auth.register.success' => 'Welcome to Kartenlink!',
 
     'auth.login.heading' => 'Log in',
@@ -35,6 +40,7 @@ return [
     'auth.login.submit' => 'Log in',
     'auth.login.no_account' => "Don't have an account? Sign up",
     'auth.login.forgot_password' => 'Forgot your password?',
+    'auth.login.remember_me' => 'Keep me logged in',
     'auth.login.errors.invalid_credentials' => 'Email address or password is incorrect.',
 
     'auth.forgot_password.heading' => 'Forgot password',

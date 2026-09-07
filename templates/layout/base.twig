@@ -113,6 +113,47 @@
             margin: 0 0 1rem 0;
             font-size: 0.9rem;
         }
+        .password-field { position: relative; }
+        .password-field input { padding-right: 2.5rem; }
+        .password-toggle {
+            position: absolute;
+            right: 0.4rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.3rem;
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .password-strength { margin-top: 0.5rem; }
+        .password-strength-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .password-strength-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--danger);
+            transition: width 0.2s, background-color 0.2s;
+        }
+        .password-strength-label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+            display: block;
+            min-height: 1.2em;
+        }
+        .password-requirements {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin: 0.3rem 0 0 0;
+        }
     </style>
 </head>
 <body>
@@ -140,5 +181,54 @@
     {% endfor %}
     {% block body %}{% endblock %}
 </main>
+<script>
+    document.querySelectorAll('.password-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = document.getElementById(btn.dataset.toggleFor);
+            if (!input) return;
+            var showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            btn.textContent = showing ? '👁' : '🙈';
+        });
+    });
+
+    document.querySelectorAll('[data-strength-for]').forEach(function (meter) {
+        var input = document.getElementById(meter.dataset.strengthFor);
+        var fill = meter.querySelector('.password-strength-fill');
+        var label = meter.querySelector('.password-strength-label');
+        if (!input || !fill || !label) return;
+
+        input.addEventListener('input', function () {
+            var pw = input.value;
+            var score = 0;
+            if (pw.length >= 8) score++;
+            if (pw.length >= 12) score++;
+            if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+            if (/[0-9]/.test(pw)) score++;
+            if (/[^A-Za-z0-9]/.test(pw)) score++;
+            score = Math.min(score, 4);
+
+            if (pw.length === 0) {
+                fill.style.width = '0%';
+                label.textContent = '';
+                return;
+            }
+
+            var color = '#d33b3b';
+            var text = meter.dataset.labelWeak;
+            if (score >= 4) {
+                color = '#1f9d55';
+                text = meter.dataset.labelStrong;
+            } else if (score >= 2) {
+                color = '#e08e0b';
+                text = meter.dataset.labelMedium;
+            }
+
+            fill.style.width = Math.max(15, (score / 4) * 100) + '%';
+            fill.style.background = color;
+            label.textContent = text;
+        });
+    });
+</script>
 </body>
 </html>

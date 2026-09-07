@@ -7,6 +7,7 @@ namespace Kartenlink\App\Controller;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Mailer;
+use Kartenlink\App\Support\PasswordPolicy;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\Translator;
 use Kartenlink\App\Support\View;
@@ -57,8 +58,8 @@ final class AuthController
             $errors[] = $this->translator->trans('auth.register.errors.email_taken');
         }
 
-        if (strlen($password) < 8) {
-            $errors[] = $this->translator->trans('auth.register.errors.password_too_short');
+        if (!PasswordPolicy::isValid($password)) {
+            $errors[] = $this->translator->trans('auth.register.errors.password_requirements');
         } elseif ($password !== $passwordConfirm) {
             $errors[] = $this->translator->trans('auth.register.errors.password_mismatch');
         }
@@ -102,7 +103,7 @@ final class AuthController
             return;
         }
 
-        $this->auth->login($user);
+        $this->auth->login($user, remember: isset($_POST['remember']));
         $this->redirect('/dashboard');
     }
 
@@ -169,8 +170,8 @@ final class AuthController
         $passwordConfirm = (string) ($_POST['password_confirm'] ?? '');
 
         $errors = [];
-        if (strlen($password) < 8) {
-            $errors[] = $this->translator->trans('auth.register.errors.password_too_short');
+        if (!PasswordPolicy::isValid($password)) {
+            $errors[] = $this->translator->trans('auth.register.errors.password_requirements');
         } elseif ($password !== $passwordConfirm) {
             $errors[] = $this->translator->trans('auth.register.errors.password_mismatch');
         }

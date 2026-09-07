@@ -25,8 +25,13 @@ return [
     'auth.register.errors.name_required' => 'Bitte gib deinen Namen ein.',
     'auth.register.errors.email_invalid' => 'Bitte gib eine gültige E-Mail-Adresse ein.',
     'auth.register.errors.email_taken' => 'Diese E-Mail-Adresse wird bereits verwendet.',
-    'auth.register.errors.password_too_short' => 'Das Passwort muss mindestens 8 Zeichen lang sein.',
+    'auth.register.errors.password_requirements' => 'Das Passwort muss mindestens 8 Zeichen lang sein und Groß-, Kleinbuchstaben sowie eine Zahl enthalten.',
     'auth.register.errors.password_mismatch' => 'Die Passwörter stimmen nicht überein.',
+    'auth.password_requirements_hint' => 'Mindestens 8 Zeichen, Groß- und Kleinbuchstaben sowie eine Zahl.',
+    'auth.password_strength.weak' => 'Schwach',
+    'auth.password_strength.medium' => 'Mittel',
+    'auth.password_strength.strong' => 'Stark',
+    'auth.password_toggle_show' => 'Passwort anzeigen',
     'auth.register.success' => 'Willkommen bei Kartenlink!',
 
     'auth.login.heading' => 'Anmelden',
@@ -35,6 +40,7 @@ return [
     'auth.login.submit' => 'Anmelden',
     'auth.login.no_account' => 'Noch kein Konto? Jetzt registrieren',
     'auth.login.forgot_password' => 'Passwort vergessen?',
+    'auth.login.remember_me' => 'Angemeldet bleiben',
     'auth.login.errors.invalid_credentials' => 'E-Mail-Adresse oder Passwort ist falsch.',
 
     'auth.forgot_password.heading' => 'Passwort vergessen',
