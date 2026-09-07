@@ -73,6 +73,14 @@ return [
     'card.edit.website_label' => 'Website',
     'card.edit.address_label' => 'Address',
     'card.edit.bio_label' => 'Short bio',
+    'card.edit.opening_hours_label' => 'Opening hours',
+    'card.edit.opening_hours_placeholder' => "Mon–Fri: 9am–6pm\nSat: 10am–2pm",
+    'card.edit.logo_label' => 'Logo',
+    'card.edit.logo_remove' => 'Remove logo',
+    'card.edit.logo_hint' => 'JPG, PNG or WebP, max. 2 MB.',
+    'card.edit.errors.logo_too_large' => 'The logo must be 2 MB or smaller.',
+    'card.edit.errors.logo_invalid_type' => 'The logo must be a JPG, PNG or WebP image.',
+    'card.edit.errors.logo_upload_failed' => 'The logo upload failed. Please try again.',
     'card.edit.slug_label' => 'Public link (findmichonline.com/...)',
     'card.edit.slug_placeholder' => 'auto-generated if left empty',
     'card.edit.design_label' => 'Design',
@@ -95,6 +103,7 @@ return [
     'card.qr.download_svg' => 'Download SVG',
 
     'card.public.at' => 'at',
+    'card.public.opening_hours' => 'Opening hours',
 
     'card.not_found.heading' => "This business card doesn't exist (anymore)",
     'card.not_found.text' => "The link is either wrong or the card hasn't been published yet.",

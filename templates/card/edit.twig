@@ -22,7 +22,7 @@
             </p>
         {% endif %}
 
-        <form method="post" action="/card/edit">
+        <form method="post" action="/card/edit" enctype="multipart/form-data">
             <label for="display_name">{{ trans('card.edit.name_label') }}</label>
             <input type="text" id="display_name" name="display_name" value="{{ old.display_name|default('') }}" required>
 
@@ -46,6 +46,22 @@
 
             <label for="bio">{{ trans('card.edit.bio_label') }}</label>
             <input type="text" id="bio" name="bio" value="{{ old.bio|default('') }}">
+
+            <label for="opening_hours">{{ trans('card.edit.opening_hours_label') }}</label>
+            <textarea id="opening_hours" name="opening_hours" rows="4" placeholder="{{ trans('card.edit.opening_hours_placeholder') }}" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; font-family:inherit;">{{ old.opening_hours|default('') }}</textarea>
+
+            <label for="logo">{{ trans('card.edit.logo_label') }}</label>
+            {% if old.logo_path is defined and old.logo_path %}
+                <div style="margin-bottom:0.5rem;">
+                    <img src="/{{ old.logo_path }}" alt="Logo" style="max-height:80px; border-radius:8px;">
+                </div>
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
+                    <input type="checkbox" name="remove_logo" value="1">
+                    {{ trans('card.edit.logo_remove') }}
+                </label>
+            {% endif %}
+            <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
+            <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
 
             <label for="slug">{{ trans('card.edit.slug_label') }}</label>
             <input type="text" id="slug" name="slug" value="{{ old.slug|default('') }}" placeholder="{{ trans('card.edit.slug_placeholder') }}">

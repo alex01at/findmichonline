@@ -2,6 +2,18 @@
 
 declare(strict_types=1);
 
+// The PHP built-in dev server (php -S ... public/index.php) invokes this
+// script for every request. Returning false here lets it fall back to
+// serving a real file directly (e.g. uploaded logos) instead of running
+// it through the app. Apache doesn't use this file as a router, so this
+// has no effect in production — public/.htaccess handles it there.
+if (PHP_SAPI === 'cli-server') {
+    $requestedFile = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (is_file($requestedFile)) {
+        return false;
+    }
+}
+
 use Kartenlink\App\Controller\AccountController;
 use Kartenlink\App\Controller\AdminController;
 use Kartenlink\App\Controller\AuthController;
@@ -14,6 +26,7 @@ use Kartenlink\App\Controller\QrCodeController;
 use Kartenlink\App\Controller\StripeWebhookController;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Database;
+use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\Mailer;
 use Kartenlink\App\Support\Router;
 use Kartenlink\App\Support\Session;
@@ -90,7 +103,8 @@ $router->get('/dashboard', function () use ($dashboard, $requireAuth) {
     $dashboard->index();
 });
 
-$card = new CardController($db, $view, $auth, $translator);
+$logoUploader = new LogoUploader(dirname(__DIR__) . '/public');
+$card = new CardController($db, $view, $auth, $translator, $logoUploader);
 $router->get('/card/edit', function () use ($card, $requireAuth) {
     $requireAuth();
     $card->edit();
@@ -152,7 +166,7 @@ $router->get('/lang/{locale}', function (array $params) {
     exit;
 });
 
-$admin = new AdminController($db, $view, $auth, $translator);
+$admin = new AdminController($db, $view, $auth, $translator, $logoUploader);
 $router->get('/admin', function () use ($admin, $requireAdmin) {
     $requireAdmin();
     $admin->index();

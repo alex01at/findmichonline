@@ -1,5 +1,6 @@
 /vendor/
 /var/cache/*
 !/var/cache/.gitkeep
+/public/uploads/
 .env
 .DS_Store

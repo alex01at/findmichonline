@@ -6,17 +6,24 @@ namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Support\Auth;
+use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\Translator;
 use Kartenlink\App\Support\View;
 use PDO;
+use RuntimeException;
 
 final class CardController
 {
     private BusinessCard $cards;
 
-    public function __construct(private PDO $db, private View $view, private Auth $auth, private Translator $translator)
-    {
+    public function __construct(
+        private PDO $db,
+        private View $view,
+        private Auth $auth,
+        private Translator $translator,
+        private LogoUploader $logoUploader
+    ) {
         $this->cards = new BusinessCard($db);
     }
 
@@ -46,8 +53,10 @@ final class CardController
         $website = trim($_POST['website'] ?? '');
         $address = trim($_POST['address'] ?? '');
         $bio = trim($_POST['bio'] ?? '');
+        $openingHours = trim($_POST['opening_hours'] ?? '');
         $slugInput = trim(strtolower($_POST['slug'] ?? ''));
         $isPublished = isset($_POST['is_published']);
+        $removeLogo = isset($_POST['remove_logo']);
 
         $design = $_POST['design'] ?? 'classic';
         if (!in_array($design, BusinessCard::AVAILABLE_DESIGNS, true)) {
@@ -84,6 +93,20 @@ final class CardController
             $slug = $slugInput;
         }
 
+        $logoPath = $existing['logo_path'] ?? null;
+        if ($removeLogo) {
+            $logoPath = null;
+        } elseif (isset($_FILES['logo'])) {
+            try {
+                $uploaded = $this->logoUploader->upload($userId, $_FILES['logo']);
+                if ($uploaded !== null) {
+                    $logoPath = $uploaded;
+                }
+            } catch (RuntimeException $e) {
+                $errors[] = $this->translator->trans($e->getMessage());
+            }
+        }
+
         if ($errors !== []) {
             echo $this->view->render('card/edit.twig', [
                 'card' => $existing,
@@ -97,6 +120,8 @@ final class CardController
                     'website' => $website,
                     'address' => $address,
                     'bio' => $bio,
+                    'opening_hours' => $openingHours,
+                    'logo_path' => $logoPath,
                     'design' => $design,
                     'is_published' => $isPublished,
                 ],
@@ -104,6 +129,10 @@ final class CardController
                 'design_modern_allowed' => $this->auth->can('design_modern'),
             ]);
             return;
+        }
+
+        if ($removeLogo) {
+            $this->logoUploader->remove($userId);
         }
 
         $this->cards->upsertForUser($userId, [
@@ -116,6 +145,8 @@ final class CardController
             'website' => $website !== '' ? $website : null,
             'address' => $address !== '' ? $address : null,
             'bio' => $bio !== '' ? $bio : null,
+            'opening_hours' => $openingHours !== '' ? $openingHours : null,
+            'logo_path' => $logoPath,
             'design' => $design,
             'is_published' => $isPublished,
         ]);

@@ -1,9 +1,14 @@
 {% extends 'layout/base.twig' %}
 
 {% block title %}{{ card.display_name }} – Kartenlink{% endblock %}
+{% block main_class %}card-public{% endblock %}
 
 {% block body %}
-    <div class="card">
+    <div class="card" style="text-align:center;">
+        {% if card.logo_path %}
+            <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="max-height:120px; max-width:100%; border-radius:12px; margin-bottom:1rem;">
+        {% endif %}
+
         <h1>{{ card.display_name }}</h1>
 
         {% if card.job_title or card.company %}
@@ -16,12 +21,15 @@
             <p>{{ card.bio }}</p>
         {% endif %}
 
-        <ul style="list-style:none; padding:0; margin-top:1.5rem;">
+        {% if card.phone %}
+            <a href="tel:{{ card.phone }}" style="display:inline-block; margin-top:1rem; padding:0.8rem 2rem; background:var(--success); color:#fff; text-decoration:none; border-radius:999px; font-weight:600;">
+                📞 {{ card.phone }}
+            </a>
+        {% endif %}
+
+        <ul style="list-style:none; padding:0; margin-top:1.5rem; text-align:left; max-width:420px; margin-left:auto; margin-right:auto;">
             {% if card.email %}
                 <li style="margin-bottom:0.6rem;">✉️ <a href="mailto:{{ card.email }}">{{ card.email }}</a></li>
-            {% endif %}
-            {% if card.phone %}
-                <li style="margin-bottom:0.6rem;">📞 <a href="tel:{{ card.phone }}">{{ card.phone }}</a></li>
             {% endif %}
             {% if card.website %}
                 <li style="margin-bottom:0.6rem;">🌐 <a href="{{ card.website starts with 'http' ? card.website : 'https://' ~ card.website }}" target="_blank" rel="noopener">{{ card.website }}</a></li>
@@ -30,5 +38,12 @@
                 <li style="margin-bottom:0.6rem;">📍 {{ card.address }}</li>
             {% endif %}
         </ul>
+
+        {% if card.opening_hours %}
+            <div style="margin-top:1.5rem; text-align:left; max-width:420px; margin-left:auto; margin-right:auto; border-top:1px solid var(--border); padding-top:1rem;">
+                <strong>{{ trans('card.public.opening_hours') }}</strong>
+                <p style="white-space:pre-line; margin:0.4rem 0 0 0;">{{ card.opening_hours }}</p>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

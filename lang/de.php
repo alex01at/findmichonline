@@ -73,6 +73,14 @@ return [
     'card.edit.website_label' => 'Website',
     'card.edit.address_label' => 'Adresse',
     'card.edit.bio_label' => 'Kurzbeschreibung',
+    'card.edit.opening_hours_label' => 'Öffnungszeiten',
+    'card.edit.opening_hours_placeholder' => "Mo–Fr: 9–18 Uhr\nSa: 10–14 Uhr",
+    'card.edit.logo_label' => 'Logo',
+    'card.edit.logo_remove' => 'Logo entfernen',
+    'card.edit.logo_hint' => 'JPG, PNG oder WebP, max. 2 MB.',
+    'card.edit.errors.logo_too_large' => 'Das Logo darf maximal 2 MB groß sein.',
+    'card.edit.errors.logo_invalid_type' => 'Das Logo muss ein JPG-, PNG- oder WebP-Bild sein.',
+    'card.edit.errors.logo_upload_failed' => 'Der Logo-Upload ist fehlgeschlagen. Bitte versuche es erneut.',
     'card.edit.slug_label' => 'Öffentlicher Link (findmichonline.com/...)',
     'card.edit.slug_placeholder' => 'wird automatisch generiert, wenn leer',
     'card.edit.design_label' => 'Design',
@@ -95,6 +103,7 @@ return [
     'card.qr.download_svg' => 'SVG herunterladen',
 
     'card.public.at' => 'bei',
+    'card.public.opening_hours' => 'Öffnungszeiten',
 
     'card.not_found.heading' => 'Diese Visitenkarte gibt es nicht (mehr)',
     'card.not_found.text' => 'Der Link ist entweder falsch oder die Karte wurde noch nicht veröffentlicht.',

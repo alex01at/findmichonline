@@ -64,9 +64,9 @@ final class BusinessCard
         if ($existing === null) {
             $stmt = $this->db->prepare(
                 'INSERT INTO business_cards
-                    (user_id, slug, display_name, job_title, company, email, phone, website, address, bio, design, is_published, created_at, updated_at)
+                    (user_id, slug, display_name, job_title, company, email, phone, website, address, bio, opening_hours, logo_path, design, is_published, created_at, updated_at)
                  VALUES
-                    (:user_id, :slug, :display_name, :job_title, :company, :email, :phone, :website, :address, :bio, :design, :is_published, NOW(), NOW())'
+                    (:user_id, :slug, :display_name, :job_title, :company, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :design, :is_published, NOW(), NOW())'
             );
         } else {
             $stmt = $this->db->prepare(
@@ -80,6 +80,8 @@ final class BusinessCard
                     website = :website,
                     address = :address,
                     bio = :bio,
+                    opening_hours = :opening_hours,
+                    logo_path = :logo_path,
                     design = :design,
                     is_published = :is_published,
                     updated_at = NOW()
@@ -99,6 +101,8 @@ final class BusinessCard
             'design' => $data['design'],
             'address' => $data['address'],
             'bio' => $data['bio'],
+            'opening_hours' => $data['opening_hours'],
+            'logo_path' => $data['logo_path'],
             'is_published' => $data['is_published'] ? 1 : 0,
         ]);
     }
