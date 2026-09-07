@@ -1,0 +1,79 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Kartenlink\App\Model;
+
+use PDO;
+
+final class User
+{
+    public function __construct(private PDO $db)
+    {
+    }
+
+    public function findByEmail(string $email): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function findById(int $id): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function create(string $name, string $email, string $passwordHash): int
+    {
+        $stmt = $this->db->prepare(
+            'INSERT INTO users (name, email, password_hash, created_at) VALUES (:name, :email, :password_hash, NOW())'
+        );
+        $stmt->execute([
+            'name' => $name,
+            'email' => $email,
+            'password_hash' => $passwordHash,
+        ]);
+
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function updatePlan(int $id, string $plan): void
+    {
+        $stmt = $this->db->prepare('UPDATE users SET plan = :plan WHERE id = :id');
+        $stmt->execute(['plan' => $plan, 'id' => $id]);
+    }
+
+    public function findByStripeCustomerId(string $customerId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE stripe_customer_id = :customer_id');
+        $stmt->execute(['customer_id' => $customerId]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function syncStripeSubscription(int $id, array $data): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET
+                plan = :plan,
+                stripe_customer_id = :stripe_customer_id,
+                stripe_subscription_id = :stripe_subscription_id,
+                subscription_status = :subscription_status,
+                cancel_at_period_end = :cancel_at_period_end
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            'plan' => $data['plan'],
+            'stripe_customer_id' => $data['stripe_customer_id'],
+            'stripe_subscription_id' => $data['stripe_subscription_id'],
+            'subscription_status' => $data['subscription_status'],
+            'cancel_at_period_end' => $data['cancel_at_period_end'] ? 1 : 0,
+            'id' => $id,
+        ]);
+    }
+}

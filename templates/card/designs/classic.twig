@@ -1,0 +1,34 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ card.display_name }} – Kartenlink{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ card.display_name }}</h1>
+
+        {% if card.job_title or card.company %}
+            <p class="muted-link" style="margin-top:-0.5rem;">
+                {{ card.job_title }}{% if card.job_title and card.company %} {{ trans('card.public.at') }} {% endif %}{{ card.company }}
+            </p>
+        {% endif %}
+
+        {% if card.bio %}
+            <p>{{ card.bio }}</p>
+        {% endif %}
+
+        <ul style="list-style:none; padding:0; margin-top:1.5rem;">
+            {% if card.email %}
+                <li style="margin-bottom:0.6rem;">✉️ <a href="mailto:{{ card.email }}">{{ card.email }}</a></li>
+            {% endif %}
+            {% if card.phone %}
+                <li style="margin-bottom:0.6rem;">📞 <a href="tel:{{ card.phone }}">{{ card.phone }}</a></li>
+            {% endif %}
+            {% if card.website %}
+                <li style="margin-bottom:0.6rem;">🌐 <a href="{{ card.website starts with 'http' ? card.website : 'https://' ~ card.website }}" target="_blank" rel="noopener">{{ card.website }}</a></li>
+            {% endif %}
+            {% if card.address %}
+                <li style="margin-bottom:0.6rem;">📍 {{ card.address }}</li>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock %}

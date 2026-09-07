@@ -1,0 +1,11 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('billing.success.heading') }} – Kartenlink{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ trans('billing.success.heading') }}</h1>
+        <p>{{ trans('billing.success.text') }}</p>
+        <a class="btn" href="/dashboard">{{ trans('billing.success.dashboard_link') }}</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('pricing.heading') }} – Kartenlink{% endblock %}
+{% block main_class %}wide{% endblock %}
+
+{% block body %}
+    <h1 style="text-align:center;">{{ trans('pricing.heading') }}</h1>
+    <p class="muted-link" style="text-align:center;">{{ trans('pricing.subtitle') }}</p>
+
+    <div style="display:flex; gap:1.5rem; margin-top:2rem; flex-wrap:wrap; justify-content:center;">
+        <div class="card" style="flex:1; min-width:260px; max-width:320px;">
+            <h2 style="margin-top:0;">{{ trans('pricing.free.name') }}</h2>
+            <p style="font-size:1.5rem; font-weight:700; margin:0 0 1rem 0;">{{ trans('pricing.free.price') }}</p>
+            <ul style="padding-left:1.2rem; line-height:1.9;">
+                <li>{{ trans('pricing.feature.card') }}</li>
+                <li>{{ trans('pricing.feature.classic_design') }}</li>
+                <li>{{ trans('pricing.feature.qr') }}</li>
+            </ul>
+
+            {% if current_plan == 'free' %}
+                <p class="muted-link">{{ trans('pricing.current_plan') }}</p>
+            {% elseif current_plan == 'pro' and not stripe_configured %}
+                <form method="post" action="/account/plan">
+                    <input type="hidden" name="plan" value="free">
+                    <button type="submit">{{ trans('pricing.cta.downgrade') }}</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="card" style="flex:1; min-width:260px; max-width:320px; border-color:var(--primary);">
+            <h2 style="margin-top:0;">{{ trans('pricing.pro.name') }}</h2>
+            <p style="font-size:1.5rem; font-weight:700; margin:0 0 1rem 0;">{{ trans('pricing.pro.price') }}</p>
+            <ul style="padding-left:1.2rem; line-height:1.9;">
+                <li>{{ trans('pricing.feature.card') }}</li>
+                <li>{{ trans('pricing.feature.classic_design') }}</li>
+                <li>{{ trans('pricing.feature.modern_design') }}</li>
+                <li>{{ trans('pricing.feature.qr') }}</li>
+            </ul>
+
+            {% if current_plan == 'pro' %}
+                <p class="muted-link">{{ trans('pricing.current_plan') }}</p>
+                {% if cancel_at_period_end %}
+                    <p class="muted-link">{{ trans('pricing.cancel_scheduled') }}</p>
+                {% endif %}
+                {% if stripe_configured and has_stripe_customer %}
+                    <form method="post" action="/billing/portal">
+                        <button type="submit">{{ trans('pricing.cta.manage_subscription') }}</button>
+                    </form>
+                {% elseif not stripe_configured %}
+                    <form method="post" action="/account/plan">
+                        <input type="hidden" name="plan" value="free">
+                        <button type="submit">{{ trans('pricing.cta.downgrade') }}</button>
+                    </form>
+                {% endif %}
+            {% elseif current_plan == 'free' %}
+                {% if stripe_configured %}
+                    <form method="post" action="/billing/checkout">
+                        <button type="submit">{{ trans('pricing.cta.upgrade') }}</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="/account/plan">
+                        <input type="hidden" name="plan" value="pro">
+                        <button type="submit">{{ trans('pricing.cta.upgrade') }}</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <a class="btn" href="/login">{{ trans('pricing.cta.login_required') }}</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <p class="muted-link" style="text-align:center; margin-top:2rem;">
+        {{ stripe_configured ? trans('pricing.note_stripe') : trans('pricing.note_dev_mode') }}
+    </p>
+{% endblock %}

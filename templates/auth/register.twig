@@ -1,0 +1,34 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}Registrieren – Kartenlink{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ trans('auth.register.heading') }}</h1>
+
+        {% if errors is defined and errors|length > 0 %}
+            <ul class="errors">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="/register">
+            <label for="name">{{ trans('auth.register.name_label') }}</label>
+            <input type="text" id="name" name="name" value="{{ old.name|default('') }}" required>
+
+            <label for="email">{{ trans('auth.register.email_label') }}</label>
+            <input type="email" id="email" name="email" value="{{ old.email|default('') }}" required>
+
+            <label for="password">{{ trans('auth.register.password_label') }}</label>
+            <input type="password" id="password" name="password" required minlength="8">
+
+            <label for="password_confirm">{{ trans('auth.register.password_confirm_label') }}</label>
+            <input type="password" id="password_confirm" name="password_confirm" required minlength="8">
+
+            <button type="submit">{{ trans('auth.register.submit') }}</button>
+        </form>
+        <a class="muted-link" href="/login">{{ trans('auth.register.have_account') }}</a>
+    </div>
+{% endblock %}
