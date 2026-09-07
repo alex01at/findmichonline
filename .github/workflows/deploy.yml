@@ -21,19 +21,17 @@ jobs:
       - name: Install Composer dependencies (production)
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-      - name: Deploy over FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Remove files that must not be uploaded
+        run: rm -rf .git .github
+
+      - name: Deploy over SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         timeout-minutes: 5
         with:
           server: ${{ secrets.FTP_SERVER }}
+          port: ${{ secrets.FTP_PORT || '22' }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
-          protocol: ftps
-          log-level: verbose
-          exclude: |
-            .git*
-            .git*/**
-            .github/**
-            .env
-            **/.gitkeep
+          local_path: './*'
+          remote_path: ${{ secrets.FTP_SERVER_DIR }}
+          sftp_only: true
