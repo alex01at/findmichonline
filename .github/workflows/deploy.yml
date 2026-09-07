@@ -21,36 +21,16 @@ jobs:
       - name: Install Composer dependencies (production)
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-      - name: Remove files that must not be uploaded
-        run: rm -rf .git .github
-
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      # The host uses a self-signed FTPS certificate, so certificate
-      # verification is intentionally disabled here (verified manually
-      # that this host requires ftp:ssl-force with a self-signed cert).
-      # .env is excluded from both upload and delete so the live
-      # database/Stripe credentials on the server are never touched.
-      # Credentials are passed via env vars (not interpolated directly
-      # into the script) so special characters like "$" in the password
-      # are not misread as shell variable references.
+      # The host presents a self-signed FTPS certificate, so certificate
+      # verification is intentionally disabled in deploy_ftps.py (verified
+      # manually against the live host that this is required). The script
+      # skips .git, .github and .env on its own, so the live server's
+      # database/Stripe credentials are never touched by a deploy.
       - name: Deploy over FTPS
         timeout-minutes: 5
         env:
-          LFTP_USER: ${{ secrets.FTP_USERNAME }}
-          LFTP_PASS: ${{ secrets.FTP_PASSWORD }}
-          LFTP_HOST: ${{ secrets.FTP_SERVER }}
-          LFTP_DIR: ${{ secrets.FTP_SERVER_DIR }}
-        run: |
-          lftp -u "$LFTP_USER,$LFTP_PASS" -e "
-            set ftp:ssl-force true;
-            set ftp:ssl-protect-data true;
-            set ssl:verify-certificate no;
-            mirror -R --delete --verbose \
-              --exclude-glob .env \
-              --exclude-glob .git* \
-              --exclude-glob .github* \
-              ./ ./ ;
-            bye
-          " "ftp://$LFTP_HOST:21/$LFTP_DIR"
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: python3 .github/scripts/deploy_ftps.py
