@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 return [
+    'seo.default_description' => 'Kartenlink – erstelle deine digitale Visitenkarte mit eigenem Link, individuellem Design und QR-Code.',
+
     'nav.dashboard' => 'Dashboard',
     'nav.logout' => 'Abmelden',
     'nav.login' => 'Anmelden',
@@ -14,6 +16,8 @@ return [
     'home.subtitle' => 'Erstelle in wenigen Minuten eine digitale Visitenkarte mit eigenem Link und QR-Code.',
     'home.cta_start' => 'Kostenlos starten',
     'home.cta_login' => 'Ich habe bereits ein Konto',
+    'home.meta_description' => 'Kartenlink: Erstelle kostenlos deine digitale Visitenkarte mit eigenem Kurzlink, individuellem Design (Classic/Modern), QR-Code zum Teilen und mehrsprachiger Darstellung. In wenigen Minuten startklar – ganz ohne Druckkosten.',
+    'pricing.meta_description' => 'Vergleiche die Kartenlink-Tarife: Free für den Einstieg, Pro mit modernem Design und allen Zusatzfunktionen. Jederzeit wechselbar.',
 
     'auth.register.heading' => 'Konto erstellen',
     'auth.register.name_label' => 'Name',

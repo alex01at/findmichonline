@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 return [
+    'seo.default_description' => 'Kartenlink – create your digital business card with your own link, custom design and QR code.',
+
     'nav.dashboard' => 'Dashboard',
     'nav.logout' => 'Log out',
     'nav.login' => 'Log in',
@@ -14,6 +16,8 @@ return [
     'home.subtitle' => 'Create a digital business card with your own link and QR code in minutes.',
     'home.cta_start' => 'Start for free',
     'home.cta_login' => 'I already have an account',
+    'home.meta_description' => 'Kartenlink: create your digital business card for free with your own short link, custom design (Classic/Modern), a shareable QR code, and multilingual display. Ready in minutes — no printing costs.',
+    'pricing.meta_description' => 'Compare Kartenlink plans: Free to get started, Pro with the modern design and all extra features. Switch anytime.',
 
     'auth.register.heading' => 'Create an account',
     'auth.register.name_label' => 'Name',

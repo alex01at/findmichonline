@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Kartenlink{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ trans('seo.default_description') }}{% endblock %}">
+    <meta name="robots" content="{% block robots %}noindex, nofollow{% endblock %}">
+    <link rel="canonical" href="{% block canonical_url %}{{ current_url }}{% endblock %}">
+    <meta property="og:site_name" content="Kartenlink">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ block('meta_description') }}{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ current_url }}{% endblock %}">
+    <meta name="twitter:title" content="{{ block('og_title') }}">
+    <meta name="twitter:description" content="{{ block('og_description') }}">
+    {% set og_image_url = block('og_image_url')|trim %}
+    <meta name="twitter:card" content="{{ og_image_url ? 'summary_large_image' : 'summary' }}">
+    {% if og_image_url %}
+        <meta property="og:image" content="{{ og_image_url }}">
+        <meta name="twitter:image" content="{{ og_image_url }}">
+    {% endif %}
+    {% block og_image_url %}{% endblock %}
+    {% block structured_data %}{% endblock %}
     <style>
         :root {
             color-scheme: light;

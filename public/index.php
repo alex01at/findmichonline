@@ -60,7 +60,8 @@ $view = new View(
     dirname(__DIR__) . '/var/cache/twig',
     $config['app']['env'] === 'dev',
     $translator,
-    $auth
+    $auth,
+    $config['app']['url']
 );
 
 $router = new Router();
@@ -105,7 +106,7 @@ $router->get('/dashboard', function () use ($dashboard, $requireAuth) {
 });
 
 $logoUploader = new LogoUploader(dirname(__DIR__) . '/public');
-$card = new CardController($db, $view, $auth, $translator, $logoUploader);
+$card = new CardController($db, $view, $auth, $translator, $logoUploader, $config['app']['url']);
 $router->get('/card/edit', function () use ($card, $requireAuth) {
     $requireAuth();
     $card->edit();

@@ -1,6 +1,11 @@
 {% extends 'layout/base.twig' %}
 
-{% block title %}{{ card.display_name }} – Kartenlink{% endblock %}
+{% block title %}{{ card.display_name }}{% if card.job_title or card.company %} – {{ card.job_title }}{% if card.job_title and card.company %} {{ trans('card.public.at') }} {% endif %}{{ card.company }}{% endif %}{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+{% block robots %}index, follow{% endblock %}
+{% block og_type %}profile{% endblock %}
+{% block og_image_url %}{{ og_image_url }}{% endblock %}
+{% block structured_data %}<script type="application/ld+json">{{ structured_data_json|raw }}</script>{% endblock %}
 {% block main_class %}card-public{% endblock %}
 
 {% block body %}

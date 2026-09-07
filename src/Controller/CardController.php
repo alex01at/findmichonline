@@ -22,7 +22,8 @@ final class CardController
         private View $view,
         private Auth $auth,
         private Translator $translator,
-        private LogoUploader $logoUploader
+        private LogoUploader $logoUploader,
+        private string $appUrl
     ) {
         $this->cards = new BusinessCard($db);
     }
@@ -189,7 +190,49 @@ final class CardController
         }
 
         $design = in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
+        $cardUrl = $this->appUrl . '/' . $card['slug'];
+        $logoUrl = $card['logo_path'] ? $this->appUrl . '/' . $card['logo_path'] : null;
 
-        echo $this->view->render("card/designs/{$design}.twig", ['card' => $card]);
+        echo $this->view->render("card/designs/{$design}.twig", [
+            'card' => $card,
+            'meta_description' => $this->buildMetaDescription($card),
+            'og_image_url' => $logoUrl,
+            'structured_data_json' => $this->buildStructuredData($card, $cardUrl, $logoUrl),
+        ]);
+    }
+
+    private function buildStructuredData(array $card, string $cardUrl, ?string $logoUrl): string
+    {
+        $data = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => $card['display_name'],
+            'jobTitle' => $card['job_title'] ?: null,
+            'worksFor' => $card['company'] ? ['@type' => 'Organization', 'name' => $card['company']] : null,
+            'email' => $card['email'] ?: null,
+            'telephone' => $card['phone'] ?: null,
+            'url' => $cardUrl,
+            'image' => $logoUrl,
+            'address' => $card['address'] ? ['@type' => 'PostalAddress', 'streetAddress' => $card['address']] : null,
+        ], static fn ($value) => $value !== null);
+
+        return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
+    }
+
+    private function buildMetaDescription(array $card): string
+    {
+        $parts = [];
+
+        $role = trim($card['job_title'] . ($card['job_title'] && $card['company'] ? ' ' . $this->translator->trans('card.public.at') . ' ' : '') . $card['company']);
+        if ($role !== '') {
+            $parts[] = $role;
+        }
+        if (!empty($card['bio'])) {
+            $parts[] = $card['bio'];
+        }
+
+        $description = $parts === [] ? $this->translator->trans('seo.default_description') : implode('. ', $parts);
+
+        return mb_strimwidth($description, 0, 200, '…');
     }
 }
