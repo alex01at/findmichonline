@@ -8,6 +8,15 @@ use PDO;
 
 final class BusinessCard
 {
+    public const AVAILABLE_DESIGNS = ['classic', 'modern'];
+
+    // Slugs that would collide with a real application route, since
+    // cards are published at the domain root (/{slug}).
+    public const RESERVED_SLUGS = [
+        'login', 'register', 'logout', 'dashboard', 'pricing', 'card',
+        'billing', 'lang', 'webhook', 'account', 'c', 'public', 'admin',
+    ];
+
     public function __construct(private PDO $db)
     {
     }
@@ -26,6 +35,12 @@ final class BusinessCard
         $stmt->execute(['slug' => $slug]);
         $card = $stmt->fetch();
         return $card ?: null;
+    }
+
+    public function deleteForUser(int $userId): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM business_cards WHERE user_id = :user_id');
+        $stmt->execute(['user_id' => $userId]);
     }
 
     public function slugExists(string $slug, ?int $excludeUserId = null): bool

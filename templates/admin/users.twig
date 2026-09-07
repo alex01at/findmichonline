@@ -1,0 +1,50 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('admin.heading') }} – Kartenlink{% endblock %}
+{% block main_class %}wide{% endblock %}
+
+{% block body %}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h1 style="margin:0;">{{ trans('admin.heading') }}</h1>
+        <a class="btn" href="/admin/users/create">{{ trans('admin.new_user') }}</a>
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
+            <thead>
+                <tr style="text-align:left; border-bottom:1px solid var(--border);">
+                    <th style="padding:0.5rem;">{{ trans('admin.table.name') }}</th>
+                    <th style="padding:0.5rem;">{{ trans('admin.table.email') }}</th>
+                    <th style="padding:0.5rem;">{{ trans('admin.table.plan') }}</th>
+                    <th style="padding:0.5rem;">{{ trans('admin.table.admin') }}</th>
+                    <th style="padding:0.5rem;">{{ trans('admin.table.card') }}</th>
+                    <th style="padding:0.5rem;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:0.5rem;">{{ u.name }}</td>
+                        <td style="padding:0.5rem;">{{ u.email }}</td>
+                        <td style="padding:0.5rem;">{{ u.plan }}</td>
+                        <td style="padding:0.5rem;">{{ u.is_admin ? '✓' : '' }}</td>
+                        <td style="padding:0.5rem;">
+                            {% if u.card_slug %}
+                                <a href="/{{ u.card_slug }}" target="_blank">/{{ u.card_slug }}</a>
+                                {% if not u.card_is_published %}<span class="muted-link">({{ trans('admin.table.unpublished') }})</span>{% endif %}
+                            {% else %}
+                                <span class="muted-link">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding:0.5rem; white-space:nowrap;">
+                            <a href="/admin/users/{{ u.id }}">{{ trans('admin.table.edit') }}</a>
+                            <form method="post" action="/admin/users/{{ u.id }}/delete" style="display:inline;" onsubmit="return confirm('{{ trans('admin.confirm_delete_user') }}');">
+                                <button type="submit" style="margin:0; padding:0.2rem 0.6rem; background:var(--danger); font-size:0.85rem;">{{ trans('admin.table.delete') }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

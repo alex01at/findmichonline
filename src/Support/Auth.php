@@ -49,4 +49,10 @@ final class Auth
     {
         return Features::allows($this->plan(), $feature);
     }
+
+    public function isAdmin(): bool
+    {
+        $user = $this->user();
+        return $user !== null && (bool) $user['is_admin'];
+    }
 }

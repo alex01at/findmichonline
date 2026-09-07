@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Kartenlink\App\Controller\AccountController;
+use Kartenlink\App\Controller\AdminController;
 use Kartenlink\App\Controller\AuthController;
 use Kartenlink\App\Controller\BillingController;
 use Kartenlink\App\Controller\CardController;
@@ -43,7 +44,8 @@ $view = new View(
     dirname(__DIR__) . '/templates',
     dirname(__DIR__) . '/var/cache/twig',
     $config['app']['env'] === 'dev',
-    $translator
+    $translator,
+    $auth
 );
 
 $router = new Router();
@@ -52,6 +54,17 @@ $requireAuth = function () use ($auth): void {
     if (!$auth->check()) {
         header('Location: /login');
         exit;
+    }
+};
+
+$requireAdmin = function () use ($auth): void {
+    if (!$auth->check()) {
+        header('Location: /login');
+        exit;
+    }
+    if (!$auth->isAdmin()) {
+        http_response_code(403);
+        exit('403 - Kein Zugriff');
     }
 };
 
@@ -131,6 +144,40 @@ $router->get('/lang/{locale}', function (array $params) {
     $referer = $_SERVER['HTTP_REFERER'] ?? '/';
     header('Location: ' . $referer);
     exit;
+});
+
+$admin = new AdminController($db, $view, $auth, $translator);
+$router->get('/admin', function () use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->index();
+});
+$router->get('/admin/users/create', function () use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->showCreateUser();
+});
+$router->post('/admin/users/create', function () use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->createUser();
+});
+$router->get('/admin/users/{id}', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->showEditUser($params);
+});
+$router->post('/admin/users/{id}', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->updateUser($params);
+});
+$router->post('/admin/users/{id}/delete', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->deleteUser($params);
+});
+$router->post('/admin/users/{id}/card', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->updateCard($params);
+});
+$router->post('/admin/users/{id}/card/delete', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->deleteCard($params);
 });
 
 // Catch-all for published business cards (findmichonline.com/{slug}).

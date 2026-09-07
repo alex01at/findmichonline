@@ -1,0 +1,42 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('admin.new_user') }} – Kartenlink{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ trans('admin.new_user') }}</h1>
+
+        {% if errors is defined and errors|length > 0 %}
+            <ul class="errors">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="/admin/users/create">
+            <label for="name">{{ trans('auth.register.name_label') }}</label>
+            <input type="text" id="name" name="name" value="{{ old.name|default('') }}" required>
+
+            <label for="email">{{ trans('auth.register.email_label') }}</label>
+            <input type="email" id="email" name="email" value="{{ old.email|default('') }}" required>
+
+            <label for="password">{{ trans('auth.register.password_label') }}</label>
+            <input type="password" id="password" name="password" required minlength="8">
+
+            <label for="plan">{{ trans('admin.table.plan') }}</label>
+            <select id="plan" name="plan" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem;">
+                <option value="free" {% if (old.plan|default('free')) == 'free' %}selected{% endif %}>Free</option>
+                <option value="pro" {% if (old.plan|default('free')) == 'pro' %}selected{% endif %}>Pro</option>
+            </select>
+
+            <label style="display:flex; align-items:center; gap:0.5rem; margin-top:1rem;">
+                <input type="checkbox" name="is_admin" value="1" {% if old.is_admin|default(false) %}checked{% endif %}>
+                {{ trans('admin.table.admin') }}
+            </label>
+
+            <button type="submit">{{ trans('admin.new_user') }}</button>
+        </form>
+        <a class="muted-link" href="/admin">{{ trans('admin.back_to_list') }}</a>
+    </div>
+{% endblock %}

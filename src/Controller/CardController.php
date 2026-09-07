@@ -13,15 +13,6 @@ use PDO;
 
 final class CardController
 {
-    private const AVAILABLE_DESIGNS = ['classic', 'modern'];
-
-    // Slugs that would collide with a real application route now that
-    // cards are published at the domain root (/{slug}) instead of /c/{slug}.
-    private const RESERVED_SLUGS = [
-        'login', 'register', 'logout', 'dashboard', 'pricing', 'card',
-        'billing', 'lang', 'webhook', 'account', 'c', 'public',
-    ];
-
     private BusinessCard $cards;
 
     public function __construct(private PDO $db, private View $view, private Auth $auth, private Translator $translator)
@@ -59,7 +50,7 @@ final class CardController
         $isPublished = isset($_POST['is_published']);
 
         $design = $_POST['design'] ?? 'classic';
-        if (!in_array($design, self::AVAILABLE_DESIGNS, true)) {
+        if (!in_array($design, BusinessCard::AVAILABLE_DESIGNS, true)) {
             $design = 'classic';
         }
         $designDowngraded = false;
@@ -79,11 +70,11 @@ final class CardController
         }
 
         if ($slugInput === '') {
-            $slug = $this->cards->generateUniqueSlug($displayName !== '' ? $displayName : 'karte', $userId, self::RESERVED_SLUGS);
+            $slug = $this->cards->generateUniqueSlug($displayName !== '' ? $displayName : 'karte', $userId, BusinessCard::RESERVED_SLUGS);
         } elseif (!preg_match('/^[a-z0-9-]{3,100}$/', $slugInput)) {
             $errors[] = $this->translator->trans('card.edit.errors.slug_invalid');
             $slug = $slugInput;
-        } elseif (in_array($slugInput, self::RESERVED_SLUGS, true)) {
+        } elseif (in_array($slugInput, BusinessCard::RESERVED_SLUGS, true)) {
             $errors[] = $this->translator->trans('card.edit.errors.slug_taken');
             $slug = $slugInput;
         } elseif ($this->cards->slugExists($slugInput, $userId)) {
@@ -147,7 +138,7 @@ final class CardController
             return;
         }
 
-        $design = in_array($card['design'], self::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
+        $design = in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
 
         echo $this->view->render("card/designs/{$design}.twig", ['card' => $card]);
     }

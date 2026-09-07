@@ -1,0 +1,10 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('admin.heading') }} – Kartenlink{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ trans('admin.user_not_found') }}</h1>
+        <a class="btn" href="/admin">{{ trans('admin.back_to_list') }}</a>
+    </div>
+{% endblock %}

@@ -48,6 +48,45 @@ final class User
         $stmt->execute(['plan' => $plan, 'id' => $id]);
     }
 
+    /** @return array<int, array<string, mixed>> */
+    public function findAllWithCardInfo(): array
+    {
+        $stmt = $this->db->query(
+            'SELECT u.*, c.slug AS card_slug, c.is_published AS card_is_published
+             FROM users u
+             LEFT JOIN business_cards c ON c.user_id = u.id
+             ORDER BY u.created_at DESC'
+        );
+
+        return $stmt->fetchAll();
+    }
+
+    public function updateProfile(int $id, string $name, string $email, string $plan, bool $isAdmin): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET name = :name, email = :email, plan = :plan, is_admin = :is_admin WHERE id = :id'
+        );
+        $stmt->execute([
+            'name' => $name,
+            'email' => $email,
+            'plan' => $plan,
+            'is_admin' => $isAdmin ? 1 : 0,
+            'id' => $id,
+        ]);
+    }
+
+    public function updatePasswordHash(int $id, string $passwordHash): void
+    {
+        $stmt = $this->db->prepare('UPDATE users SET password_hash = :password_hash WHERE id = :id');
+        $stmt->execute(['password_hash' => $passwordHash, 'id' => $id]);
+    }
+
+    public function delete(int $id): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM users WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
     public function findByStripeCustomerId(string $customerId): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE stripe_customer_id = :customer_id');

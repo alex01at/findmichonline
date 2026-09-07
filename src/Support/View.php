@@ -12,7 +12,7 @@ final class View
 {
     private Environment $twig;
 
-    public function __construct(string $templatesPath, string $cachePath, bool $debug, Translator $translator)
+    public function __construct(string $templatesPath, string $cachePath, bool $debug, Translator $translator, Auth $auth)
     {
         $loader = new FilesystemLoader($templatesPath);
         $this->twig = new Environment($loader, [
@@ -22,6 +22,7 @@ final class View
 
         $this->twig->addGlobal('flashes', Session::pullFlashes());
         $this->twig->addGlobal('auth_check', Session::get('user_id') !== null);
+        $this->twig->addGlobal('is_admin', $auth->isAdmin());
         $this->twig->addGlobal('locale', $translator->locale());
         $this->twig->addFunction(new TwigFunction(
             'trans',

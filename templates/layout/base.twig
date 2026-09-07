@@ -113,6 +113,9 @@
         <a href="/pricing">{{ trans('nav.pricing') }}</a>
         {% if auth_check %}
             <a href="/dashboard">{{ trans('nav.dashboard') }}</a>
+            {% if is_admin %}
+                <a href="/admin">{{ trans('nav.admin') }}</a>
+            {% endif %}
             <a href="/logout">{{ trans('nav.logout') }}</a>
         {% else %}
             <a href="/login">{{ trans('nav.login') }}</a>
