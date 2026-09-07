@@ -4,7 +4,6 @@
 {% block meta_description %}{{ meta_description }}{% endblock %}
 {% block robots %}index, follow{% endblock %}
 {% block og_type %}profile{% endblock %}
-{% block og_image_url %}{{ og_image_url }}{% endblock %}
 {% block structured_data %}<script type="application/ld+json">{{ structured_data_json|raw }}</script>{% endblock %}
 {% block main_class %}card-public{% endblock %}
 
@@ -93,8 +92,10 @@
             </div>
         {% endif %}
 
-        <div style="background:var(--bg); text-align:center; padding:0.9rem; font-size:0.85rem; color:var(--muted); border-top:1px solid var(--border);">
-            💙 {{ trans('card.public.footer_branding') }}
-        </div>
+        {% if card.owner_plan != 'pro' %}
+            <div style="background:var(--bg); text-align:center; padding:0.9rem; font-size:0.85rem; color:var(--muted); border-top:1px solid var(--border);">
+                💙 {{ trans('card.public.footer_branding') }}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

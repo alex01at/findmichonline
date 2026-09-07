@@ -32,7 +32,12 @@ final class BusinessCard
 
     public function findPublishedBySlug(string $slug): ?array
     {
-        $stmt = $this->db->prepare('SELECT * FROM business_cards WHERE slug = :slug AND is_published = 1');
+        $stmt = $this->db->prepare(
+            'SELECT c.*, u.plan AS owner_plan
+             FROM business_cards c
+             JOIN users u ON u.id = c.user_id
+             WHERE c.slug = :slug AND c.is_published = 1'
+        );
         $stmt->execute(['slug' => $slug]);
         $card = $stmt->fetch();
         return $card ?: null;
