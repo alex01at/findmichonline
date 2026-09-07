@@ -87,6 +87,35 @@ final class User
         $stmt->execute(['id' => $id]);
     }
 
+    public function setPasswordResetToken(int $id, string $token, int $ttlSeconds): void
+    {
+        // Expiry is computed by MySQL itself (NOW() + INTERVAL) rather than
+        // passed in from PHP, so the comparison in findByValidResetToken()
+        // isn't thrown off by PHP and MySQL running in different timezones.
+        $stmt = $this->db->prepare(
+            'UPDATE users SET password_reset_token = :token, password_reset_expires_at = DATE_ADD(NOW(), INTERVAL :ttl SECOND) WHERE id = :id'
+        );
+        $stmt->execute(['token' => $token, 'ttl' => $ttlSeconds, 'id' => $id]);
+    }
+
+    public function findByValidResetToken(string $token): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM users WHERE password_reset_token = :token AND password_reset_expires_at > NOW()'
+        );
+        $stmt->execute(['token' => $token]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function resetPassword(int $id, string $passwordHash): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET password_hash = :password_hash, password_reset_token = NULL, password_reset_expires_at = NULL WHERE id = :id'
+        );
+        $stmt->execute(['password_hash' => $passwordHash, 'id' => $id]);
+    }
+
     public function findByStripeCustomerId(string $customerId): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE stripe_customer_id = :customer_id');

@@ -14,6 +14,7 @@ use Kartenlink\App\Controller\QrCodeController;
 use Kartenlink\App\Controller\StripeWebhookController;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Database;
+use Kartenlink\App\Support\Mailer;
 use Kartenlink\App\Support\Router;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\StripeService;
@@ -71,12 +72,17 @@ $requireAdmin = function () use ($auth): void {
 $home = new HomeController($view, $auth);
 $router->get('/', fn () => $home->index());
 
-$authController = new AuthController($db, $view, $auth, $translator);
+$mailer = new Mailer($config['mail']['from_address'], $config['mail']['from_name']);
+$authController = new AuthController($db, $view, $auth, $translator, $mailer, $config['app']['url']);
 $router->get('/register', fn () => $authController->showRegister());
 $router->post('/register', fn () => $authController->register());
 $router->get('/login', fn () => $authController->showLogin());
 $router->post('/login', fn () => $authController->login());
 $router->get('/logout', fn () => $authController->logout());
+$router->get('/forgot-password', fn () => $authController->showForgotPassword());
+$router->post('/forgot-password', fn () => $authController->forgotPassword());
+$router->get('/reset-password/{token}', fn (array $params) => $authController->showResetPassword($params));
+$router->post('/reset-password/{token}', fn (array $params) => $authController->resetPassword($params));
 
 $dashboard = new DashboardController($db, $view, $auth);
 $router->get('/dashboard', function () use ($dashboard, $requireAuth) {

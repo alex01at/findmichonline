@@ -30,4 +30,8 @@ return [
         'webhook_secret' => $_ENV['STRIPE_WEBHOOK_SECRET'] ?? '',
         'price_id_pro' => $_ENV['STRIPE_PRICE_ID_PRO'] ?? '',
     ],
+    'mail' => [
+        'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@localhost',
+        'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Kartenlink',
+    ],
 ];

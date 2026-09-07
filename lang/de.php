@@ -34,7 +34,21 @@ return [
     'auth.login.password_label' => 'Passwort',
     'auth.login.submit' => 'Anmelden',
     'auth.login.no_account' => 'Noch kein Konto? Jetzt registrieren',
+    'auth.login.forgot_password' => 'Passwort vergessen?',
     'auth.login.errors.invalid_credentials' => 'E-Mail-Adresse oder Passwort ist falsch.',
+
+    'auth.forgot_password.heading' => 'Passwort vergessen',
+    'auth.forgot_password.intro' => 'Gib deine E-Mail-Adresse ein, wir schicken dir einen Link zum Zurücksetzen.',
+    'auth.forgot_password.submit' => 'Link anfordern',
+    'auth.forgot_password.sent' => 'Falls diese E-Mail-Adresse registriert ist, haben wir einen Link zum Zurücksetzen geschickt.',
+    'auth.forgot_password.email_subject' => 'Passwort zurücksetzen – Kartenlink',
+    'auth.forgot_password.email_body' => "Hallo,\n\ndu (oder jemand anderes) hat angefordert, das Passwort für dein Kartenlink-Konto zurückzusetzen.\n\nLink zum Zurücksetzen (1 Stunde gültig):\n{link}\n\nWenn du das nicht warst, kannst du diese E-Mail ignorieren.",
+
+    'auth.reset_password.heading' => 'Neues Passwort festlegen',
+    'auth.reset_password.new_password_label' => 'Neues Passwort',
+    'auth.reset_password.submit' => 'Passwort speichern',
+    'auth.reset_password.success' => 'Dein Passwort wurde geändert. Du kannst dich jetzt anmelden.',
+    'auth.reset_password.invalid_token' => 'Dieser Link ist ungültig oder abgelaufen. Bitte fordere einen neuen an.',
 
     'dashboard.welcome' => 'Willkommen, {name}!',
     'dashboard.email_label' => 'Deine E-Mail-Adresse: {email}',

@@ -6,6 +6,7 @@ namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
+use Kartenlink\App\Support\Mailer;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\Translator;
 use Kartenlink\App\Support\View;
@@ -13,10 +14,18 @@ use PDO;
 
 final class AuthController
 {
+    private const RESET_TOKEN_TTL_SECONDS = 3600;
+
     private User $users;
 
-    public function __construct(private PDO $db, private View $view, private Auth $auth, private Translator $translator)
-    {
+    public function __construct(
+        private PDO $db,
+        private View $view,
+        private Auth $auth,
+        private Translator $translator,
+        private Mailer $mailer,
+        private string $appUrl
+    ) {
         $this->users = new User($db);
     }
 
@@ -100,6 +109,80 @@ final class AuthController
     public function logout(): void
     {
         $this->auth->logout();
+        $this->redirect('/login');
+    }
+
+    public function showForgotPassword(): void
+    {
+        if ($this->auth->check()) {
+            $this->redirect('/dashboard');
+        }
+
+        echo $this->view->render('auth/forgot_password.twig');
+    }
+
+    public function forgotPassword(): void
+    {
+        $email = strtolower(trim($_POST['email'] ?? ''));
+        $user = $email !== '' ? $this->users->findByEmail($email) : null;
+
+        if ($user !== null) {
+            $token = bin2hex(random_bytes(32));
+            $this->users->setPasswordResetToken((int) $user['id'], $token, self::RESET_TOKEN_TTL_SECONDS);
+
+            $link = $this->appUrl . '/reset-password/' . $token;
+            $this->mailer->send(
+                $user['email'],
+                $this->translator->trans('auth.forgot_password.email_subject'),
+                $this->translator->trans('auth.forgot_password.email_body', ['link' => $link])
+            );
+        }
+
+        // Always show the same message, whether or not the address is registered,
+        // so this form can't be used to check which emails have an account.
+        Session::flash('success', $this->translator->trans('auth.forgot_password.sent'));
+        $this->redirect('/forgot-password');
+    }
+
+    public function showResetPassword(array $params): void
+    {
+        $user = $this->users->findByValidResetToken($params['token']);
+        if ($user === null) {
+            echo $this->view->render('auth/reset_password.twig', ['invalid_token' => true]);
+            return;
+        }
+
+        echo $this->view->render('auth/reset_password.twig', ['token' => $params['token']]);
+    }
+
+    public function resetPassword(array $params): void
+    {
+        $token = $params['token'];
+        $user = $this->users->findByValidResetToken($token);
+
+        if ($user === null) {
+            echo $this->view->render('auth/reset_password.twig', ['invalid_token' => true]);
+            return;
+        }
+
+        $password = (string) ($_POST['password'] ?? '');
+        $passwordConfirm = (string) ($_POST['password_confirm'] ?? '');
+
+        $errors = [];
+        if (strlen($password) < 8) {
+            $errors[] = $this->translator->trans('auth.register.errors.password_too_short');
+        } elseif ($password !== $passwordConfirm) {
+            $errors[] = $this->translator->trans('auth.register.errors.password_mismatch');
+        }
+
+        if ($errors !== []) {
+            echo $this->view->render('auth/reset_password.twig', ['token' => $token, 'errors' => $errors]);
+            return;
+        }
+
+        $this->users->resetPassword((int) $user['id'], password_hash($password, PASSWORD_DEFAULT));
+
+        Session::flash('success', $this->translator->trans('auth.reset_password.success'));
         $this->redirect('/login');
     }
 

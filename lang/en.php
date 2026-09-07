@@ -34,7 +34,21 @@ return [
     'auth.login.password_label' => 'Password',
     'auth.login.submit' => 'Log in',
     'auth.login.no_account' => "Don't have an account? Sign up",
+    'auth.login.forgot_password' => 'Forgot your password?',
     'auth.login.errors.invalid_credentials' => 'Email address or password is incorrect.',
+
+    'auth.forgot_password.heading' => 'Forgot password',
+    'auth.forgot_password.intro' => "Enter your email address and we'll send you a reset link.",
+    'auth.forgot_password.submit' => 'Send reset link',
+    'auth.forgot_password.sent' => "If that email address is registered, we've sent a password reset link.",
+    'auth.forgot_password.email_subject' => 'Reset your password – Kartenlink',
+    'auth.forgot_password.email_body' => "Hi,\n\nsomeone (hopefully you) requested a password reset for your Kartenlink account.\n\nReset link (valid for 1 hour):\n{link}\n\nIf this wasn't you, you can safely ignore this email.",
+
+    'auth.reset_password.heading' => 'Set a new password',
+    'auth.reset_password.new_password_label' => 'New password',
+    'auth.reset_password.submit' => 'Save password',
+    'auth.reset_password.success' => 'Your password has been changed. You can log in now.',
+    'auth.reset_password.invalid_token' => 'This link is invalid or has expired. Please request a new one.',
 
     'dashboard.welcome' => 'Welcome, {name}!',
     'dashboard.email_label' => 'Your email address: {email}',

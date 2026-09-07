@@ -1,6 +1,6 @@
 {% extends 'layout/base.twig' %}
 
-{% block title %}Anmelden – Kartenlink{% endblock %}
+{% block title %}{{ trans('auth.login.heading') }} – Kartenlink{% endblock %}
 
 {% block body %}
     <div class="card">
@@ -23,6 +23,7 @@
 
             <button type="submit">{{ trans('auth.login.submit') }}</button>
         </form>
+        <a class="muted-link" href="/forgot-password">{{ trans('auth.login.forgot_password') }}</a>
         <a class="muted-link" href="/register">{{ trans('auth.login.no_account') }}</a>
     </div>
 {% endblock %}
