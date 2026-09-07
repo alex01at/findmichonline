@@ -64,9 +64,9 @@ final class BusinessCard
         if ($existing === null) {
             $stmt = $this->db->prepare(
                 'INSERT INTO business_cards
-                    (user_id, slug, display_name, job_title, company, email, phone, website, address, bio, opening_hours, logo_path, design, is_published, created_at, updated_at)
+                    (user_id, slug, display_name, job_title, company, email, phone, website, address, bio, opening_hours, logo_path, linkedin_url, instagram_url, facebook_url, youtube_url, design, is_published, created_at, updated_at)
                  VALUES
-                    (:user_id, :slug, :display_name, :job_title, :company, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :design, :is_published, NOW(), NOW())'
+                    (:user_id, :slug, :display_name, :job_title, :company, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :design, :is_published, NOW(), NOW())'
             );
         } else {
             $stmt = $this->db->prepare(
@@ -82,6 +82,10 @@ final class BusinessCard
                     bio = :bio,
                     opening_hours = :opening_hours,
                     logo_path = :logo_path,
+                    linkedin_url = :linkedin_url,
+                    instagram_url = :instagram_url,
+                    facebook_url = :facebook_url,
+                    youtube_url = :youtube_url,
                     design = :design,
                     is_published = :is_published,
                     updated_at = NOW()
@@ -103,6 +107,10 @@ final class BusinessCard
             'bio' => $data['bio'],
             'opening_hours' => $data['opening_hours'],
             'logo_path' => $data['logo_path'],
+            'linkedin_url' => $data['linkedin_url'],
+            'instagram_url' => $data['instagram_url'],
+            'facebook_url' => $data['facebook_url'],
+            'youtube_url' => $data['youtube_url'],
             'is_published' => $data['is_published'] ? 1 : 0,
         ]);
     }

@@ -4,46 +4,92 @@
 {% block main_class %}card-public{% endblock %}
 
 {% block body %}
-    <div class="card" style="text-align:center;">
-        {% if card.logo_path %}
-            <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="max-height:120px; max-width:100%; border-radius:12px; margin-bottom:1rem;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(20,25,40,0.06);">
+
+        {% if card.logo_path or card.company %}
+            <div style="display:flex; align-items:center; gap:0.8rem; padding:1.8rem 2rem 0 2rem;">
+                {% if card.logo_path %}
+                    <img src="/{{ card.logo_path }}" alt="" style="width:44px; height:44px; object-fit:contain; border-radius:8px; flex-shrink:0;">
+                {% endif %}
+                {% if card.company %}
+                    <div style="font-weight:700; font-size:1.15rem;">{{ card.company }}</div>
+                {% endif %}
+            </div>
         {% endif %}
 
-        <h1>{{ card.display_name }}</h1>
-
-        {% if card.job_title or card.company %}
-            <p class="muted-link" style="margin-top:-0.5rem;">
-                {{ card.job_title }}{% if card.job_title and card.company %} {{ trans('card.public.at') }} {% endif %}{{ card.company }}
-            </p>
-        {% endif %}
+        <div style="display:flex; align-items:center; gap:1.3rem; padding:1.5rem 2rem; flex-wrap:wrap;">
+            {% if card.logo_path %}
+                <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 4px var(--bg);">
+            {% endif %}
+            <div>
+                <h1 style="margin:0;">{{ card.display_name }}</h1>
+                {% if card.job_title %}
+                    <p style="margin:0.2rem 0 0 0; color:var(--primary); font-weight:600;">{{ card.job_title }}</p>
+                {% endif %}
+                {% if card.company %}
+                    <p style="margin:0.1rem 0 0 0; color:var(--muted);">{{ card.company }}</p>
+                {% endif %}
+            </div>
+        </div>
 
         {% if card.bio %}
-            <p>{{ card.bio }}</p>
+            <p style="padding:0 2rem; margin:0 0 1rem 0;">{{ card.bio }}</p>
         {% endif %}
 
-        {% if card.phone %}
-            <a href="tel:{{ card.phone }}" style="display:inline-block; margin-top:1rem; padding:0.8rem 2rem; background:var(--success); color:#fff; text-decoration:none; border-radius:999px; font-weight:600;">
-                📞 {{ card.phone }}
-            </a>
-        {% endif %}
+        <hr style="border:none; border-top:1px solid var(--border); margin:0 2rem;">
 
-        <ul style="list-style:none; padding:0; margin-top:1.5rem; text-align:left; max-width:420px; margin-left:auto; margin-right:auto;">
-            {% if card.email %}
-                <li style="margin-bottom:0.6rem;">✉️ <a href="mailto:{{ card.email }}">{{ card.email }}</a></li>
-            {% endif %}
-            {% if card.website %}
-                <li style="margin-bottom:0.6rem;">🌐 <a href="{{ card.website starts with 'http' ? card.website : 'https://' ~ card.website }}" target="_blank" rel="noopener">{{ card.website }}</a></li>
-            {% endif %}
-            {% if card.address %}
-                <li style="margin-bottom:0.6rem;">📍 {{ card.address }}</li>
-            {% endif %}
-        </ul>
+        <div style="padding:1.5rem 2rem; display:flex; gap:2.5rem; flex-wrap:wrap;">
+            <div style="flex:2; min-width:260px;">
+                {% if card.phone %}
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.7rem;">
+                        <span>📞 {{ card.phone }}</span>
+                        <a href="tel:{{ card.phone }}" style="color:var(--primary); font-size:0.9rem; white-space:nowrap;">{{ trans('card.public.call') }}</a>
+                    </div>
+                {% endif %}
+                {% if card.email %}
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.7rem;">
+                        <span>✉️ {{ card.email }}</span>
+                        <a href="mailto:{{ card.email }}" style="color:var(--primary); font-size:0.9rem; white-space:nowrap;">{{ trans('card.public.email_action') }}</a>
+                    </div>
+                {% endif %}
+                {% if card.website %}
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.7rem;">
+                        <span>🌐 {{ card.website }}</span>
+                        <a href="{{ card.website starts with 'http' ? card.website : 'https://' ~ card.website }}" target="_blank" rel="noopener" style="color:var(--primary); font-size:0.9rem; white-space:nowrap;">{{ trans('card.public.website_action') }}</a>
+                    </div>
+                {% endif %}
+                {% if card.address %}
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.7rem;">
+                        <span>📍 {{ card.address }}</span>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ card.address|url_encode }}" target="_blank" rel="noopener" style="color:var(--primary); font-size:0.9rem; white-space:nowrap;">{{ trans('card.public.route') }}</a>
+                    </div>
+                {% endif %}
+
+                {% if card.linkedin_url or card.instagram_url or card.facebook_url or card.youtube_url %}
+                    <div style="display:flex; gap:0.6rem; margin-top:1.2rem;">
+                        {% if card.linkedin_url %}<a href="{{ card.linkedin_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#0A66C2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.85rem;">in</a>{% endif %}
+                        {% if card.instagram_url %}<a href="{{ card.instagram_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#E4405F; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1rem;">📷</a>{% endif %}
+                        {% if card.facebook_url %}<a href="{{ card.facebook_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#1877F2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.95rem;">f</a>{% endif %}
+                        {% if card.youtube_url %}<a href="{{ card.youtube_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#FF0000; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:0.9rem;">▶</a>{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="text-align:center;">
+                <img src="/qr/{{ card.slug }}.png" alt="QR" width="140" height="140" style="border-radius:8px; border:1px solid var(--border);">
+                <p style="font-size:0.8rem; color:var(--muted); margin:0.4rem 0 0 0; max-width:140px;">{{ trans('card.public.qr_caption') }}</p>
+            </div>
+        </div>
 
         {% if card.opening_hours %}
-            <div style="margin-top:1.5rem; text-align:left; max-width:420px; margin-left:auto; margin-right:auto; border-top:1px solid var(--border); padding-top:1rem;">
+            <div style="margin:0 2rem 1.5rem 2rem; padding-top:1.2rem; border-top:1px solid var(--border);">
                 <strong>{{ trans('card.public.opening_hours') }}</strong>
                 <p style="white-space:pre-line; margin:0.4rem 0 0 0;">{{ card.opening_hours }}</p>
             </div>
         {% endif %}
+
+        <div style="background:var(--bg); text-align:center; padding:0.9rem; font-size:0.85rem; color:var(--muted); border-top:1px solid var(--border);">
+            💙 {{ trans('card.public.footer_branding') }}
+        </div>
     </div>
 {% endblock %}

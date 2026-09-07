@@ -204,6 +204,10 @@ final class AdminController
         $address = trim($_POST['address'] ?? '');
         $bio = trim($_POST['bio'] ?? '');
         $openingHours = trim($_POST['opening_hours'] ?? '');
+        $linkedinUrl = trim($_POST['linkedin_url'] ?? '');
+        $instagramUrl = trim($_POST['instagram_url'] ?? '');
+        $facebookUrl = trim($_POST['facebook_url'] ?? '');
+        $youtubeUrl = trim($_POST['youtube_url'] ?? '');
         $slugInput = trim(strtolower($_POST['slug'] ?? ''));
         $isPublished = isset($_POST['is_published']);
         $removeLogo = isset($_POST['remove_logo']);
@@ -221,6 +225,13 @@ final class AdminController
 
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = $this->translator->trans('card.edit.errors.email_invalid');
+        }
+
+        foreach ([$linkedinUrl, $instagramUrl, $facebookUrl, $youtubeUrl] as $socialUrl) {
+            if ($socialUrl !== '' && !filter_var($socialUrl, FILTER_VALIDATE_URL)) {
+                $errors[] = $this->translator->trans('card.edit.errors.social_url_invalid');
+                break;
+            }
         }
 
         if ($slugInput === '') {
@@ -265,6 +276,10 @@ final class AdminController
                 'bio' => $bio,
                 'opening_hours' => $openingHours,
                 'logo_path' => $logoPath,
+                'linkedin_url' => $linkedinUrl,
+                'instagram_url' => $instagramUrl,
+                'facebook_url' => $facebookUrl,
+                'youtube_url' => $youtubeUrl,
                 'design' => $design,
                 'is_published' => $isPublished,
             ]), $errors);
@@ -287,6 +302,10 @@ final class AdminController
             'bio' => $bio !== '' ? $bio : null,
             'opening_hours' => $openingHours !== '' ? $openingHours : null,
             'logo_path' => $logoPath,
+            'linkedin_url' => $linkedinUrl !== '' ? $linkedinUrl : null,
+            'instagram_url' => $instagramUrl !== '' ? $instagramUrl : null,
+            'facebook_url' => $facebookUrl !== '' ? $facebookUrl : null,
+            'youtube_url' => $youtubeUrl !== '' ? $youtubeUrl : null,
             'design' => $design,
             'is_published' => $isPublished,
         ]);

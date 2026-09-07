@@ -104,6 +104,19 @@
             <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
             <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
 
+            <label style="margin-top:1.5rem; font-weight:600; color:var(--text);">{{ trans('card.edit.social_heading') }}</label>
+            <label for="linkedin_url">{{ trans('card.edit.linkedin_label') }}</label>
+            <input type="url" id="linkedin_url" name="linkedin_url" value="{{ card.linkedin_url|default('') }}" placeholder="https://linkedin.com/in/...">
+
+            <label for="instagram_url">{{ trans('card.edit.instagram_label') }}</label>
+            <input type="url" id="instagram_url" name="instagram_url" value="{{ card.instagram_url|default('') }}" placeholder="https://instagram.com/...">
+
+            <label for="facebook_url">{{ trans('card.edit.facebook_label') }}</label>
+            <input type="url" id="facebook_url" name="facebook_url" value="{{ card.facebook_url|default('') }}" placeholder="https://facebook.com/...">
+
+            <label for="youtube_url">{{ trans('card.edit.youtube_label') }}</label>
+            <input type="url" id="youtube_url" name="youtube_url" value="{{ card.youtube_url|default('') }}" placeholder="https://youtube.com/@...">
+
             <label for="slug">{{ trans('card.edit.slug_label') }}</label>
             <input type="text" id="slug" name="slug" value="{{ card.slug|default('') }}" placeholder="{{ trans('card.edit.slug_placeholder') }}">
 

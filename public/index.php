@@ -124,6 +124,8 @@ $router->get('/card/qr.svg', function () use ($qrCode, $requireAuth) {
     $requireAuth();
     $qrCode->svg();
 });
+$router->get('/qr/{slug}.png', fn (array $params) => $qrCode->publicPng($params));
+$router->get('/qr/{slug}.svg', fn (array $params) => $qrCode->publicSvg($params));
 
 $stripe = new StripeService(
     $config['stripe']['secret_key'],

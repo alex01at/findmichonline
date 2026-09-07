@@ -24,15 +24,25 @@ final class QrCodeController
 
     public function png(): void
     {
-        $this->respond('png');
+        $this->respondOwn('png');
     }
 
     public function svg(): void
     {
-        $this->respond('svg');
+        $this->respondOwn('svg');
     }
 
-    private function respond(string $format): void
+    public function publicPng(array $params): void
+    {
+        $this->respondPublic($params['slug'], 'png');
+    }
+
+    public function publicSvg(array $params): void
+    {
+        $this->respondPublic($params['slug'], 'svg');
+    }
+
+    private function respondOwn(string $format): void
     {
         $user = $this->auth->user();
         $card = $this->cards->findByUserId((int) $user['id']);
@@ -43,9 +53,27 @@ final class QrCodeController
             return;
         }
 
-        $cardUrl = $this->appUrl . '/' . $card['slug'];
+        $this->render($card['slug'], $format);
+    }
+
+    private function respondPublic(string $slug, string $format): void
+    {
+        $card = $this->cards->findPublishedBySlug($slug);
+
+        if ($card === null) {
+            http_response_code(404);
+            echo $this->translator->trans('qr.no_card');
+            return;
+        }
+
+        $this->render($card['slug'], $format);
+    }
+
+    private function render(string $slug, string $format): void
+    {
+        $cardUrl = $this->appUrl . '/' . $slug;
         $download = isset($_GET['download']);
-        $filename = $card['slug'] . '-qrcode.' . $format;
+        $filename = $slug . '-qrcode.' . $format;
 
         if ($format === 'svg') {
             $options = new QROptions([

@@ -100,6 +100,12 @@ return [
     'card.edit.errors.email_invalid' => 'Bitte gib eine gültige E-Mail-Adresse ein.',
     'card.edit.errors.slug_invalid' => 'Der Link darf nur Kleinbuchstaben, Ziffern und Bindestriche enthalten (mind. 3 Zeichen).',
     'card.edit.errors.slug_taken' => 'Dieser Link ist bereits vergeben. Bitte wähle einen anderen.',
+    'card.edit.errors.social_url_invalid' => 'Bitte gib eine gültige URL für die Social-Media-Links ein (z. B. https://...).',
+    'card.edit.social_heading' => 'Social Media',
+    'card.edit.linkedin_label' => 'LinkedIn-URL',
+    'card.edit.instagram_label' => 'Instagram-URL',
+    'card.edit.facebook_label' => 'Facebook-URL',
+    'card.edit.youtube_label' => 'YouTube-URL',
     'card.edit.success' => 'Deine Visitenkarte wurde gespeichert.',
     'card.edit.design_downgraded' => 'Das moderne Design ist nur im Pro-Tarif verfügbar. Es wurde "Classic" verwendet.',
 
@@ -110,6 +116,12 @@ return [
 
     'card.public.at' => 'bei',
     'card.public.opening_hours' => 'Öffnungszeiten',
+    'card.public.call' => 'Anrufen',
+    'card.public.email_action' => 'E-Mail schreiben',
+    'card.public.website_action' => 'Website öffnen',
+    'card.public.route' => 'Route',
+    'card.public.qr_caption' => 'Kontaktdaten als QR-Code',
+    'card.public.footer_branding' => 'Erstellt mit Kartenlink',
 
     'card.not_found.heading' => 'Diese Visitenkarte gibt es nicht (mehr)',
     'card.not_found.text' => 'Der Link ist entweder falsch oder die Karte wurde noch nicht veröffentlicht.',

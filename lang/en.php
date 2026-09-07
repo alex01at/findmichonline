@@ -100,6 +100,12 @@ return [
     'card.edit.errors.email_invalid' => 'Please enter a valid email address.',
     'card.edit.errors.slug_invalid' => 'The link may only contain lowercase letters, digits and hyphens (min. 3 characters).',
     'card.edit.errors.slug_taken' => 'This link is already taken. Please choose another one.',
+    'card.edit.errors.social_url_invalid' => 'Please enter a valid URL for the social media links (e.g. https://...).',
+    'card.edit.social_heading' => 'Social media',
+    'card.edit.linkedin_label' => 'LinkedIn URL',
+    'card.edit.instagram_label' => 'Instagram URL',
+    'card.edit.facebook_label' => 'Facebook URL',
+    'card.edit.youtube_label' => 'YouTube URL',
     'card.edit.success' => 'Your business card has been saved.',
     'card.edit.design_downgraded' => 'The modern design is only available on the Pro plan. "Classic" was used instead.',
 
@@ -110,6 +116,12 @@ return [
 
     'card.public.at' => 'at',
     'card.public.opening_hours' => 'Opening hours',
+    'card.public.call' => 'Call',
+    'card.public.email_action' => 'Send email',
+    'card.public.website_action' => 'Open website',
+    'card.public.route' => 'Directions',
+    'card.public.qr_caption' => 'Contact details as QR code',
+    'card.public.footer_branding' => 'Made with Kartenlink',
 
     'card.not_found.heading' => "This business card doesn't exist (anymore)",
     'card.not_found.text' => "The link is either wrong or the card hasn't been published yet.",
