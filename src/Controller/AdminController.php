@@ -220,7 +220,7 @@ final class AdminController
             $design = 'classic';
         }
 
-        // Admin edits bypass the Free/Pro gate entirely (same as design_modern above).
+        // Admin edits bypass the Free/Pro gate entirely (same as design_pro above).
         $useCustomColors = isset($_POST['use_custom_colors']);
         $colorBackground = trim($_POST['color_background'] ?? '');
         $colorHeader = trim($_POST['color_header'] ?? '');

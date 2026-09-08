@@ -1,0 +1,109 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ card.display_name }}{% if card.job_title or card.company %} – {{ card.job_title }}{% if card.job_title and card.company %} {{ trans('card.public.at') }} {% endif %}{{ card.company }}{% endif %}{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+{% block robots %}index, follow{% endblock %}
+{% block og_type %}profile{% endblock %}
+{% block structured_data %}<script type="application/ld+json">{{ structured_data_json|raw }}</script>{% endblock %}
+{% block main_class %}card-public{% endblock %}
+{% block header_nav %}{% endblock %}
+
+{% block body %}
+    {% set is_pro = card.owner_plan == 'pro' %}
+    {% set has_custom = is_pro and card.use_custom_colors %}
+    {# Free cards (including a downgraded former-Pro card still marked "playful") get the
+       same plain/gray treatment as every other design - none of the pastel colors below
+       apply unless is_pro is true. #}
+    {% set c_bg = has_custom and card.color_background ? card.color_background : (is_pro ? '#fef7f0' : '#ffffff') %}
+    {% set c_header = has_custom and card.color_header ? card.color_header : (is_pro ? '#fef7f0' : '#ffffff') %}
+    {% set c_accent = has_custom and card.color_content ? card.color_content : (is_pro ? '#ec4899' : '#6b7280') %}
+    {% set c_footer = has_custom and card.color_footer ? card.color_footer : (is_pro ? '#fdf2f8' : '#f5f6fa') %}
+    {% set chip_phone = is_pro ? '#f472b6' : c_accent %}
+    {% set chip_email = is_pro ? '#a78bfa' : c_accent %}
+    {% set chip_website = is_pro ? '#2dd4bf' : c_accent %}
+    {% set chip_address = is_pro ? '#f59e0b' : c_accent %}
+    {% set social_linkedin = is_pro ? '#0A66C2' : c_accent %}
+    {% set social_instagram = is_pro ? '#E4405F' : c_accent %}
+    {% set social_facebook = is_pro ? '#1877F2' : c_accent %}
+    {% set social_youtube = is_pro ? '#FF0000' : c_accent %}
+
+    <div style="background:{{ c_bg }}; border-radius:28px; overflow:hidden; box-shadow:0 16px 36px rgba(20,25,40,0.1);">
+
+        <div style="background:{{ c_header }}; padding:2.4rem 2rem 1.6rem 2rem; text-align:center;">
+            {% if card.logo_path %}
+                <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="width:104px; height:104px; border-radius:50%; object-fit:cover; border:4px dashed {{ c_accent }}; padding:4px; background:#fff;">
+            {% endif %}
+            <h1 style="margin:0.9rem 0 0 0;">{{ card.display_name }}</h1>
+            {% if card.job_title %}
+                <span style="display:inline-block; margin-top:0.6rem; background:{{ c_accent }}; color:#fff; font-size:0.8rem; font-weight:700; padding:0.35rem 1rem; border-radius:999px;">{{ card.job_title }}</span>
+            {% endif %}
+            {% if card.company %}
+                <p style="margin:0.6rem 0 0 0; color:var(--muted); font-weight:600;">{{ card.company }}</p>
+            {% endif %}
+        </div>
+
+        {% if card.bio %}
+            <p style="padding:0 2rem; margin:0 0 1.3rem 0; text-align:center;">{{ card.bio }}</p>
+        {% endif %}
+
+        {% if card.phone or card.email or card.website or card.address %}
+            <div style="display:flex; gap:0.7rem; padding:0.5rem 2rem 1rem 2rem; flex-wrap:wrap; justify-content:center;">
+                {% if card.phone %}
+                    <a href="/go/{{ card.slug }}/phone" style="display:inline-flex; align-items:center; gap:0.4rem; background:{{ chip_phone }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.55rem 1.1rem; border-radius:999px;">📞 {{ trans('card.public.call') }}</a>
+                {% endif %}
+                {% if card.email %}
+                    <a href="/go/{{ card.slug }}/email" style="display:inline-flex; align-items:center; gap:0.4rem; background:{{ chip_email }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.55rem 1.1rem; border-radius:999px;">✉️ {{ trans('card.public.email_action') }}</a>
+                {% endif %}
+                {% if card.website %}
+                    <a href="/go/{{ card.slug }}/website" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:0.4rem; background:{{ chip_website }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.55rem 1.1rem; border-radius:999px;">🌐 {{ trans('card.public.website_action') }}</a>
+                {% endif %}
+                {% if card.address %}
+                    <a href="/go/{{ card.slug }}/address" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:0.4rem; background:{{ chip_address }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.55rem 1.1rem; border-radius:999px;">📍 {{ trans('card.public.route') }}</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if card.phone or card.email or card.website or card.address %}
+            <div style="padding:0 2rem 0.5rem 2rem; text-align:center; color:var(--muted); font-size:0.9rem;">
+                {% if card.phone %}<div style="margin-bottom:0.35rem;">📞 {{ card.phone }}</div>{% endif %}
+                {% if card.email %}<div style="margin-bottom:0.35rem;">✉️ {{ card.email }}</div>{% endif %}
+                {% if card.website %}<div style="margin-bottom:0.35rem;">🌐 {{ card.website }}</div>{% endif %}
+                {% if card.address %}<div style="margin-bottom:0.35rem;">📍 {{ card.address }}</div>{% endif %}
+            </div>
+        {% endif %}
+
+        {% if card.linkedin_url or card.instagram_url or card.facebook_url or card.youtube_url %}
+            <div style="display:flex; gap:0.6rem; padding:0.4rem 2rem 0.5rem 2rem; justify-content:center;">
+                {% if card.linkedin_url %}<a href="/go/{{ card.slug }}/linkedin" target="_blank" rel="noopener" style="width:38px; height:38px; border-radius:50%; background:{{ social_linkedin }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.85rem;">in</a>{% endif %}
+                {% if card.instagram_url %}<a href="/go/{{ card.slug }}/instagram" target="_blank" rel="noopener" style="width:38px; height:38px; border-radius:50%; background:{{ social_instagram }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1rem;">📷</a>{% endif %}
+                {% if card.facebook_url %}<a href="/go/{{ card.slug }}/facebook" target="_blank" rel="noopener" style="width:38px; height:38px; border-radius:50%; background:{{ social_facebook }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.95rem;">f</a>{% endif %}
+                {% if card.youtube_url %}<a href="/go/{{ card.slug }}/youtube" target="_blank" rel="noopener" style="width:38px; height:38px; border-radius:50%; background:{{ social_youtube }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:0.9rem;">▶</a>{% endif %}
+            </div>
+        {% endif %}
+
+        <div style="text-align:center; padding:1.5rem 2rem;">
+            <div style="display:inline-block; padding:0.6rem; border:3px dashed {{ c_accent }}; border-radius:20px;">
+                <img src="/qr/{{ card.slug }}.png" alt="QR" width="130" height="130" style="border-radius:12px; display:block;">
+            </div>
+            <p style="font-size:0.8rem; color:var(--muted); margin:0.7rem 0 0 0;">{{ trans('card.public.qr_caption') }}</p>
+            {% if is_pro %}
+                <a href="/vcard/{{ card.slug }}.vcf" style="margin-top:0.9rem; display:inline-block; background:{{ c_accent }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.6rem 1.3rem; border-radius:999px; transform:rotate(-2deg);">💾 {{ trans('card.public.save_contact') }}</a>
+            {% endif %}
+        </div>
+
+        {% if card.opening_hours %}
+            <div style="margin:0 2rem 1.6rem 2rem; padding-top:1.2rem; border-top:2px dashed var(--border); text-align:center;">
+                <strong>{{ trans('card.public.opening_hours') }}</strong>
+                <p style="white-space:pre-line; margin:0.5rem 0 0 0;">{{ card.opening_hours }}</p>
+            </div>
+        {% endif %}
+
+        {% if is_pro %}
+            <div style="background:{{ c_footer }}; padding:1rem; text-align:center;">🎉</div>
+        {% else %}
+            <div style="background:var(--bg); text-align:center; padding:0.9rem; font-size:0.85rem; color:var(--muted); border-top:1px solid var(--border);">
+                {{ trans('card.public.footer_branding') }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

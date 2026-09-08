@@ -93,17 +93,25 @@
 
             <div class="tab-panel" data-tab-panel="design" hidden>
                 <label>{{ trans('card.edit.design_label') }}</label>
-                <div style="display:flex; gap:1rem; margin-top:0.3rem;">
+                <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.3rem;">
                     <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0;">
                         <input type="radio" name="design" value="classic" {% if (old.design|default('classic')) == 'classic' %}checked{% endif %}>
                         {{ trans('card.edit.design_classic') }}
                     </label>
-                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_modern_allowed %}opacity:0.5;{% endif %}">
-                        <input type="radio" name="design" value="modern" {% if not design_modern_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'modern' %}checked{% endif %}>
-                        {{ trans('card.edit.design_modern') }} {% if not design_modern_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
+                        <input type="radio" name="design" value="modern" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'modern' %}checked{% endif %}>
+                        {{ trans('card.edit.design_modern') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
+                        <input type="radio" name="design" value="professional" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'professional' %}checked{% endif %}>
+                        {{ trans('card.edit.design_professional') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
+                        <input type="radio" name="design" value="playful" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'playful' %}checked{% endif %}>
+                        {{ trans('card.edit.design_playful') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
                     </label>
                 </div>
-                {% if not design_modern_allowed %}
+                {% if not design_pro_allowed %}
                     <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.edit.design_pro_hint') }}</p>
                 {% endif %}
 

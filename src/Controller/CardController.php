@@ -37,7 +37,7 @@ final class CardController
         echo $this->view->render('card/edit.twig', [
             'card' => $card,
             'old' => $card,
-            'design_modern_allowed' => $this->auth->can('design_modern'),
+            'design_pro_allowed' => $this->auth->can('design_pro'),
             'custom_colors_allowed' => $this->auth->can('custom_colors'),
         ]);
     }
@@ -70,7 +70,7 @@ final class CardController
             $design = 'classic';
         }
         $designDowngraded = false;
-        if ($design === 'modern' && !$this->auth->can('design_modern')) {
+        if ($design !== 'classic' && !$this->auth->can('design_pro')) {
             $design = 'classic';
             $designDowngraded = true;
         }
@@ -169,7 +169,7 @@ final class CardController
                     'is_published' => $isPublished,
                 ],
                 'errors' => $errors,
-                'design_modern_allowed' => $this->auth->can('design_modern'),
+                'design_pro_allowed' => $this->auth->can('design_pro'),
                 'custom_colors_allowed' => $this->auth->can('custom_colors'),
             ]);
             return;

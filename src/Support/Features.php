@@ -15,7 +15,7 @@ final class Features
 
     /** @var array<string, list<string>> feature => plans that include it */
     private const MATRIX = [
-        'design_modern' => [self::PRO],
+        'design_pro' => [self::PRO],
         'view_stats' => [self::PRO],
         'custom_colors' => [self::PRO],
         'vcard' => [self::PRO],

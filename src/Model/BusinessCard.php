@@ -8,7 +8,7 @@ use PDO;
 
 final class BusinessCard
 {
-    public const AVAILABLE_DESIGNS = ['classic', 'modern'];
+    public const AVAILABLE_DESIGNS = ['classic', 'modern', 'professional', 'playful'];
 
     // Slugs that would collide with a real application route, since
     // cards are published at the domain root (/{slug}).
