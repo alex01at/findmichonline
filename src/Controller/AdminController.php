@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
+use Kartenlink\App\Model\LegalPage;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Features;
@@ -20,6 +21,7 @@ final class AdminController
 {
     private User $users;
     private BusinessCard $cards;
+    private LegalPage $legalPages;
 
     public function __construct(
         private PDO $db,
@@ -30,6 +32,7 @@ final class AdminController
     ) {
         $this->users = new User($db);
         $this->cards = new BusinessCard($db);
+        $this->legalPages = new LegalPage($db);
     }
 
     public function index(): void
@@ -349,6 +352,28 @@ final class AdminController
 
         Session::flash('success', $this->translator->trans('admin.card_deleted'));
         header('Location: /admin/users/' . $userId);
+        exit;
+    }
+
+    public function showLegal(): void
+    {
+        echo $this->view->render('admin/legal.twig', [
+            'pages' => $this->legalPages->all(),
+        ]);
+    }
+
+    public function updateLegal(): void
+    {
+        foreach (LegalPage::PAGES as $slug) {
+            $this->legalPages->update(
+                $slug,
+                trim($_POST['content_de_' . $slug] ?? ''),
+                trim($_POST['content_en_' . $slug] ?? '')
+            );
+        }
+
+        Session::flash('success', $this->translator->trans('admin.legal_saved'));
+        header('Location: /admin/legal');
         exit;
     }
 

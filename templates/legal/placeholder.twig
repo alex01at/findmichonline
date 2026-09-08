@@ -6,6 +6,10 @@
 {% block body %}
     <div class="card">
         <h1>{{ heading }}</h1>
-        <p class="muted-link">{{ trans('legal.placeholder_text') }}</p>
+        {% if content %}
+            <p style="white-space:pre-line;">{{ content }}</p>
+        {% else %}
+            <p class="muted-link">{{ trans('legal.placeholder_text') }}</p>
+        {% endif %}
     </div>
 {% endblock %}

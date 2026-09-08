@@ -4,31 +4,41 @@ declare(strict_types=1);
 
 namespace Kartenlink\App\Controller;
 
+use Kartenlink\App\Model\LegalPage;
 use Kartenlink\App\Support\Translator;
 use Kartenlink\App\Support\View;
+use PDO;
 
 /**
- * Placeholder pages for the footer links (Impressum/Datenschutz/Kontakt)
- * until real legal content exists.
+ * Public Impressum/Datenschutz pages. Content is stored in the
+ * legal_pages table and edited via the admin panel (AdminController),
+ * not through a deploy — falls back to a placeholder note if an admin
+ * hasn't filled in that language yet.
  */
 final class LegalController
 {
-    private const PAGES = ['impressum', 'datenschutz', 'kontakt'];
+    private LegalPage $pages;
 
-    public function __construct(private View $view, private Translator $translator)
+    public function __construct(private View $view, private Translator $translator, PDO $db, private string $locale)
     {
+        $this->pages = new LegalPage($db);
     }
 
-    public function show(string $page): void
+    public function show(string $slug): void
     {
-        if (!in_array($page, self::PAGES, true)) {
+        $page = $this->pages->find($slug);
+
+        if ($page === null) {
             http_response_code(404);
             echo $this->view->render('card/not_found.twig');
             return;
         }
 
+        $content = trim((string) ($page['content_' . $this->locale] ?? ''));
+
         echo $this->view->render('legal/placeholder.twig', [
-            'heading' => $this->translator->trans('footer.' . $page),
+            'heading' => $this->translator->trans('footer.' . $slug),
+            'content' => $content !== '' ? $content : null,
         ]);
     }
 }

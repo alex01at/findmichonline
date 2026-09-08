@@ -19,6 +19,7 @@ use Kartenlink\App\Controller\AdminController;
 use Kartenlink\App\Controller\AuthController;
 use Kartenlink\App\Controller\BillingController;
 use Kartenlink\App\Controller\CardController;
+use Kartenlink\App\Controller\ContactController;
 use Kartenlink\App\Controller\DashboardController;
 use Kartenlink\App\Controller\HomeController;
 use Kartenlink\App\Controller\LegalController;
@@ -141,10 +142,13 @@ $stripe = new StripeService(
 $pricing = new PricingController($view, $auth, $stripe);
 $router->get('/pricing', fn () => $pricing->index());
 
-$legal = new LegalController($view, $translator);
+$legal = new LegalController($view, $translator, $db, $locale);
 $router->get('/impressum', fn () => $legal->show('impressum'));
 $router->get('/datenschutz', fn () => $legal->show('datenschutz'));
-$router->get('/kontakt', fn () => $legal->show('kontakt'));
+
+$contact = new ContactController($view, $translator, $mailer, $config['mail']['contact_address']);
+$router->get('/kontakt', fn () => $contact->show());
+$router->post('/kontakt', fn () => $contact->submit());
 
 $account = new AccountController($db, $auth, $translator);
 $router->post('/account/plan', function () use ($account, $requireAuth) {
@@ -211,6 +215,14 @@ $router->post('/admin/users/{id}/card', function (array $params) use ($admin, $r
 $router->post('/admin/users/{id}/card/delete', function (array $params) use ($admin, $requireAdmin) {
     $requireAdmin();
     $admin->deleteCard($params);
+});
+$router->get('/admin/legal', function () use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->showLegal();
+});
+$router->post('/admin/legal', function () use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->updateLegal();
 });
 
 // Catch-all for published business cards (findmichonline.com/{slug}).
