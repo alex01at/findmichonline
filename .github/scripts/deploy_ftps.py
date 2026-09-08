@@ -9,15 +9,23 @@ The host's firewall/FTPD stalls once too many data connections pile up
 in a short window (verified directly: 0-0.4s delay reproducibly stalls
 around 170-230 files; a 1.5s delay uploaded 300/300 files without a
 single stall). Since plain FTP opens a fresh data connection per file,
-this script paces uploads with a delay (default 1.5s, override via
-FTP_UPLOAD_DELAY), and skips files whose remote size already matches
-the local size (a cheap control-channel-only check) so that day-to-day
-deploys, which only change a handful of files, stay fast. Only the
-very first full deploy uploads everything and takes a while (roughly
-1.5s per file).
+this script paces every actual upload with a delay (default 1.5s,
+override via FTP_UPLOAD_DELAY).
+
+Which files need uploading is decided entirely locally, from a JSON
+manifest (path -> sha256) left over from the previous successful run
+(FTP_MANIFEST_PATH, restored/saved by the workflow via actions/cache).
+An earlier version asked the server for every file's remote size
+before deciding — one control-channel round trip per file, ~1000 of
+them, which is what made every run take minutes even when only a
+couple of files had actually changed. Comparing hashes locally means
+unchanged files cost nothing over the network at all. The very first
+run (no manifest yet) still uploads everything at the throttled pace.
 """
 
 import ftplib
+import hashlib
+import json
 import os
 import ssl
 import sys
@@ -28,6 +36,7 @@ USER = os.environ["FTP_USER"]
 PASSWORD = os.environ["FTP_PASS"]
 REMOTE_ROOT = os.environ["FTP_DIR"].strip("/")
 UPLOAD_DELAY = float(os.environ.get("FTP_UPLOAD_DELAY", "1.5"))
+MANIFEST_PATH = os.environ.get("FTP_MANIFEST_PATH", "").strip()
 
 EXCLUDE_DIR_NAMES = {".git", ".github"}
 EXCLUDE_FILE_NAMES = {".env"}
@@ -49,54 +58,82 @@ def ensure_remote_dir(ftp: ftplib.FTP_TLS, path: str) -> None:
             pass  # already exists
 
 
-def remote_size(ftp: ftplib.FTP_TLS, path: str) -> int | None:
+def hash_file(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def load_manifest() -> dict:
+    if not MANIFEST_PATH or not os.path.isfile(MANIFEST_PATH):
+        return {}
     try:
-        return ftp.size(path)
-    except ftplib.error_perm:
-        return None
+        with open(MANIFEST_PATH, encoding="utf-8") as fh:
+            return json.load(fh)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def save_manifest(manifest: dict) -> None:
+    if not MANIFEST_PATH:
+        return
+    os.makedirs(os.path.dirname(MANIFEST_PATH) or ".", exist_ok=True)
+    with open(MANIFEST_PATH, "w", encoding="utf-8") as fh:
+        json.dump(manifest, fh)
 
 
 def main() -> int:
-    context = ssl._create_unverified_context()
-    ftp = ftplib.FTP_TLS(context=context, timeout=30)
-    ftp.connect(HOST, 21)
-    ftp.auth()
-    ftp.login(USER, PASSWORD)
-    ftp.prot_p()
-    ftp.voidcmd("TYPE I")  # binary mode; also required by some servers for SIZE
+    previous_manifest = load_manifest()
+    new_manifest = {}
 
-    if REMOTE_ROOT:
-        ensure_remote_dir(ftp, REMOTE_ROOT)
-
-    uploaded = 0
-    skipped = 0
+    to_upload = []
     for root, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIR_NAMES]
         rel_root = os.path.relpath(root, ".")
         rel_root = "" if rel_root == "." else rel_root.replace(os.sep, "/")
-
-        if rel_root:
-            ensure_remote_dir(ftp, remote_path(rel_root))
 
         for name in files:
             if name in EXCLUDE_FILE_NAMES:
                 continue
             rel_file = f"{rel_root}/{name}" if rel_root else name
             local_file = os.path.join(root, name)
-            r_path = remote_path(rel_file)
+            file_hash = hash_file(local_file)
+            new_manifest[rel_file] = file_hash
 
-            local_size = os.path.getsize(local_file)
-            if remote_size(ftp, r_path) == local_size:
-                skipped += 1
-                continue
+            if previous_manifest.get(rel_file) != file_hash:
+                to_upload.append((rel_file, local_file))
+
+    print(f"{len(new_manifest)} files tracked, {len(to_upload)} need uploading.")
+
+    if to_upload:
+        context = ssl._create_unverified_context()
+        ftp = ftplib.FTP_TLS(context=context, timeout=30)
+        ftp.connect(HOST, 21)
+        ftp.auth()
+        ftp.login(USER, PASSWORD)
+        ftp.prot_p()
+        ftp.voidcmd("TYPE I")  # binary mode
+
+        if REMOTE_ROOT:
+            ensure_remote_dir(ftp, REMOTE_ROOT)
+
+        ensured_dirs = set()
+        for rel_file, local_file in to_upload:
+            rel_root = os.path.dirname(rel_file)
+            if rel_root and rel_root not in ensured_dirs:
+                ensure_remote_dir(ftp, remote_path(rel_root))
+                ensured_dirs.add(rel_root)
 
             with open(local_file, "rb") as fh:
-                ftp.storbinary(f"STOR {r_path}", fh)
-            uploaded += 1
+                ftp.storbinary(f"STOR {remote_path(rel_file)}", fh)
             time.sleep(UPLOAD_DELAY)
 
-    ftp.quit()
-    print(f"Uploaded {uploaded} files, skipped {skipped} unchanged, to {REMOTE_ROOT or '/'} on {HOST}.")
+        ftp.quit()
+
+    save_manifest(new_manifest)
+    print(f"Uploaded {len(to_upload)} files, {len(new_manifest) - len(to_upload)} unchanged, to {REMOTE_ROOT or '/'} on {HOST}.")
     return 0
 
 

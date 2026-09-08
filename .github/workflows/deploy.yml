@@ -18,8 +18,34 @@ jobs:
         with:
           php-version: '8.3'
 
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
       - name: Install Composer dependencies (production)
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      # Lets deploy_ftps.py skip files that didn't change since the last
+      # successful deploy without asking the server about each one (see
+      # that script for why: one remote check per file, over ~1000 files,
+      # is what made every run take minutes). restore-keys falls back to
+      # the most recent manifest from any previous run; a cache miss (e.g.
+      # first-ever deploy, or the entry aged out) just means deploy_ftps.py
+      # treats every file as new, which is always correct, just slower.
+      - name: Restore deploy manifest
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/deploy-manifest.json
+          key: deploy-manifest-${{ github.run_id }}
+          restore-keys: |
+            deploy-manifest-
 
       # The host presents a self-signed FTPS certificate, so certificate
       # verification is intentionally disabled in deploy_ftps.py (verified
@@ -30,9 +56,8 @@ jobs:
       # The very first deploy uploads the whole tree (~1000 files) at a
       # throttled pace (verified necessary against this host's firewall)
       # and can take up to ~30 minutes. Every deploy after that only
-      # uploads files that actually changed and finishes in well under a
-      # minute, since deploy_ftps.py skips remote files whose size
-      # already matches.
+      # uploads files whose content actually changed and should finish in
+      # well under a minute.
       - name: Deploy over FTPS
         timeout-minutes: 40
         env:
@@ -40,4 +65,11 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USERNAME }}
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
           FTP_DIR: ${{ secrets.FTP_SERVER_DIR }}
+          FTP_MANIFEST_PATH: /tmp/deploy-manifest.json
         run: python3 .github/scripts/deploy_ftps.py
+
+      - name: Save deploy manifest
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/deploy-manifest.json
+          key: deploy-manifest-${{ github.run_id }}
