@@ -472,7 +472,11 @@ final class CardController
 
         $design = in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
         $cardUrl = $this->appUrl . '/' . $card['slug'];
-        $logoUrl = $card['logo_path'] ? $this->appUrl . '/' . $card['logo_path'] : null;
+        // Prefer the personal profile photo over the company logo for link
+        // previews - more recognizable for a person's card, same fallback
+        // order the design templates already use for the avatar circle.
+        $avatarPath = $card['photo_path'] ?: $card['logo_path'];
+        $avatarUrl = $avatarPath ? $this->appUrl . '/' . $avatarPath : null;
         $categoryName = $card['category_id']
             ? ($this->translator->locale() === 'de' ? $card['category_name_de'] : $card['category_name_en'])
             : null;
@@ -480,8 +484,8 @@ final class CardController
         echo $this->view->render("card/designs/{$design}.twig", [
             'card' => $card,
             'meta_description' => $this->buildMetaDescription($card),
-            'og_image_url' => $logoUrl,
-            'structured_data_json' => $this->buildStructuredData($card, $cardUrl, $logoUrl),
+            'og_image_url' => $avatarUrl,
+            'structured_data_json' => $this->buildStructuredData($card, $cardUrl, $avatarUrl),
             'gallery_images' => $this->galleryImages->findByCardId((int) $card['id']),
             'offerings' => $this->offerings->findByCardId((int) $card['id']),
             'category_name' => $categoryName,
@@ -525,8 +529,9 @@ final class CardController
             return;
         }
 
-        $logoUrl = $card['logo_path'] ? $this->appUrl . '/' . $card['logo_path'] : null;
-        $vcard = $this->buildVCard($card, $logoUrl);
+        $avatarPath = $card['photo_path'] ?: $card['logo_path'];
+        $avatarUrl = $avatarPath ? $this->appUrl . '/' . $avatarPath : null;
+        $vcard = $this->buildVCard($card, $avatarUrl);
 
         header('Content-Type: text/vcard; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $card['slug'] . '.vcf"');
