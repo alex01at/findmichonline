@@ -24,9 +24,10 @@ final class BillingController
         }
 
         $user = $this->auth->user();
+        $interval = ($_POST['interval'] ?? '') === 'yearly' ? 'yearly' : 'monthly';
 
         try {
-            $session = $this->stripe->createCheckoutSession($user);
+            $session = $this->stripe->createCheckoutSession($user, $interval);
         } catch (\Throwable) {
             Session::flash('error', $this->translator->trans('billing.error.checkout_failed'));
             $this->redirect('/pricing');

@@ -14,7 +14,8 @@ final class StripeService
 {
     public function __construct(
         private string $secretKey,
-        private string $priceIdPro,
+        private string $priceIdProMonthly,
+        private string $priceIdProYearly,
         private string $appUrl
     ) {
         if ($this->secretKey !== '') {
@@ -24,15 +25,17 @@ final class StripeService
 
     public function isConfigured(): bool
     {
-        return $this->secretKey !== '' && $this->priceIdPro !== '';
+        return $this->secretKey !== '' && $this->priceIdProMonthly !== '' && $this->priceIdProYearly !== '';
     }
 
-    public function createCheckoutSession(array $user): CheckoutSession
+    public function createCheckoutSession(array $user, string $interval): CheckoutSession
     {
+        $priceId = $interval === 'yearly' ? $this->priceIdProYearly : $this->priceIdProMonthly;
+
         $params = [
             'mode' => 'subscription',
             'line_items' => [[
-                'price' => $this->priceIdPro,
+                'price' => $priceId,
                 'quantity' => 1,
             ]],
             'success_url' => $this->appUrl . '/billing/success?session_id={CHECKOUT_SESSION_ID}',

@@ -132,7 +132,8 @@ $router->get('/vcard/{slug}.vcf', fn (array $params) => $card->downloadVcard($pa
 
 $stripe = new StripeService(
     $config['stripe']['secret_key'],
-    $config['stripe']['price_id_pro'],
+    $config['stripe']['price_id_pro_monthly'],
+    $config['stripe']['price_id_pro_yearly'],
     $config['app']['url']
 );
 

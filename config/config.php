@@ -28,7 +28,8 @@ return [
         'secret_key' => $_ENV['STRIPE_SECRET_KEY'] ?? '',
         'publishable_key' => $_ENV['STRIPE_PUBLISHABLE_KEY'] ?? '',
         'webhook_secret' => $_ENV['STRIPE_WEBHOOK_SECRET'] ?? '',
-        'price_id_pro' => $_ENV['STRIPE_PRICE_ID_PRO'] ?? '',
+        'price_id_pro_monthly' => $_ENV['STRIPE_PRICE_ID_PRO_MONTHLY'] ?? '',
+        'price_id_pro_yearly' => $_ENV['STRIPE_PRICE_ID_PRO_YEARLY'] ?? '',
     ],
     'mail' => [
         'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@localhost',
