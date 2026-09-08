@@ -158,27 +158,30 @@
             {% else %}
                 <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.gallery.hint', {max: gallery_max}) }}</p>
 
-                {% if gallery_images|length > 0 %}
-                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:0.8rem; margin-top:1rem;">
-                        {% for image in gallery_images %}
-                            <div style="position:relative;">
-                                <img src="/{{ image.image_path }}" alt="" style="width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block;">
-                                <form method="post" action="/card/gallery/{{ image.id }}/delete" style="margin:0;" onsubmit="return confirm('{{ trans('card.gallery.confirm_delete') }}');">
-                                    <button type="submit" style="position:absolute; top:6px; right:6px; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>
-                                </form>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                <div id="gallery-grid" style="display:{% if gallery_images|length > 0 %}grid{% else %}none{% endif %}; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:0.8rem; margin-top:1rem;">
+                    {% for image in gallery_images %}
+                        <div class="gallery-tile" style="position:relative;">
+                            <img src="/{{ image.image_path }}" alt="" style="width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block;">
+                            <form method="post" action="/card/gallery/{{ image.id }}/delete" class="gallery-delete-form" data-image-id="{{ image.id }}" style="margin:0;">
+                                <button type="submit" style="position:absolute; top:6px; right:6px; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
 
-                {% if gallery_images|length < gallery_max %}
-                    <form method="post" action="/card/gallery/add" enctype="multipart/form-data" style="margin-top:1.2rem;">
-                        <input type="file" name="gallery_image" accept="image/png,image/jpeg,image/webp" required>
-                        <button type="submit">{{ trans('card.gallery.upload_button') }}</button>
+                <div id="gallery-upload-wrap" {% if gallery_images|length >= gallery_max %}hidden{% endif %} style="margin-top:1.2rem;">
+                    <form id="gallery-upload-form" method="post" action="/card/gallery/add" enctype="multipart/form-data">
+                        <input type="file" id="gallery-image-input" name="gallery_image" accept="image/png,image/jpeg,image/webp" required>
+                        <button type="submit" id="gallery-upload-btn">{{ trans('card.gallery.upload_button') }}</button>
                     </form>
-                {% else %}
-                    <p class="muted-link" style="margin-top:1rem;">{{ trans('card.gallery.limit_reached_hint') }}</p>
-                {% endif %}
+                    <div id="gallery-progress-wrap" hidden style="margin-top:0.6rem;">
+                        <div style="height:8px; background:var(--border); border-radius:999px; overflow:hidden;">
+                            <div id="gallery-progress-bar" style="height:100%; width:0%; background:var(--primary); transition:width 0.15s;"></div>
+                        </div>
+                    </div>
+                    <p id="gallery-error" class="muted-link" style="color:var(--danger); display:none; margin-top:0.5rem;"></p>
+                </div>
+                <p id="gallery-limit-hint" class="muted-link" style="margin-top:1rem; display:{% if gallery_images|length >= gallery_max %}block{% else %}none{% endif %};">{{ trans('card.gallery.limit_reached_hint') }}</p>
             {% endif %}
         </div>
     </div>
@@ -194,4 +197,119 @@
             </div>
         </div>
     {% endif %}
+
+    <script>
+        (function () {
+            var form = document.getElementById('gallery-upload-form');
+            if (!form) return;
+
+            var fileInput = document.getElementById('gallery-image-input');
+            var uploadBtn = document.getElementById('gallery-upload-btn');
+            var progressWrap = document.getElementById('gallery-progress-wrap');
+            var progressBar = document.getElementById('gallery-progress-bar');
+            var errorEl = document.getElementById('gallery-error');
+            var grid = document.getElementById('gallery-grid');
+            var uploadWrap = document.getElementById('gallery-upload-wrap');
+            var limitHint = document.getElementById('gallery-limit-hint');
+            var confirmText = {{ trans('card.gallery.confirm_delete')|json_encode|raw }};
+            var genericError = {{ trans('card.gallery.errors.upload_failed')|json_encode|raw }};
+
+            function showError(message) {
+                errorEl.textContent = message || genericError;
+                errorEl.style.display = 'block';
+            }
+
+            function bindDeleteForm(formEl) {
+                formEl.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    if (!confirm(confirmText)) return;
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', formEl.getAttribute('action'));
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    xhr.onload = function () {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            formEl.closest('.gallery-tile').remove();
+                            if (!grid.querySelector('.gallery-tile')) {
+                                grid.style.display = 'none';
+                            }
+                            uploadWrap.hidden = false;
+                            limitHint.style.display = 'none';
+                        }
+                    };
+                    xhr.send();
+                });
+            }
+
+            function addTile(image) {
+                var div = document.createElement('div');
+                div.className = 'gallery-tile';
+                div.style.position = 'relative';
+                div.innerHTML =
+                    '<img src="/' + image.image_path + '" alt="" style="width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block;">' +
+                    '<form method="post" action="/card/gallery/' + image.id + '/delete" class="gallery-delete-form" data-image-id="' + image.id + '" style="margin:0;">' +
+                    '<button type="submit" style="position:absolute; top:6px; right:6px; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>' +
+                    '</form>';
+                grid.appendChild(div);
+                grid.style.display = 'grid';
+                bindDeleteForm(div.querySelector('.gallery-delete-form'));
+            }
+
+            grid.querySelectorAll('.gallery-delete-form').forEach(bindDeleteForm);
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!fileInput.files.length) return;
+
+                errorEl.style.display = 'none';
+                progressBar.style.width = '0%';
+                progressWrap.hidden = false;
+                uploadBtn.disabled = true;
+
+                var formData = new FormData();
+                formData.append('gallery_image', fileInput.files[0]);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', form.getAttribute('action'));
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.upload.addEventListener('progress', function (evt) {
+                    if (evt.lengthComputable) {
+                        progressBar.style.width = Math.round((evt.loaded / evt.total) * 100) + '%';
+                    }
+                });
+
+                xhr.onload = function () {
+                    uploadBtn.disabled = false;
+                    progressWrap.hidden = true;
+
+                    var data = null;
+                    try {
+                        data = JSON.parse(xhr.responseText);
+                    } catch (err) {
+                        data = null;
+                    }
+
+                    if (data && data.success && data.image) {
+                        addTile(data.image);
+                        fileInput.value = '';
+                        if (data.remaining <= 0) {
+                            uploadWrap.hidden = true;
+                            limitHint.style.display = 'block';
+                        }
+                    } else {
+                        showError(data ? data.error : null);
+                    }
+                };
+
+                xhr.onerror = function () {
+                    uploadBtn.disabled = false;
+                    progressWrap.hidden = true;
+                    showError(null);
+                };
+
+                xhr.send(formData);
+            });
+        })();
+    </script>
 {% endblock %}

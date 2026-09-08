@@ -539,6 +539,10 @@
         <button type="button" class="modal-close" id="lang-modal-close">{{ trans('footer.language_modal_close') }}</button>
     </div>
 </div>
+
+<div id="image-lightbox" class="modal-overlay" hidden>
+    <img id="image-lightbox-img" src="" alt="" style="max-width:92vw; max-height:90vh; border-radius:12px; display:block;">
+</div>
 <script>
     document.querySelectorAll('.password-toggle').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -615,6 +619,27 @@
         });
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && !modal.hidden) close();
+        });
+    })();
+
+    (function () {
+        var lightbox = document.getElementById('image-lightbox');
+        var lightboxImg = document.getElementById('image-lightbox-img');
+        if (!lightbox || !lightboxImg) return;
+
+        document.querySelectorAll('[data-lightbox]').forEach(function (trigger) {
+            trigger.addEventListener('click', function (e) {
+                e.preventDefault();
+                lightboxImg.src = trigger.getAttribute('href');
+                lightbox.hidden = false;
+            });
+        });
+
+        lightbox.addEventListener('click', function () {
+            lightbox.hidden = true;
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !lightbox.hidden) lightbox.hidden = true;
         });
     })();
 </script>

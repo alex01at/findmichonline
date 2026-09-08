@@ -227,50 +227,82 @@ final class CardController
      * Pro-gated: uploading is checked against the feature flag here (not just
      * hidden in the UI), same as every other Pro-only card feature.
      */
+    /**
+     * The gallery tab uploads via XHR so it can show a progress bar and
+     * avoid a full page reload (which used to reset the tabs back to
+     * "Inhalt"). Falls back to the old redirect flow when JS isn't
+     * driving the request, so the plain <form> still works without JS.
+     */
     public function uploadGalleryImage(): void
     {
+        $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
         $user = $this->auth->user();
         $card = $this->cards->findByUserId((int) $user['id']);
 
+        $error = null;
+        $image = null;
+
         if ($card === null || !$this->auth->can('gallery')) {
-            header('Location: /card/edit');
-            exit;
+            $error = $this->translator->trans('card.gallery.errors.upload_failed');
+        } elseif ($this->galleryImages->countByCardId((int) $card['id']) >= CardGalleryImage::MAX_IMAGES) {
+            $error = $this->translator->trans('card.gallery.errors.limit_reached');
+        } else {
+            try {
+                $path = $this->galleryUploader->upload((int) $card['id'], $_FILES['gallery_image'] ?? null);
+            } catch (RuntimeException $e) {
+                $path = null;
+                $error = $this->translator->trans($e->getMessage());
+            }
+
+            if ($error === null && $path === null) {
+                $error = $this->translator->trans('card.gallery.errors.upload_failed');
+            } elseif ($error === null) {
+                $sortOrder = $this->galleryImages->countByCardId((int) $card['id']);
+                $this->galleryImages->add((int) $card['id'], $path, $sortOrder);
+                $images = $this->galleryImages->findByCardId((int) $card['id']);
+                $image = end($images);
+            }
         }
 
-        $count = $this->galleryImages->countByCardId((int) $card['id']);
-        if ($count >= CardGalleryImage::MAX_IMAGES) {
-            Session::flash('error', $this->translator->trans('card.gallery.errors.limit_reached'));
-            header('Location: /card/edit');
-            exit;
+        $remaining = $card !== null
+            ? CardGalleryImage::MAX_IMAGES - $this->galleryImages->countByCardId((int) $card['id'])
+            : 0;
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => $error === null,
+                'error' => $error,
+                'image' => $image !== null ? ['id' => (int) $image['id'], 'image_path' => $image['image_path']] : null,
+                'remaining' => $remaining,
+            ]);
+            return;
         }
 
-        try {
-            $path = $this->galleryUploader->upload((int) $card['id'], $_FILES['gallery_image'] ?? null);
-        } catch (RuntimeException $e) {
-            Session::flash('error', $this->translator->trans($e->getMessage()));
-            header('Location: /card/edit');
-            exit;
-        }
-
-        if ($path !== null) {
-            $this->galleryImages->add((int) $card['id'], $path, $count);
-            Session::flash('success', $this->translator->trans('card.gallery.upload_success'));
-        }
-
+        Session::flash($error === null ? 'success' : 'error', $error ?? $this->translator->trans('card.gallery.upload_success'));
         header('Location: /card/edit');
         exit;
     }
 
     public function deleteGalleryImage(array $params): void
     {
+        $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
         $user = $this->auth->user();
         $card = $this->cards->findByUserId((int) $user['id']);
         $image = $this->galleryImages->find((int) $params['id']);
 
+        $deleted = false;
         // Only ever act if the image actually belongs to the logged-in user's own card.
         if ($card !== null && $image !== null && (int) $image['business_card_id'] === (int) $card['id']) {
             $this->galleryImages->delete((int) $image['id']);
             $this->galleryUploader->remove($image['image_path']);
+            $deleted = true;
+        }
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => $deleted]);
+            return;
         }
 
         header('Location: /card/edit');
