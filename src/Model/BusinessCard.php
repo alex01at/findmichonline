@@ -36,6 +36,29 @@ final class BusinessCard
         $stmt->execute(['id' => $id]);
     }
 
+    /** link type => column. Only these exact columns can ever be reached from incrementClickCount(). */
+    public const CLICK_COLUMNS = [
+        'phone' => 'clicks_phone',
+        'email' => 'clicks_email',
+        'website' => 'clicks_website',
+        'address' => 'clicks_address',
+        'linkedin' => 'clicks_linkedin',
+        'instagram' => 'clicks_instagram',
+        'facebook' => 'clicks_facebook',
+        'youtube' => 'clicks_youtube',
+    ];
+
+    public function incrementClickCount(int $id, string $type): void
+    {
+        $column = self::CLICK_COLUMNS[$type] ?? null;
+        if ($column === null) {
+            return;
+        }
+
+        $stmt = $this->db->prepare("UPDATE business_cards SET {$column} = {$column} + 1 WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+    }
+
     public function findPublishedBySlug(string $slug): ?array
     {
         $stmt = $this->db->prepare(

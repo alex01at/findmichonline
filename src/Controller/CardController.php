@@ -203,6 +203,47 @@ final class CardController
         ]);
     }
 
+    /**
+     * Every clickable contact/social link on a public card points here
+     * instead of straight at tel:/mailto:/etc., so each click can be
+     * counted per link type before redirecting to the real destination.
+     */
+    public function trackClick(array $params): void
+    {
+        $card = $this->cards->findPublishedBySlug($params['slug']);
+        $target = $card !== null ? $this->buildLinkTarget($card, $params['type']) : null;
+
+        if ($target === null) {
+            http_response_code(404);
+            echo $this->view->render('card/not_found.twig');
+            return;
+        }
+
+        $this->cards->incrementClickCount((int) $card['id'], $params['type']);
+
+        header('Location: ' . $target);
+        exit;
+    }
+
+    private function buildLinkTarget(array $card, string $type): ?string
+    {
+        return match ($type) {
+            'phone' => $card['phone'] ? 'tel:' . $card['phone'] : null,
+            'email' => $card['email'] ? 'mailto:' . $card['email'] : null,
+            'website' => $card['website']
+                ? (str_starts_with($card['website'], 'http') ? $card['website'] : 'https://' . $card['website'])
+                : null,
+            'address' => $card['address']
+                ? 'https://www.google.com/maps/search/?api=1&query=' . urlencode($card['address'])
+                : null,
+            'linkedin' => $card['linkedin_url'] ?: null,
+            'instagram' => $card['instagram_url'] ?: null,
+            'facebook' => $card['facebook_url'] ?: null,
+            'youtube' => $card['youtube_url'] ?: null,
+            default => null,
+        };
+    }
+
     private function buildStructuredData(array $card, string $cardUrl, ?string $logoUrl): string
     {
         $data = array_filter([

@@ -127,6 +127,7 @@ $router->get('/card/qr.svg', function () use ($qrCode, $requireAuth) {
 });
 $router->get('/qr/{slug}.png', fn (array $params) => $qrCode->publicPng($params));
 $router->get('/qr/{slug}.svg', fn (array $params) => $qrCode->publicSvg($params));
+$router->get('/go/{slug}/{type}', fn (array $params) => $card->trackClick($params));
 
 $stripe = new StripeService(
     $config['stripe']['secret_key'],

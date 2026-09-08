@@ -76,6 +76,7 @@ return [
     'dashboard.stats_views_label' => 'Total views',
     'dashboard.stats_locked_text' => 'Visit stats are only shown to Premium customers',
     'dashboard.stats_locked_cta' => 'Upgrade to Premium',
+    'dashboard.stats_clicks_heading' => 'Clicks by link',
 
     'card.edit.heading' => 'Edit business card',
     'card.edit.published_notice' => 'Your card is published at',

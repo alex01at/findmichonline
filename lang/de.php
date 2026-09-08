@@ -76,6 +76,7 @@ return [
     'dashboard.stats_views_label' => 'Aufrufe insgesamt',
     'dashboard.stats_locked_text' => 'Zugriffe werden nur Premiumkunden angezeigt',
     'dashboard.stats_locked_cta' => 'Jetzt Premium werden',
+    'dashboard.stats_clicks_heading' => 'Klicks nach Link',
 
     'card.edit.heading' => 'Visitenkarte bearbeiten',
     'card.edit.published_notice' => 'Deine Karte ist veröffentlicht unter',

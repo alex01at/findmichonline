@@ -45,22 +45,22 @@
         {% if card.phone or card.email or card.website or card.address %}
             <div style="display:flex; gap:0.8rem; padding:1.3rem 2rem 0.5rem 2rem; flex-wrap:wrap; justify-content:center;">
                 {% if card.phone %}
-                    <a href="tel:{{ card.phone }}" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
+                    <a href="/go/{{ card.slug }}/phone" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
                         <span style="font-size:1.1rem;">📞</span>{{ trans('card.public.call') }}
                     </a>
                 {% endif %}
                 {% if card.email %}
-                    <a href="mailto:{{ card.email }}" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
+                    <a href="/go/{{ card.slug }}/email" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
                         <span style="font-size:1.1rem;">✉️</span>{{ trans('card.public.email_action') }}
                     </a>
                 {% endif %}
                 {% if card.website %}
-                    <a href="{{ card.website starts with 'http' ? card.website : 'https://' ~ card.website }}" target="_blank" rel="noopener" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
+                    <a href="/go/{{ card.slug }}/website" target="_blank" rel="noopener" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
                         <span style="font-size:1.1rem;">🌐</span>{{ trans('card.public.website_action') }}
                     </a>
                 {% endif %}
                 {% if card.address %}
-                    <a href="https://www.google.com/maps/search/?api=1&query={{ card.address|url_encode }}" target="_blank" rel="noopener" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
+                    <a href="/go/{{ card.slug }}/address" target="_blank" rel="noopener" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
                         <span style="font-size:1.1rem;">📍</span>{{ trans('card.public.route') }}
                     </a>
                 {% endif %}
@@ -76,10 +76,10 @@
 
         {% if card.linkedin_url or card.instagram_url or card.facebook_url or card.youtube_url %}
             <div style="display:flex; gap:0.6rem; padding:0.5rem 2rem 0 2rem;">
-                {% if card.linkedin_url %}<a href="{{ card.linkedin_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#0A66C2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.85rem;">in</a>{% endif %}
-                {% if card.instagram_url %}<a href="{{ card.instagram_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#E4405F; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1rem;">📷</a>{% endif %}
-                {% if card.facebook_url %}<a href="{{ card.facebook_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#1877F2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.95rem;">f</a>{% endif %}
-                {% if card.youtube_url %}<a href="{{ card.youtube_url }}" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#FF0000; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:0.9rem;">▶</a>{% endif %}
+                {% if card.linkedin_url %}<a href="/go/{{ card.slug }}/linkedin" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#0A66C2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.85rem;">in</a>{% endif %}
+                {% if card.instagram_url %}<a href="/go/{{ card.slug }}/instagram" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#E4405F; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1rem;">📷</a>{% endif %}
+                {% if card.facebook_url %}<a href="/go/{{ card.slug }}/facebook" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#1877F2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.95rem;">f</a>{% endif %}
+                {% if card.youtube_url %}<a href="/go/{{ card.slug }}/youtube" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#FF0000; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:0.9rem;">▶</a>{% endif %}
             </div>
         {% endif %}
 
