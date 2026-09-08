@@ -193,7 +193,7 @@ $router->get('/lang/{locale}', function (array $params) {
     exit;
 });
 
-$admin = new AdminController($db, $view, $auth, $translator, $logoUploader);
+$admin = new AdminController($db, $view, $auth, $translator, $logoUploader, $galleryUploader);
 $router->get('/admin', function () use ($admin, $requireAdmin) {
     $requireAdmin();
     $admin->index();
@@ -225,6 +225,10 @@ $router->post('/admin/users/{id}/card', function (array $params) use ($admin, $r
 $router->post('/admin/users/{id}/card/delete', function (array $params) use ($admin, $requireAdmin) {
     $requireAdmin();
     $admin->deleteCard($params);
+});
+$router->post('/admin/users/{id}/gallery/{imageId}/delete', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->deleteGalleryImage($params);
 });
 $router->get('/admin/legal', function () use ($admin, $requireAdmin) {
     $requireAdmin();

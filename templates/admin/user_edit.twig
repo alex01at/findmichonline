@@ -183,6 +183,26 @@
         </form>
 
         {% if card %}
+            <div style="margin-top:1.5rem;">
+                <label style="margin-top:0; font-weight:600; color:var(--text);">{{ trans('card.gallery.heading') }}</label>
+                {% if gallery_images|length > 0 %}
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:0.8rem; margin-top:0.7rem;">
+                        {% for image in gallery_images %}
+                            <div style="position:relative;">
+                                <img src="/{{ image.image_path }}" alt="" style="width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block;">
+                                <form method="post" action="/admin/users/{{ target_user.id }}/gallery/{{ image.id }}/delete" style="margin:0;" onsubmit="return confirm('{{ trans('card.gallery.confirm_delete') }}');">
+                                    <button type="submit" style="position:absolute; top:6px; right:6px; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="muted-link" style="margin-top:0.4rem;">{{ trans('admin.gallery_empty') }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if card %}
             <form method="post" action="/admin/users/{{ target_user.id }}/card/delete" style="margin-top:1rem;" onsubmit="return confirm('{{ trans('admin.confirm_delete_card') }}');">
                 <button type="submit" style="background:var(--danger);">{{ trans('admin.delete_card') }}</button>
             </form>

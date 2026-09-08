@@ -263,6 +263,7 @@ return [
     'admin.new_password_placeholder' => 'leer lassen = unverändert',
     'admin.save_user' => 'Benutzer speichern',
     'admin.card_heading' => 'Visitenkarte',
+    'admin.gallery_empty' => 'Keine Galeriebilder vorhanden.',
     'admin.delete_card' => 'Visitenkarte löschen',
     'admin.user_not_found' => 'Benutzer nicht gefunden.',
     'admin.user_created' => 'Benutzer wurde angelegt.',

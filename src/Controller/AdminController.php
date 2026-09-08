@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
+use Kartenlink\App\Model\CardGalleryImage;
 use Kartenlink\App\Model\LegalPage;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Features;
+use Kartenlink\App\Support\GalleryUploader;
 use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\PasswordPolicy;
 use Kartenlink\App\Support\Session;
@@ -22,17 +24,20 @@ final class AdminController
     private User $users;
     private BusinessCard $cards;
     private LegalPage $legalPages;
+    private CardGalleryImage $galleryImages;
 
     public function __construct(
         private PDO $db,
         private View $view,
         private Auth $auth,
         private Translator $translator,
-        private LogoUploader $logoUploader
+        private LogoUploader $logoUploader,
+        private GalleryUploader $galleryUploader
     ) {
         $this->users = new User($db);
         $this->cards = new BusinessCard($db);
         $this->legalPages = new LegalPage($db);
+        $this->galleryImages = new CardGalleryImage($db);
     }
 
     public function index(): void
@@ -377,11 +382,27 @@ final class AdminController
         exit;
     }
 
+    public function deleteGalleryImage(array $params): void
+    {
+        $userId = (int) $params['id'];
+        $card = $this->cards->findByUserId($userId);
+        $image = $this->galleryImages->find((int) $params['imageId']);
+
+        if ($card !== null && $image !== null && (int) $image['business_card_id'] === (int) $card['id']) {
+            $this->galleryImages->delete((int) $image['id']);
+            $this->galleryUploader->remove($image['image_path']);
+        }
+
+        header('Location: /admin/users/' . $userId);
+        exit;
+    }
+
     private function renderEditUser(array $user, ?array $card, array $errors = []): void
     {
         echo $this->view->render('admin/user_edit.twig', [
             'target_user' => $user,
             'card' => $card,
+            'gallery_images' => $card !== null ? $this->galleryImages->findByCardId((int) $card['id']) : [],
             'errors' => $errors,
         ]);
     }

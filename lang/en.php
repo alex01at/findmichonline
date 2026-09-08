@@ -263,6 +263,7 @@ return [
     'admin.new_password_placeholder' => 'leave blank to keep unchanged',
     'admin.save_user' => 'Save user',
     'admin.card_heading' => 'Business card',
+    'admin.gallery_empty' => 'No gallery images yet.',
     'admin.delete_card' => 'Delete business card',
     'admin.user_not_found' => 'User not found.',
     'admin.user_created' => 'User created.',
