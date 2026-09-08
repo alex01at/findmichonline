@@ -6,6 +6,7 @@ namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Support\Auth;
+use Kartenlink\App\Support\Features;
 use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\Translator;
@@ -258,6 +259,76 @@ final class CardController
 
         header('Location: ' . $target);
         exit;
+    }
+
+    /**
+     * Lets a visitor save the card's details straight into their phone
+     * contacts. Pro-only, same as the footer branding removal: gated on
+     * the card owner's current plan, not on whether a visitor is logged in.
+     */
+    public function downloadVcard(array $params): void
+    {
+        $card = $this->cards->findPublishedBySlug($params['slug']);
+
+        if ($card === null || ($card['owner_plan'] ?? null) !== Features::PRO) {
+            http_response_code(404);
+            echo $this->view->render('card/not_found.twig');
+            return;
+        }
+
+        $logoUrl = $card['logo_path'] ? $this->appUrl . '/' . $card['logo_path'] : null;
+        $vcard = $this->buildVCard($card, $logoUrl);
+
+        header('Content-Type: text/vcard; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $card['slug'] . '.vcf"');
+        header('Content-Length: ' . (string) strlen($vcard));
+        echo $vcard;
+    }
+
+    private function buildVCard(array $card, ?string $logoUrl): string
+    {
+        $lines = ['BEGIN:VCARD', 'VERSION:3.0'];
+        $lines[] = 'FN:' . $this->escapeVCardValue($card['display_name']);
+        $lines[] = 'N:' . $this->escapeVCardValue($card['display_name']) . ';;;;';
+
+        if (!empty($card['job_title'])) {
+            $lines[] = 'TITLE:' . $this->escapeVCardValue($card['job_title']);
+        }
+        if (!empty($card['company'])) {
+            $lines[] = 'ORG:' . $this->escapeVCardValue($card['company']);
+        }
+        if (!empty($card['phone'])) {
+            $lines[] = 'TEL;TYPE=WORK,VOICE:' . $this->escapeVCardValue($card['phone']);
+        }
+        if (!empty($card['email'])) {
+            $lines[] = 'EMAIL;TYPE=INTERNET:' . $this->escapeVCardValue($card['email']);
+        }
+        if (!empty($card['website'])) {
+            $url = str_starts_with($card['website'], 'http') ? $card['website'] : 'https://' . $card['website'];
+            $lines[] = 'URL:' . $this->escapeVCardValue($url);
+        }
+        if (!empty($card['address'])) {
+            $lines[] = 'ADR;TYPE=WORK:;;' . $this->escapeVCardValue($card['address']) . ';;;;';
+        }
+        if (!empty($card['bio'])) {
+            $lines[] = 'NOTE:' . $this->escapeVCardValue($card['bio']);
+        }
+        if ($logoUrl !== null) {
+            $lines[] = 'PHOTO;VALUE=uri:' . $logoUrl;
+        }
+
+        $lines[] = 'END:VCARD';
+
+        return implode("\r\n", $lines) . "\r\n";
+    }
+
+    private function escapeVCardValue(string $value): string
+    {
+        return str_replace(
+            ['\\', ',', ';', "\r\n", "\n"],
+            ['\\\\', '\\,', '\\;', '\\n', '\\n'],
+            $value
+        );
     }
 
     private function buildLinkTarget(array $card, string $type): ?string

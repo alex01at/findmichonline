@@ -109,6 +109,9 @@
             <div style="text-align:center;">
                 <img src="/qr/{{ card.slug }}.png" alt="QR" width="130" height="130" style="border-radius:8px; border:1px solid var(--border);">
                 <p style="font-size:0.8rem; color:var(--muted); margin:0.4rem 0 0 0; max-width:130px;">{{ trans('card.public.qr_caption') }}</p>
+                {% if is_pro %}
+                    <a class="btn" href="/vcard/{{ card.slug }}.vcf" style="margin-top:0.7rem; background:{{ c_accent }}; font-size:0.85rem; padding:0.5rem 1rem;">💾 {{ trans('card.public.save_contact') }}</a>
+                {% endif %}
             </div>
         </div>
 
