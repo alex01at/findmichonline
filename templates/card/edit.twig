@@ -22,82 +22,119 @@
             </p>
         {% endif %}
 
+        <div class="tabs">
+            <button type="button" class="tab-btn active" data-tab="content">{{ trans('card.edit.tab_content') }}</button>
+            <button type="button" class="tab-btn" data-tab="design">{{ trans('card.edit.tab_design') }}</button>
+        </div>
+
         <form method="post" action="/card/edit" enctype="multipart/form-data">
-            <label for="display_name">{{ trans('card.edit.name_label') }}</label>
-            <input type="text" id="display_name" name="display_name" value="{{ old.display_name|default('') }}" required>
+            <div class="tab-panel" data-tab-panel="content">
+                <label for="display_name">{{ trans('card.edit.name_label') }}</label>
+                <input type="text" id="display_name" name="display_name" value="{{ old.display_name|default('') }}" required>
 
-            <label for="job_title">{{ trans('card.edit.job_title_label') }}</label>
-            <input type="text" id="job_title" name="job_title" value="{{ old.job_title|default('') }}">
+                <label for="job_title">{{ trans('card.edit.job_title_label') }}</label>
+                <input type="text" id="job_title" name="job_title" value="{{ old.job_title|default('') }}">
 
-            <label for="company">{{ trans('card.edit.company_label') }}</label>
-            <input type="text" id="company" name="company" value="{{ old.company|default('') }}">
+                <label for="company">{{ trans('card.edit.company_label') }}</label>
+                <input type="text" id="company" name="company" value="{{ old.company|default('') }}">
 
-            <label for="email">{{ trans('card.edit.email_label') }}</label>
-            <input type="email" id="email" name="email" value="{{ old.email|default('') }}">
+                <label for="email">{{ trans('card.edit.email_label') }}</label>
+                <input type="email" id="email" name="email" value="{{ old.email|default('') }}">
 
-            <label for="phone">{{ trans('card.edit.phone_label') }}</label>
-            <input type="text" id="phone" name="phone" value="{{ old.phone|default('') }}">
+                <label for="phone">{{ trans('card.edit.phone_label') }}</label>
+                <input type="text" id="phone" name="phone" value="{{ old.phone|default('') }}">
 
-            <label for="website">{{ trans('card.edit.website_label') }}</label>
-            <input type="text" id="website" name="website" value="{{ old.website|default('') }}">
+                <label for="website">{{ trans('card.edit.website_label') }}</label>
+                <input type="text" id="website" name="website" value="{{ old.website|default('') }}">
 
-            <label for="address">{{ trans('card.edit.address_label') }}</label>
-            <input type="text" id="address" name="address" value="{{ old.address|default('') }}">
+                <label for="address">{{ trans('card.edit.address_label') }}</label>
+                <input type="text" id="address" name="address" value="{{ old.address|default('') }}">
 
-            <label for="bio">{{ trans('card.edit.bio_label') }}</label>
-            <input type="text" id="bio" name="bio" value="{{ old.bio|default('') }}">
+                <label for="bio">{{ trans('card.edit.bio_label') }}</label>
+                <input type="text" id="bio" name="bio" value="{{ old.bio|default('') }}">
 
-            <label for="opening_hours">{{ trans('card.edit.opening_hours_label') }}</label>
-            <textarea id="opening_hours" name="opening_hours" rows="4" placeholder="{{ trans('card.edit.opening_hours_placeholder') }}" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; font-family:inherit;">{{ old.opening_hours|default('') }}</textarea>
+                <label for="opening_hours">{{ trans('card.edit.opening_hours_label') }}</label>
+                <textarea id="opening_hours" name="opening_hours" rows="4" placeholder="{{ trans('card.edit.opening_hours_placeholder') }}" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; font-family:inherit;">{{ old.opening_hours|default('') }}</textarea>
 
-            <label for="logo">{{ trans('card.edit.logo_label') }}</label>
-            {% if old.logo_path is defined and old.logo_path %}
-                <div style="margin-bottom:0.5rem;">
-                    <img src="/{{ old.logo_path }}" alt="Logo" style="max-height:80px; border-radius:8px;">
-                </div>
-                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
-                    <input type="checkbox" name="remove_logo" value="1">
-                    {{ trans('card.edit.logo_remove') }}
-                </label>
-            {% endif %}
-            <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
-            <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
+                <label for="logo">{{ trans('card.edit.logo_label') }}</label>
+                {% if old.logo_path is defined and old.logo_path %}
+                    <div style="margin-bottom:0.5rem;">
+                        <img src="/{{ old.logo_path }}" alt="Logo" style="max-height:80px; border-radius:8px;">
+                    </div>
+                    <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
+                        <input type="checkbox" name="remove_logo" value="1">
+                        {{ trans('card.edit.logo_remove') }}
+                    </label>
+                {% endif %}
+                <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
+                <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
 
-            <label style="margin-top:1.5rem; font-weight:600; color:var(--text);">{{ trans('card.edit.social_heading') }}</label>
-            <label for="linkedin_url">{{ trans('card.edit.linkedin_label') }}</label>
-            <input type="url" id="linkedin_url" name="linkedin_url" value="{{ old.linkedin_url|default('') }}" placeholder="https://linkedin.com/in/...">
+                <label style="margin-top:1.5rem; font-weight:600; color:var(--text);">{{ trans('card.edit.social_heading') }}</label>
+                <label for="linkedin_url">{{ trans('card.edit.linkedin_label') }}</label>
+                <input type="url" id="linkedin_url" name="linkedin_url" value="{{ old.linkedin_url|default('') }}" placeholder="https://linkedin.com/in/...">
 
-            <label for="instagram_url">{{ trans('card.edit.instagram_label') }}</label>
-            <input type="url" id="instagram_url" name="instagram_url" value="{{ old.instagram_url|default('') }}" placeholder="https://instagram.com/...">
+                <label for="instagram_url">{{ trans('card.edit.instagram_label') }}</label>
+                <input type="url" id="instagram_url" name="instagram_url" value="{{ old.instagram_url|default('') }}" placeholder="https://instagram.com/...">
 
-            <label for="facebook_url">{{ trans('card.edit.facebook_label') }}</label>
-            <input type="url" id="facebook_url" name="facebook_url" value="{{ old.facebook_url|default('') }}" placeholder="https://facebook.com/...">
+                <label for="facebook_url">{{ trans('card.edit.facebook_label') }}</label>
+                <input type="url" id="facebook_url" name="facebook_url" value="{{ old.facebook_url|default('') }}" placeholder="https://facebook.com/...">
 
-            <label for="youtube_url">{{ trans('card.edit.youtube_label') }}</label>
-            <input type="url" id="youtube_url" name="youtube_url" value="{{ old.youtube_url|default('') }}" placeholder="https://youtube.com/@...">
+                <label for="youtube_url">{{ trans('card.edit.youtube_label') }}</label>
+                <input type="url" id="youtube_url" name="youtube_url" value="{{ old.youtube_url|default('') }}" placeholder="https://youtube.com/@...">
 
-            <label for="slug">{{ trans('card.edit.slug_label') }}</label>
-            <input type="text" id="slug" name="slug" value="{{ old.slug|default('') }}" placeholder="{{ trans('card.edit.slug_placeholder') }}">
+                <label for="slug">{{ trans('card.edit.slug_label') }}</label>
+                <input type="text" id="slug" name="slug" value="{{ old.slug|default('') }}" placeholder="{{ trans('card.edit.slug_placeholder') }}">
 
-            <label>{{ trans('card.edit.design_label') }}</label>
-            <div style="display:flex; gap:1rem; margin-top:0.3rem;">
-                <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0;">
-                    <input type="radio" name="design" value="classic" {% if (old.design|default('classic')) == 'classic' %}checked{% endif %}>
-                    {{ trans('card.edit.design_classic') }}
-                </label>
-                <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_modern_allowed %}opacity:0.5;{% endif %}">
-                    <input type="radio" name="design" value="modern" {% if not design_modern_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'modern' %}checked{% endif %}>
-                    {{ trans('card.edit.design_modern') }} {% if not design_modern_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                <label style="display:flex; align-items:center; gap:0.5rem; margin-top:1rem;">
+                    <input type="checkbox" name="is_published" value="1" {% if old.is_published %}checked{% endif %}>
+                    {{ trans('card.edit.publish_label') }}
                 </label>
             </div>
-            {% if not design_modern_allowed %}
-                <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.edit.design_pro_hint') }}</p>
-            {% endif %}
 
-            <label style="display:flex; align-items:center; gap:0.5rem; margin-top:1rem;">
-                <input type="checkbox" name="is_published" value="1" {% if old.is_published %}checked{% endif %}>
-                {{ trans('card.edit.publish_label') }}
-            </label>
+            <div class="tab-panel" data-tab-panel="design" hidden>
+                <label>{{ trans('card.edit.design_label') }}</label>
+                <div style="display:flex; gap:1rem; margin-top:0.3rem;">
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0;">
+                        <input type="radio" name="design" value="classic" {% if (old.design|default('classic')) == 'classic' %}checked{% endif %}>
+                        {{ trans('card.edit.design_classic') }}
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_modern_allowed %}opacity:0.5;{% endif %}">
+                        <input type="radio" name="design" value="modern" {% if not design_modern_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'modern' %}checked{% endif %}>
+                        {{ trans('card.edit.design_modern') }} {% if not design_modern_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                    </label>
+                </div>
+                {% if not design_modern_allowed %}
+                    <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.edit.design_pro_hint') }}</p>
+                {% endif %}
+
+                <label style="margin-top:1.5rem; font-weight:600; color:var(--text);">{{ trans('card.edit.colors_heading') }}</label>
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0.5rem; {% if not custom_colors_allowed %}opacity:0.5;{% endif %}">
+                    <input type="checkbox" name="use_custom_colors" value="1" {% if not custom_colors_allowed %}disabled{% endif %} {% if old.use_custom_colors|default(false) %}checked{% endif %}>
+                    {{ trans('card.edit.colors_enable') }}
+                </label>
+                {% if not custom_colors_allowed %}
+                    <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.edit.colors_pro_hint') }} <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a></p>
+                {% endif %}
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:1rem; margin-top:1rem; {% if not custom_colors_allowed %}opacity:0.5;{% endif %}">
+                    <div>
+                        <label for="color_background" style="margin-top:0;">{{ trans('card.edit.color_background_label') }}</label>
+                        <input type="color" id="color_background" name="color_background" value="{{ old.color_background|default('#ffffff') }}" {% if not custom_colors_allowed %}disabled{% endif %} style="width:100%; height:2.4rem; padding:0.2rem; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    <div>
+                        <label for="color_header" style="margin-top:0;">{{ trans('card.edit.color_header_label') }}</label>
+                        <input type="color" id="color_header" name="color_header" value="{{ old.color_header|default('#ffffff') }}" {% if not custom_colors_allowed %}disabled{% endif %} style="width:100%; height:2.4rem; padding:0.2rem; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    <div>
+                        <label for="color_content" style="margin-top:0;">{{ trans('card.edit.color_content_label') }}</label>
+                        <input type="color" id="color_content" name="color_content" value="{{ old.color_content|default('#3b5bfd') }}" {% if not custom_colors_allowed %}disabled{% endif %} style="width:100%; height:2.4rem; padding:0.2rem; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    <div>
+                        <label for="color_footer" style="margin-top:0;">{{ trans('card.edit.color_footer_label') }}</label>
+                        <input type="color" id="color_footer" name="color_footer" value="{{ old.color_footer|default('#f5f6fa') }}" {% if not custom_colors_allowed %}disabled{% endif %} style="width:100%; height:2.4rem; padding:0.2rem; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                </div>
+            </div>
 
             <button type="submit">{{ trans('card.edit.submit') }}</button>
         </form>

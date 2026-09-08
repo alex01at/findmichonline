@@ -217,6 +217,13 @@ final class AdminController
             $design = 'classic';
         }
 
+        // Admin edits bypass the Free/Pro gate entirely (same as design_modern above).
+        $useCustomColors = isset($_POST['use_custom_colors']);
+        $colorBackground = trim($_POST['color_background'] ?? '');
+        $colorHeader = trim($_POST['color_header'] ?? '');
+        $colorContent = trim($_POST['color_content'] ?? '');
+        $colorFooter = trim($_POST['color_footer'] ?? '');
+
         $errors = [];
 
         if ($displayName === '') {
@@ -231,6 +238,15 @@ final class AdminController
             if ($socialUrl !== '' && !filter_var($socialUrl, FILTER_VALIDATE_URL)) {
                 $errors[] = $this->translator->trans('card.edit.errors.social_url_invalid');
                 break;
+            }
+        }
+
+        if ($useCustomColors) {
+            foreach ([$colorBackground, $colorHeader, $colorContent, $colorFooter] as $color) {
+                if ($color !== '' && !BusinessCard::isValidHexColor($color)) {
+                    $errors[] = $this->translator->trans('card.edit.errors.color_invalid');
+                    break;
+                }
             }
         }
 
@@ -281,6 +297,11 @@ final class AdminController
                 'facebook_url' => $facebookUrl,
                 'youtube_url' => $youtubeUrl,
                 'design' => $design,
+                'use_custom_colors' => $useCustomColors,
+                'color_background' => $colorBackground,
+                'color_header' => $colorHeader,
+                'color_content' => $colorContent,
+                'color_footer' => $colorFooter,
                 'is_published' => $isPublished,
             ]), $errors);
             return;
@@ -307,6 +328,11 @@ final class AdminController
             'facebook_url' => $facebookUrl !== '' ? $facebookUrl : null,
             'youtube_url' => $youtubeUrl !== '' ? $youtubeUrl : null,
             'design' => $design,
+            'use_custom_colors' => $useCustomColors,
+            'color_background' => $useCustomColors && $colorBackground !== '' ? $colorBackground : null,
+            'color_header' => $useCustomColors && $colorHeader !== '' ? $colorHeader : null,
+            'color_content' => $useCustomColors && $colorContent !== '' ? $colorContent : null,
+            'color_footer' => $useCustomColors && $colorFooter !== '' ? $colorFooter : null,
             'is_published' => $isPublished,
         ]);
 

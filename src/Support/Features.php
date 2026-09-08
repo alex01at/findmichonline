@@ -17,6 +17,7 @@ final class Features
     private const MATRIX = [
         'design_modern' => [self::PRO],
         'view_stats' => [self::PRO],
+        'custom_colors' => [self::PRO],
     ];
 
     public static function allows(string $plan, string $feature): bool

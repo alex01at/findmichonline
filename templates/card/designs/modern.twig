@@ -8,10 +8,29 @@
 {% block main_class %}card-public{% endblock %}
 
 {% block body %}
-    <div style="background:var(--card-bg); border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(15,27,61,0.18);">
+    {% set is_pro = card.owner_plan == 'pro' %}
+    {% set has_custom = is_pro and card.use_custom_colors %}
+    {% set c_bg = has_custom and card.color_background ? card.color_background : 'var(--card-bg)' %}
+    {# Free cards get the plain gray hero instead of the dark navy/teal gradient. #}
+    {% set c_header = has_custom and card.color_header ? card.color_header : (is_pro ? '#0f1b3d' : '#f5f6fa') %}
+    {% set c_accent = has_custom and card.color_content ? card.color_content : (is_pro ? '#14b8a6' : '#9ca3af') %}
+    {% set c_footer = has_custom and card.color_footer ? card.color_footer : '#0f1b3d' %}
+    {# Text stays white only for the default dark navy header; a custom header color or
+       the plain Free header both get dark text since we don't know a custom color's luminance. #}
+    {% set header_is_default_dark = is_pro and not (has_custom and card.color_header) %}
+    {% set header_text = header_is_default_dark ? '#fff' : '#1f2430' %}
+    {% set header_muted = header_is_default_dark ? 'rgba(255,255,255,0.85)' : 'var(--muted)' %}
+    {% set social_linkedin = is_pro ? '#0A66C2' : c_accent %}
+    {% set social_instagram = is_pro ? '#E4405F' : c_accent %}
+    {% set social_facebook = is_pro ? '#1877F2' : c_accent %}
+    {% set social_youtube = is_pro ? '#FF0000' : c_accent %}
 
-        <div style="position:relative; background:linear-gradient(135deg, #0f1b3d, #14284f); overflow:hidden;">
-            <div style="position:absolute; top:0; right:0; bottom:0; width:50%; background:linear-gradient(135deg, #14b8a6, #0d9488); clip-path:polygon(65% 0, 100% 0, 100% 100%, 30% 100%); z-index:0;"></div>
+    <div style="background:{{ c_bg }}; border-radius:16px; overflow:hidden; box-shadow:0 20px 40px rgba(15,27,61,0.18);">
+
+        <div style="position:relative; background:{{ c_header }}; overflow:hidden;">
+            {% if is_pro %}
+                <div style="position:absolute; top:0; right:0; bottom:0; width:50%; background:{{ c_accent }}; clip-path:polygon(65% 0, 100% 0, 100% 100%, 30% 100%); z-index:0; opacity:0.9;"></div>
+            {% endif %}
 
             <div style="position:relative; z-index:1; padding:2rem;">
                 {% if card.logo_path or card.company %}
@@ -20,7 +39,7 @@
                             <img src="/{{ card.logo_path }}" alt="" style="width:34px; height:34px; object-fit:contain; border-radius:6px;">
                         {% endif %}
                         {% if card.company %}
-                            <div style="color:#fff; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;">{{ card.company }}</div>
+                            <div style="color:{{ header_text }}; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;">{{ card.company }}</div>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -30,12 +49,12 @@
                         <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.9);">
                     {% endif %}
                     <div>
-                        <h1 style="color:#fff; margin:0;">{{ card.display_name }}</h1>
+                        <h1 style="color:{{ header_text }}; margin:0;">{{ card.display_name }}</h1>
                         {% if card.job_title %}
-                            <p style="color:#5eead4; margin:0.2rem 0 0 0; font-weight:600;">{{ card.job_title }}</p>
+                            <p style="color:{{ c_accent }}; margin:0.2rem 0 0 0; font-weight:600;">{{ card.job_title }}</p>
                         {% endif %}
                         {% if card.company %}
-                            <p style="color:rgba(255,255,255,0.85); margin:0.1rem 0 0 0;">{{ card.company }}</p>
+                            <p style="color:{{ header_muted }}; margin:0.1rem 0 0 0;">{{ card.company }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -76,10 +95,10 @@
 
         {% if card.linkedin_url or card.instagram_url or card.facebook_url or card.youtube_url %}
             <div style="display:flex; gap:0.6rem; padding:0.5rem 2rem 0 2rem;">
-                {% if card.linkedin_url %}<a href="/go/{{ card.slug }}/linkedin" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#0A66C2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.85rem;">in</a>{% endif %}
-                {% if card.instagram_url %}<a href="/go/{{ card.slug }}/instagram" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#E4405F; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1rem;">📷</a>{% endif %}
-                {% if card.facebook_url %}<a href="/go/{{ card.slug }}/facebook" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#1877F2; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.95rem;">f</a>{% endif %}
-                {% if card.youtube_url %}<a href="/go/{{ card.slug }}/youtube" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:#FF0000; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:0.9rem;">▶</a>{% endif %}
+                {% if card.linkedin_url %}<a href="/go/{{ card.slug }}/linkedin" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:{{ social_linkedin }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.85rem;">in</a>{% endif %}
+                {% if card.instagram_url %}<a href="/go/{{ card.slug }}/instagram" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:{{ social_instagram }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1rem;">📷</a>{% endif %}
+                {% if card.facebook_url %}<a href="/go/{{ card.slug }}/facebook" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:{{ social_facebook }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-weight:700; font-size:0.95rem;">f</a>{% endif %}
+                {% if card.youtube_url %}<a href="/go/{{ card.slug }}/youtube" target="_blank" rel="noopener" style="width:36px; height:36px; border-radius:50%; background:{{ social_youtube }}; color:#fff; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:0.9rem;">▶</a>{% endif %}
             </div>
         {% endif %}
 
@@ -100,8 +119,10 @@
             </div>
         {% endif %}
 
-        {% if card.owner_plan != 'pro' %}
-            <div style="background:#0f1b3d; color:rgba(255,255,255,0.85); text-align:center; padding:0.9rem; font-size:0.85rem;">
+        {% if is_pro %}
+            <div style="background:{{ c_footer }}; padding:0.9rem;">&nbsp;</div>
+        {% else %}
+            <div style="background:var(--bg); color:var(--muted); text-align:center; padding:0.9rem; font-size:0.85rem; border-top:1px solid var(--border);">
                 💚 {{ trans('card.public.footer_branding') }}
             </div>
         {% endif %}

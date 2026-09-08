@@ -37,6 +37,7 @@ final class CardController
             'card' => $card,
             'old' => $card,
             'design_modern_allowed' => $this->auth->can('design_modern'),
+            'custom_colors_allowed' => $this->auth->can('custom_colors'),
         ]);
     }
 
@@ -73,7 +74,27 @@ final class CardController
             $designDowngraded = true;
         }
 
+        $useCustomColors = isset($_POST['use_custom_colors']);
+        $colorBackground = trim($_POST['color_background'] ?? '');
+        $colorHeader = trim($_POST['color_header'] ?? '');
+        $colorContent = trim($_POST['color_content'] ?? '');
+        $colorFooter = trim($_POST['color_footer'] ?? '');
+        $colorsDowngraded = false;
+        if ($useCustomColors && !$this->auth->can('custom_colors')) {
+            $useCustomColors = false;
+            $colorsDowngraded = true;
+        }
+
         $errors = [];
+
+        if ($useCustomColors) {
+            foreach ([$colorBackground, $colorHeader, $colorContent, $colorFooter] as $color) {
+                if ($color !== '' && !BusinessCard::isValidHexColor($color)) {
+                    $errors[] = $this->translator->trans('card.edit.errors.color_invalid');
+                    break;
+                }
+            }
+        }
 
         if ($displayName === '') {
             $errors[] = $this->translator->trans('card.edit.errors.name_required');
@@ -139,10 +160,16 @@ final class CardController
                     'facebook_url' => $facebookUrl,
                     'youtube_url' => $youtubeUrl,
                     'design' => $design,
+                    'use_custom_colors' => $useCustomColors,
+                    'color_background' => $colorBackground,
+                    'color_header' => $colorHeader,
+                    'color_content' => $colorContent,
+                    'color_footer' => $colorFooter,
                     'is_published' => $isPublished,
                 ],
                 'errors' => $errors,
                 'design_modern_allowed' => $this->auth->can('design_modern'),
+                'custom_colors_allowed' => $this->auth->can('custom_colors'),
             ]);
             return;
         }
@@ -168,12 +195,20 @@ final class CardController
             'facebook_url' => $facebookUrl !== '' ? $facebookUrl : null,
             'youtube_url' => $youtubeUrl !== '' ? $youtubeUrl : null,
             'design' => $design,
+            'use_custom_colors' => $useCustomColors,
+            'color_background' => $useCustomColors && $colorBackground !== '' ? $colorBackground : null,
+            'color_header' => $useCustomColors && $colorHeader !== '' ? $colorHeader : null,
+            'color_content' => $useCustomColors && $colorContent !== '' ? $colorContent : null,
+            'color_footer' => $useCustomColors && $colorFooter !== '' ? $colorFooter : null,
             'is_published' => $isPublished,
         ]);
 
         Session::flash('success', $this->translator->trans('card.edit.success'));
         if ($designDowngraded) {
             Session::flash('error', $this->translator->trans('card.edit.design_downgraded'));
+        }
+        if ($colorsDowngraded) {
+            Session::flash('error', $this->translator->trans('card.edit.colors_downgraded'));
         }
         header('Location: /card/edit');
         exit;
