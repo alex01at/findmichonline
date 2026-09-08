@@ -1,0 +1,31 @@
+{% extends 'onboarding/_shell.twig' %}
+
+{% block title %}{{ trans('onboarding.step3.heading') }} – findmichonline{% endblock %}
+
+{% block step_content %}
+    <div class="card">
+        <h1>{{ trans('onboarding.step3.heading') }}</h1>
+        <p class="onboarding-help">{{ trans('onboarding.step3.help') }}</p>
+
+        {% include 'onboarding/_errors.twig' %}
+
+        <form method="post" action="/onboarding/3">
+            <label for="phone">{{ trans('card.edit.phone_label') }}</label>
+            <input type="text" id="phone" name="phone" value="{{ old.phone|default(card.phone)|default('') }}" autofocus>
+
+            <label for="email">{{ trans('card.edit.email_label') }}</label>
+            <input type="email" id="email" name="email" value="{{ old.email|default(card.email)|default('') }}">
+
+            <label for="website">{{ trans('card.edit.website_label') }}</label>
+            <input type="text" id="website" name="website" value="{{ old.website|default(card.website)|default('') }}">
+
+            <label for="whatsapp">{{ trans('onboarding.step3.whatsapp_label') }}</label>
+            <input type="text" id="whatsapp" name="whatsapp" value="{{ old.whatsapp|default(card.whatsapp)|default('') }}" placeholder="+43 660 1234567">
+
+            <div class="onboarding-nav">
+                <a class="btn onboarding-back-btn" href="/onboarding/2">← {{ trans('onboarding.back') }}</a>
+                <button type="submit">{{ trans('onboarding.next') }} →</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

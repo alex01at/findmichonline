@@ -10,6 +10,7 @@
 
 {% block body %}
     {% set is_pro = card.owner_plan == 'pro' %}
+    {% set avatar_path = card.photo_path ?: card.logo_path %}
     {% set has_custom = is_pro and card.use_custom_colors %}
     {% set c_bg = has_custom and card.color_background ? card.color_background : 'var(--card-bg)' %}
     {# Free cards get the plain gray hero instead of the dark navy/teal gradient. #}
@@ -46,8 +47,8 @@
                 {% endif %}
 
                 <div class="card-header-row" style="display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap;">
-                    {% if card.logo_path %}
-                        <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.9);">
+                    {% if avatar_path %}
+                        <img src="/{{ avatar_path }}" alt="{{ card.display_name }}" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.9);">
                     {% endif %}
                     <div>
                         <h1 style="color:{{ header_text }}; margin:0;">{{ card.display_name }}</h1>
@@ -65,11 +66,16 @@
             </div>
         </div>
 
-        {% if card.phone or card.email or card.website or card.address %}
+        {% if card.phone or card.email or card.website or card.address or card.whatsapp %}
             <div style="display:flex; gap:0.8rem; padding:1.3rem 2rem 0.5rem 2rem; flex-wrap:wrap; justify-content:center;">
                 {% if card.phone %}
                     <a href="/go/{{ card.slug }}/phone" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
                         <span style="font-size:1.1rem;">📞</span>{{ trans('card.public.call') }}
+                    </a>
+                {% endif %}
+                {% if card.whatsapp %}
+                    <a href="/go/{{ card.slug }}/whatsapp" target="_blank" rel="noopener" style="display:flex; flex-direction:column; align-items:center; gap:0.3rem; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:0.7rem 1.3rem; text-decoration:none; color:var(--text); font-size:0.85rem; min-width:80px;">
+                        <span style="font-size:1.1rem;">💬</span>{{ trans('card.public.whatsapp_action') }}
                     </a>
                 {% endif %}
                 {% if card.email %}
@@ -92,6 +98,7 @@
 
         <div style="padding:0.8rem 2rem 0 2rem;">
             {% if card.phone %}<div style="margin-bottom:0.6rem;">📞 {{ card.phone }}</div>{% endif %}
+            {% if card.whatsapp %}<div style="margin-bottom:0.6rem;">💬 {{ card.whatsapp }}</div>{% endif %}
             {% if card.email %}<div style="margin-bottom:0.6rem;">✉️ {{ card.email }}</div>{% endif %}
             {% if card.website %}<div style="margin-bottom:0.6rem;">🌐 {{ card.website }}</div>{% endif %}
             {% if card.address %}<div style="margin-bottom:0.6rem;">📍 {{ card.address }}</div>{% endif %}

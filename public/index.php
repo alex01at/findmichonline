@@ -23,6 +23,7 @@ use Kartenlink\App\Controller\ContactController;
 use Kartenlink\App\Controller\DashboardController;
 use Kartenlink\App\Controller\HomeController;
 use Kartenlink\App\Controller\LegalController;
+use Kartenlink\App\Controller\OnboardingController;
 use Kartenlink\App\Controller\PricingController;
 use Kartenlink\App\Controller\QrCodeController;
 use Kartenlink\App\Controller\StripeWebhookController;
@@ -109,8 +110,9 @@ $router->get('/dashboard', function () use ($dashboard, $requireAuth) {
 });
 
 $logoUploader = new LogoUploader(dirname(__DIR__) . '/public');
+$photoUploader = new LogoUploader(dirname(__DIR__) . '/public', 'photos');
 $galleryUploader = new GalleryUploader(dirname(__DIR__) . '/public');
-$card = new CardController($db, $view, $auth, $translator, $logoUploader, $galleryUploader, $config['app']['url']);
+$card = new CardController($db, $view, $auth, $translator, $logoUploader, $photoUploader, $galleryUploader, $config['app']['url']);
 $router->get('/card/edit', function () use ($card, $requireAuth) {
     $requireAuth();
     $card->edit();
@@ -134,6 +136,38 @@ $router->post('/card/offerings/add', function () use ($card, $requireAuth) {
 $router->post('/card/offerings/{id}/delete', function (array $params) use ($card, $requireAuth) {
     $requireAuth();
     $card->deleteOffering($params);
+});
+
+$onboarding = new OnboardingController($db, $view, $auth, $translator, $logoUploader, $photoUploader, $config['app']['url']);
+// Literal paths must be registered before the /onboarding/{step} pattern below,
+// since {step} matches any single path segment (e.g. "success", "check-slug").
+$router->get('/onboarding', function () use ($onboarding, $requireAuth) {
+    $requireAuth();
+    $onboarding->index();
+});
+$router->get('/onboarding/success', function () use ($onboarding, $requireAuth) {
+    $requireAuth();
+    $onboarding->success();
+});
+$router->get('/onboarding/check-slug', function () use ($onboarding, $requireAuth) {
+    $requireAuth();
+    $onboarding->checkSlug();
+});
+$router->post('/onboarding/publish', function () use ($onboarding, $requireAuth) {
+    $requireAuth();
+    $onboarding->publish();
+});
+$router->get('/onboarding/{step}', function (array $params) use ($onboarding, $requireAuth) {
+    $requireAuth();
+    $onboarding->showStep($params);
+});
+$router->post('/onboarding/{step}', function (array $params) use ($onboarding, $requireAuth) {
+    $requireAuth();
+    $onboarding->saveStep($params);
+});
+$router->get('/card/preview', function () use ($onboarding, $requireAuth) {
+    $requireAuth();
+    $onboarding->preview();
 });
 
 $qrCode = new QrCodeController($db, $auth, $config['app']['url'], $translator);
@@ -201,7 +235,7 @@ $router->get('/lang/{locale}', function (array $params) {
     exit;
 });
 
-$admin = new AdminController($db, $view, $auth, $translator, $logoUploader, $galleryUploader);
+$admin = new AdminController($db, $view, $auth, $translator, $logoUploader, $photoUploader, $galleryUploader);
 $router->get('/admin', function () use ($admin, $requireAdmin) {
     $requireAdmin();
     $admin->index();

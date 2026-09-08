@@ -1,0 +1,38 @@
+{% extends 'onboarding/_shell.twig' %}
+
+{% block title %}{{ trans('onboarding.step7.heading') }} – findmichonline{% endblock %}
+
+{% block step_content %}
+    <div class="card">
+        <h1>{{ trans('onboarding.step7.heading') }}</h1>
+        <p class="onboarding-help">{{ trans('onboarding.step7.help') }}</p>
+
+        {% include 'onboarding/_errors.twig' %}
+
+        <form method="post" action="/onboarding/7">
+            <div class="onboarding-design-grid">
+                {% for design in ['classic', 'modern', 'professional', 'playful'] %}
+                    {% set locked = design != 'classic' and not design_pro_allowed %}
+                    <label class="onboarding-design-option {% if (old.design|default(card.design)|default('classic')) == design %}active{% endif %}" style="{% if locked %}opacity:0.6;{% endif %}">
+                        <input type="radio" name="design" value="{{ design }}" {% if locked %}disabled{% endif %} {% if (old.design|default(card.design)|default('classic')) == design %}checked{% endif %} style="position:absolute; opacity:0; pointer-events:none;">
+                        <div class="onboarding-design-thumb-wrap">
+                            <iframe src="/card/preview?design={{ design }}" tabindex="-1"></iframe>
+                        </div>
+                        <div class="onboarding-design-label">
+                            {{ trans('card.edit.design_' ~ design) }}
+                            {% if locked %}<span class="onboarding-design-lock">{{ trans('home.badge_pro') }}</span>{% endif %}
+                        </div>
+                    </label>
+                {% endfor %}
+            </div>
+            {% if not design_pro_allowed %}
+                <p class="muted-link" style="margin-top:0.8rem;">{{ trans('card.edit.design_pro_hint') }} <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a></p>
+            {% endif %}
+
+            <div class="onboarding-nav">
+                <a class="btn onboarding-back-btn" href="/onboarding/6">← {{ trans('onboarding.back') }}</a>
+                <button type="submit">{{ trans('onboarding.next') }} →</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

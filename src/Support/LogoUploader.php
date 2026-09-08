@@ -18,7 +18,7 @@ final class LogoUploader
         'image/webp' => 'webp',
     ];
 
-    public function __construct(private string $publicRoot)
+    public function __construct(private string $publicRoot, private string $subdir = 'logos')
     {
     }
 
@@ -50,14 +50,14 @@ final class LogoUploader
             throw new RuntimeException('card.edit.errors.logo_invalid_type');
         }
 
-        $dir = $this->publicRoot . '/uploads/logos';
+        $dir = $this->publicRoot . '/uploads/' . $this->subdir;
         if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
             throw new RuntimeException('card.edit.errors.logo_upload_failed');
         }
 
         $this->removeExisting($userId);
 
-        $relativePath = "uploads/logos/{$userId}.{$extension}";
+        $relativePath = "uploads/{$this->subdir}/{$userId}.{$extension}";
         if (!move_uploaded_file($file['tmp_name'], $this->publicRoot . '/' . $relativePath)) {
             throw new RuntimeException('card.edit.errors.logo_upload_failed');
         }
@@ -72,7 +72,7 @@ final class LogoUploader
 
     private function removeExisting(int $userId): void
     {
-        foreach (glob($this->publicRoot . "/uploads/logos/{$userId}.*") ?: [] as $existingFile) {
+        foreach (glob($this->publicRoot . "/uploads/{$this->subdir}/{$userId}.*") ?: [] as $existingFile) {
             @unlink($existingFile);
         }
     }

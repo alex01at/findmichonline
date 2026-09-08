@@ -36,6 +36,7 @@ final class AdminController
         private Auth $auth,
         private Translator $translator,
         private LogoUploader $logoUploader,
+        private LogoUploader $photoUploader,
         private GalleryUploader $galleryUploader
     ) {
         $this->users = new User($db);
@@ -218,6 +219,7 @@ final class AdminController
         }
         $email = trim($_POST['email'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
+        $whatsapp = trim($_POST['whatsapp'] ?? '');
         $website = trim($_POST['website'] ?? '');
         $address = trim($_POST['address'] ?? '');
         $bio = trim($_POST['bio'] ?? '');
@@ -230,6 +232,7 @@ final class AdminController
         $slugInput = trim(strtolower($_POST['slug'] ?? ''));
         $isPublished = isset($_POST['is_published']);
         $removeLogo = isset($_POST['remove_logo']);
+        $removePhoto = isset($_POST['remove_photo']);
 
         $design = $_POST['design'] ?? 'classic';
         if (!in_array($design, BusinessCard::AVAILABLE_DESIGNS, true)) {
@@ -302,6 +305,20 @@ final class AdminController
             }
         }
 
+        $photoPath = $existing['photo_path'] ?? null;
+        if ($removePhoto) {
+            $photoPath = null;
+        } elseif (isset($_FILES['photo'])) {
+            try {
+                $uploaded = $this->photoUploader->upload($userId, $_FILES['photo']);
+                if ($uploaded !== null) {
+                    $photoPath = $uploaded;
+                }
+            } catch (RuntimeException $e) {
+                $errors[] = $this->translator->trans($e->getMessage());
+            }
+        }
+
         if ($errors !== []) {
             $this->renderEditUser($user, array_merge($existing ?? [], [
                 'slug' => $slug,
@@ -311,11 +328,13 @@ final class AdminController
                 'category_id' => $categoryId,
                 'email' => $email,
                 'phone' => $phone,
+                'whatsapp' => $whatsapp,
                 'website' => $website,
                 'address' => $address,
                 'bio' => $bio,
                 'opening_hours' => $openingHours,
                 'logo_path' => $logoPath,
+                'photo_path' => $photoPath,
                 'linkedin_url' => $linkedinUrl,
                 'instagram_url' => $instagramUrl,
                 'facebook_url' => $facebookUrl,
@@ -335,6 +354,9 @@ final class AdminController
         if ($removeLogo) {
             $this->logoUploader->remove($userId);
         }
+        if ($removePhoto) {
+            $this->photoUploader->remove($userId);
+        }
 
         $this->cards->upsertForUser($userId, [
             'slug' => $slug,
@@ -344,11 +366,13 @@ final class AdminController
             'category_id' => $categoryId,
             'email' => $email !== '' ? $email : null,
             'phone' => $phone !== '' ? $phone : null,
+            'whatsapp' => $whatsapp !== '' ? $whatsapp : null,
             'website' => $website !== '' ? $website : null,
             'address' => $address !== '' ? $address : null,
             'bio' => $bio !== '' ? $bio : null,
             'opening_hours' => $openingHours !== '' ? $openingHours : null,
             'logo_path' => $logoPath,
+            'photo_path' => $photoPath,
             'linkedin_url' => $linkedinUrl !== '' ? $linkedinUrl : null,
             'instagram_url' => $instagramUrl !== '' ? $instagramUrl : null,
             'facebook_url' => $facebookUrl !== '' ? $facebookUrl : null,
@@ -362,6 +386,9 @@ final class AdminController
             'color_footer' => $useCustomColors && $colorFooter !== '' ? $colorFooter : null,
             'is_published' => $isPublished,
         ]);
+
+        $savedCard = $this->cards->findByUserId($userId);
+        $this->cards->markOnboardingDoneIfNeeded((int) $savedCard['id']);
 
         Session::flash('success', $this->translator->trans('admin.card_updated'));
         header('Location: /admin/users/' . $userId);

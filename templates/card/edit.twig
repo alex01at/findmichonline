@@ -54,6 +54,9 @@
                 <label for="phone">{{ trans('card.edit.phone_label') }}</label>
                 <input type="text" id="phone" name="phone" value="{{ old.phone|default('') }}">
 
+                <label for="whatsapp">{{ trans('card.edit.whatsapp_label') }}</label>
+                <input type="text" id="whatsapp" name="whatsapp" value="{{ old.whatsapp|default('') }}" placeholder="+43 660 1234567">
+
                 <label for="website">{{ trans('card.edit.website_label') }}</label>
                 <input type="text" id="website" name="website" value="{{ old.website|default('') }}">
 
@@ -66,7 +69,20 @@
                 <label for="opening_hours">{{ trans('card.edit.opening_hours_label') }}</label>
                 <textarea id="opening_hours" name="opening_hours" rows="4" placeholder="{{ trans('card.edit.opening_hours_placeholder') }}" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; font-family:inherit;">{{ old.opening_hours|default('') }}</textarea>
 
-                <label for="logo">{{ trans('card.edit.logo_label') }}</label>
+                <label for="photo">{{ trans('card.edit.photo_label') }}</label>
+                {% if old.photo_path is defined and old.photo_path %}
+                    <div style="margin-bottom:0.5rem;">
+                        <img src="/{{ old.photo_path }}" alt="" style="max-height:80px; border-radius:50%;">
+                    </div>
+                    <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
+                        <input type="checkbox" name="remove_photo" value="1">
+                        {{ trans('card.edit.photo_remove') }}
+                    </label>
+                {% endif %}
+                <input type="file" id="photo" name="photo" accept="image/png,image/jpeg,image/webp">
+                <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
+
+                <label for="logo" style="margin-top:1.5rem;">{{ trans('card.edit.logo_label') }}</label>
                 {% if old.logo_path is defined and old.logo_path %}
                     <div style="margin-bottom:0.5rem;">
                         <img src="/{{ old.logo_path }}" alt="Logo" style="max-height:80px; border-radius:8px;">

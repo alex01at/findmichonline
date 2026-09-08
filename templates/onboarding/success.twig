@@ -1,0 +1,14 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('onboarding.success.heading') }} – findmichonline{% endblock %}
+
+{% block body %}
+    <div class="card" style="text-align:center;">
+        <h1>{{ trans('onboarding.success.heading') }}</h1>
+        <p>{{ trans('onboarding.success.text') }}</p>
+        <p style="font-size:1.1rem; font-weight:600; margin:1rem 0;">
+            <a href="{{ app_url }}/{{ card.slug }}" target="_blank" rel="noopener">{{ app_url }}/{{ card.slug }}</a>
+        </p>
+        <a class="btn" href="/dashboard">{{ trans('onboarding.success.dashboard_button') }}</a>
+    </div>
+{% endblock %}

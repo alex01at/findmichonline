@@ -31,6 +31,7 @@ final class CardController
         private Auth $auth,
         private Translator $translator,
         private LogoUploader $logoUploader,
+        private LogoUploader $photoUploader,
         private GalleryUploader $galleryUploader,
         private string $appUrl
     ) {
@@ -76,6 +77,7 @@ final class CardController
         }
         $email = trim($_POST['email'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
+        $whatsapp = trim($_POST['whatsapp'] ?? '');
         $website = trim($_POST['website'] ?? '');
         $address = trim($_POST['address'] ?? '');
         $bio = trim($_POST['bio'] ?? '');
@@ -88,6 +90,7 @@ final class CardController
         $slugInput = trim(strtolower($_POST['slug'] ?? ''));
         $isPublished = isset($_POST['is_published']);
         $removeLogo = isset($_POST['remove_logo']);
+        $removePhoto = isset($_POST['remove_photo']);
 
         $design = $_POST['design'] ?? 'classic';
         if (!in_array($design, BusinessCard::AVAILABLE_DESIGNS, true)) {
@@ -175,6 +178,20 @@ final class CardController
             }
         }
 
+        $photoPath = $existing['photo_path'] ?? null;
+        if ($removePhoto) {
+            $photoPath = null;
+        } elseif (isset($_FILES['photo'])) {
+            try {
+                $uploaded = $this->photoUploader->upload($userId, $_FILES['photo']);
+                if ($uploaded !== null) {
+                    $photoPath = $uploaded;
+                }
+            } catch (RuntimeException $e) {
+                $errors[] = $this->translator->trans($e->getMessage());
+            }
+        }
+
         if ($errors !== []) {
             echo $this->view->render('card/edit.twig', [
                 'card' => $existing,
@@ -186,11 +203,13 @@ final class CardController
                     'category_id' => $categoryId,
                     'email' => $email,
                     'phone' => $phone,
+                    'whatsapp' => $whatsapp,
                     'website' => $website,
                     'address' => $address,
                     'bio' => $bio,
                     'opening_hours' => $openingHours,
                     'logo_path' => $logoPath,
+                    'photo_path' => $photoPath,
                     'linkedin_url' => $linkedinUrl,
                     'instagram_url' => $instagramUrl,
                     'facebook_url' => $facebookUrl,
@@ -222,6 +241,9 @@ final class CardController
         if ($removeLogo) {
             $this->logoUploader->remove($userId);
         }
+        if ($removePhoto) {
+            $this->photoUploader->remove($userId);
+        }
 
         $this->cards->upsertForUser($userId, [
             'slug' => $slug,
@@ -231,11 +253,13 @@ final class CardController
             'category_id' => $categoryId,
             'email' => $email !== '' ? $email : null,
             'phone' => $phone !== '' ? $phone : null,
+            'whatsapp' => $whatsapp !== '' ? $whatsapp : null,
             'website' => $website !== '' ? $website : null,
             'address' => $address !== '' ? $address : null,
             'bio' => $bio !== '' ? $bio : null,
             'opening_hours' => $openingHours !== '' ? $openingHours : null,
             'logo_path' => $logoPath,
+            'photo_path' => $photoPath,
             'linkedin_url' => $linkedinUrl !== '' ? $linkedinUrl : null,
             'instagram_url' => $instagramUrl !== '' ? $instagramUrl : null,
             'facebook_url' => $facebookUrl !== '' ? $facebookUrl : null,
@@ -249,6 +273,9 @@ final class CardController
             'color_footer' => $useCustomColors && $colorFooter !== '' ? $colorFooter : null,
             'is_published' => $isPublished,
         ]);
+
+        $savedCard = $this->cards->findByUserId($userId);
+        $this->cards->markOnboardingDoneIfNeeded((int) $savedCard['id']);
 
         Session::flash('success', $this->translator->trans('card.edit.success'));
         if ($designDowngraded) {
@@ -557,6 +584,7 @@ final class CardController
     {
         return match ($type) {
             'phone' => $card['phone'] ? 'tel:' . $card['phone'] : null,
+            'whatsapp' => $card['whatsapp'] ? 'https://wa.me/' . preg_replace('/\D/', '', $card['whatsapp']) : null,
             'email' => $card['email'] ? 'mailto:' . $card['email'] : null,
             'website' => $card['website']
                 ? (str_starts_with($card['website'], 'http') ? $card['website'] : 'https://' . $card['website'])

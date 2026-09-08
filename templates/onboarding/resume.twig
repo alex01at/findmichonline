@@ -1,0 +1,11 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('onboarding.resume.heading') }} – findmichonline{% endblock %}
+
+{% block body %}
+    <div class="card onboarding-resume-box">
+        <h1>{{ trans('onboarding.resume.heading') }}</h1>
+        <p>{{ trans('onboarding.resume.text', {completed: completed_steps, total: total_steps}) }}</p>
+        <a class="btn" href="/onboarding/{{ next_step }}">{{ trans('onboarding.resume.button') }}</a>
+    </div>
+{% endblock %}

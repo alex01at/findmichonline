@@ -1,0 +1,41 @@
+{% extends 'onboarding/_shell.twig' %}
+
+{% block title %}{{ trans('onboarding.step4.heading') }} – findmichonline{% endblock %}
+
+{% block step_content %}
+    <div class="card">
+        <h1>{{ trans('onboarding.step4.heading') }}</h1>
+        <p class="onboarding-help">{{ trans('onboarding.step4.help') }}</p>
+
+        {% include 'onboarding/_errors.twig' %}
+
+        {% if card.address %}
+            <p class="muted-link">{{ trans('onboarding.step4.current_label') }} {{ card.address }}</p>
+        {% endif %}
+
+        <form method="post" action="/onboarding/4">
+            <label style="display:flex; align-items:center; gap:0.5rem; margin-top:1rem;">
+                <input type="checkbox" name="show_address" value="1" id="show_address" {% if old.show_address|default(card.address is defined and card.address) %}checked{% endif %}>
+                {{ trans('onboarding.step4.show_address_label') }}
+            </label>
+
+            <label for="street">{{ trans('onboarding.step4.street_label') }}</label>
+            <input type="text" id="street" name="street" value="{{ old.street|default('') }}">
+
+            <label for="postal_code">{{ trans('onboarding.step4.postal_code_label') }}</label>
+            <input type="text" id="postal_code" name="postal_code" value="{{ old.postal_code|default('') }}">
+
+            <label for="city">{{ trans('onboarding.step4.city_label') }}</label>
+            <input type="text" id="city" name="city" value="{{ old.city|default('') }}">
+
+            <label for="country">{{ trans('onboarding.step4.country_label') }}</label>
+            <input type="text" id="country" name="country" value="{{ old.country|default('') }}">
+
+            <div class="onboarding-nav">
+                <a class="btn onboarding-back-btn" href="/onboarding/3">← {{ trans('onboarding.back') }}</a>
+                <button type="submit">{{ trans('onboarding.next') }} →</button>
+            </div>
+            <button type="submit" name="skip" value="1" formnovalidate class="onboarding-skip-btn">{{ trans('onboarding.skip') }}</button>
+        </form>
+    </div>
+{% endblock %}

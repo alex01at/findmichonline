@@ -1,0 +1,26 @@
+{% extends 'onboarding/_shell.twig' %}
+
+{% block title %}{{ trans('onboarding.step8.heading') }} – findmichonline{% endblock %}
+
+{% block step_content %}
+    <div class="card">
+        <h1>{{ trans('onboarding.step8.heading') }}</h1>
+        <p class="onboarding-help">{{ trans('onboarding.step8.help') }}</p>
+
+        {% include 'onboarding/_errors.twig' %}
+
+        <form method="post" action="/onboarding/8">
+            <label for="slug">{{ trans('onboarding.step8.slug_label') }}</label>
+            <div class="onboarding-slug-row">
+                <span class="onboarding-slug-preview">{{ app_url }}/</span>
+                <input type="text" id="slug" name="slug" value="{{ old.slug|default(card.slug)|default('') }}" style="flex:1; min-width:160px;" required>
+            </div>
+            <p id="onboarding-slug-status" class="onboarding-slug-status" data-available-text="{{ trans('onboarding.step8.available') }}" data-taken-text="{{ trans('onboarding.step8.taken') }}"></p>
+
+            <div class="onboarding-nav">
+                <a class="btn onboarding-back-btn" href="/onboarding/7">← {{ trans('onboarding.back') }}</a>
+                <button type="submit">{{ trans('onboarding.next') }} →</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

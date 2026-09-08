@@ -10,6 +10,7 @@
 
 {% block body %}
     {% set is_pro = card.owner_plan == 'pro' %}
+    {% set avatar_path = card.photo_path ?: card.logo_path %}
     {% set has_custom = is_pro and card.use_custom_colors %}
     {# Free cards (including a downgraded former-Pro card still marked "playful") get the
        same plain/gray treatment as every other design - none of the pastel colors below
@@ -22,6 +23,7 @@
     {% set chip_email = is_pro ? '#a78bfa' : c_accent %}
     {% set chip_website = is_pro ? '#2dd4bf' : c_accent %}
     {% set chip_address = is_pro ? '#f59e0b' : c_accent %}
+    {% set chip_whatsapp = is_pro ? '#22c55e' : c_accent %}
     {% set social_linkedin = is_pro ? '#0A66C2' : c_accent %}
     {% set social_instagram = is_pro ? '#E4405F' : c_accent %}
     {% set social_facebook = is_pro ? '#1877F2' : c_accent %}
@@ -30,8 +32,8 @@
     <div style="background:{{ c_bg }}; border-radius:28px; overflow:hidden; box-shadow:0 16px 36px rgba(20,25,40,0.1);">
 
         <div style="background:{{ c_header }}; padding:2.4rem 2rem 1.6rem 2rem; text-align:center;">
-            {% if card.logo_path %}
-                <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="width:104px; height:104px; border-radius:50%; object-fit:cover; border:4px dashed {{ c_accent }}; padding:4px; background:#fff;">
+            {% if avatar_path %}
+                <img src="/{{ avatar_path }}" alt="{{ card.display_name }}" style="width:104px; height:104px; border-radius:50%; object-fit:cover; border:4px dashed {{ c_accent }}; padding:4px; background:#fff;">
             {% endif %}
             <h1 style="margin:0.9rem 0 0 0;">{{ card.display_name }}</h1>
             {% if card.job_title %}
@@ -49,10 +51,13 @@
             <p style="padding:0 2rem; margin:0 0 1.3rem 0; text-align:center;">{{ card.bio }}</p>
         {% endif %}
 
-        {% if card.phone or card.email or card.website or card.address %}
+        {% if card.phone or card.email or card.website or card.address or card.whatsapp %}
             <div style="display:flex; gap:0.7rem; padding:0.5rem 2rem 1rem 2rem; flex-wrap:wrap; justify-content:center;">
                 {% if card.phone %}
                     <a href="/go/{{ card.slug }}/phone" style="display:inline-flex; align-items:center; gap:0.4rem; background:{{ chip_phone }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.55rem 1.1rem; border-radius:999px;">📞 {{ trans('card.public.call') }}</a>
+                {% endif %}
+                {% if card.whatsapp %}
+                    <a href="/go/{{ card.slug }}/whatsapp" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:0.4rem; background:{{ chip_whatsapp }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.55rem 1.1rem; border-radius:999px;">💬 {{ trans('card.public.whatsapp_action') }}</a>
                 {% endif %}
                 {% if card.email %}
                     <a href="/go/{{ card.slug }}/email" style="display:inline-flex; align-items:center; gap:0.4rem; background:{{ chip_email }}; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:700; padding:0.55rem 1.1rem; border-radius:999px;">✉️ {{ trans('card.public.email_action') }}</a>
@@ -66,9 +71,10 @@
             </div>
         {% endif %}
 
-        {% if card.phone or card.email or card.website or card.address %}
+        {% if card.phone or card.email or card.website or card.address or card.whatsapp %}
             <div style="padding:0 2rem 0.5rem 2rem; text-align:center; color:var(--muted); font-size:0.9rem;">
                 {% if card.phone %}<div style="margin-bottom:0.35rem;">📞 {{ card.phone }}</div>{% endif %}
+                {% if card.whatsapp %}<div style="margin-bottom:0.35rem;">💬 {{ card.whatsapp }}</div>{% endif %}
                 {% if card.email %}<div style="margin-bottom:0.35rem;">✉️ {{ card.email }}</div>{% endif %}
                 {% if card.website %}<div style="margin-bottom:0.35rem;">🌐 {{ card.website }}</div>{% endif %}
                 {% if card.address %}<div style="margin-bottom:0.35rem;">📍 {{ card.address }}</div>{% endif %}

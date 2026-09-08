@@ -1,0 +1,27 @@
+{% extends 'onboarding/_shell.twig' %}
+
+{% block title %}{{ trans('onboarding.step9.heading') }} – findmichonline{% endblock %}
+
+{% block step_content %}
+    <div class="card">
+        <h1>{{ trans('onboarding.step9.heading') }}</h1>
+        <p class="onboarding-help">{{ trans('onboarding.step9.help') }}</p>
+
+        <ul class="onboarding-checklist">
+            <li>✓ {{ trans('onboarding.step9.checklist_personal') }}</li>
+            <li>{% if card.phone or card.email or card.website or card.whatsapp %}✓{% else %}–{% endif %} {{ trans('onboarding.step9.checklist_contact') }}</li>
+            <li>✓ {{ trans('onboarding.step9.checklist_design') }}</li>
+            <li>{% if card.photo_path or card.logo_path %}✓{% else %}–{% endif %} {{ trans('onboarding.step9.checklist_photo') }}</li>
+            <li>✓ {{ trans('onboarding.step9.checklist_url') }} {{ app_url }}/{{ card.slug }}</li>
+        </ul>
+
+        <a class="btn onboarding-back-btn" href="/card/preview" target="_blank" rel="noopener">{{ trans('onboarding.step9.preview_button') }}</a>
+
+        <form method="post" action="/onboarding/publish">
+            <div class="onboarding-nav">
+                <a class="btn onboarding-back-btn" href="/onboarding/8">← {{ trans('onboarding.back') }}</a>
+                <button type="submit">{{ trans('onboarding.publish_button') }}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'layout/base.twig' %}
+
+{% block main_class %}onboarding{% endblock %}
+{% block header_nav %}{% endblock %}
+
+{% block body %}
+    <div class="onboarding-progress-wrap">
+        <p class="onboarding-progress-label">{{ trans('onboarding.progress_label', {current: step, total: total_steps}) }}</p>
+        <div class="onboarding-progress-bar">
+            <div class="onboarding-progress-fill" style="width:{{ (step / total_steps * 100)|round }}%;"></div>
+        </div>
+    </div>
+
+    <div class="onboarding-layout">
+        <div class="onboarding-form-col">
+            {% block step_content %}{% endblock %}
+        </div>
+
+        <div class="onboarding-preview-col" id="onboarding-preview-col">
+            <p class="onboarding-preview-label">{{ trans('onboarding.preview_label') }}</p>
+            <div class="onboarding-preview-frame-wrap">
+                <iframe id="onboarding-preview-frame" src="/card/preview" title="{{ trans('onboarding.preview_label') }}"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="onboarding-preview-toggle" id="onboarding-preview-toggle" data-show-label="{{ trans('onboarding.show_preview') }}" data-hide-label="{{ trans('onboarding.hide_preview') }}">{{ trans('onboarding.show_preview') }}</button>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'onboarding/_shell.twig' %}
+
+{% block title %}{{ trans('onboarding.step1.heading') }} – findmichonline{% endblock %}
+
+{% block step_content %}
+    <div class="card">
+        <h1>{{ trans('onboarding.step1.heading') }}</h1>
+        <p class="onboarding-help">{{ trans('onboarding.step1.help') }}</p>
+
+        {% include 'onboarding/_errors.twig' %}
+
+        <form method="post" action="/onboarding/1">
+            <label for="first_name">{{ trans('onboarding.step1.first_name_label') }}</label>
+            <input type="text" id="first_name" name="first_name" value="{{ first_name }}" required autofocus>
+
+            <label for="last_name">{{ trans('onboarding.step1.last_name_label') }}</label>
+            <input type="text" id="last_name" name="last_name" value="{{ last_name }}" required>
+
+            <div class="onboarding-nav">
+                <span></span>
+                <button type="submit">{{ trans('onboarding.next') }} →</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

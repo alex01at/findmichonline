@@ -10,6 +10,7 @@
 
 {% block body %}
     {% set is_pro = card.owner_plan == 'pro' %}
+    {% set avatar_path = card.photo_path ?: card.logo_path %}
     {% set has_custom = is_pro and card.use_custom_colors %}
     {% set c_bg = has_custom and card.color_background ? card.color_background : '#ffffff' %}
     {% set c_header = has_custom and card.color_header ? card.color_header : '#ffffff' %}
@@ -38,8 +39,8 @@
             {% endif %}
 
             <div class="card-header-row" style="display:flex; align-items:center; gap:1.3rem; padding:1.5rem 2rem; flex-wrap:wrap;">
-                {% if card.logo_path %}
-                    <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 4px {{ c_header }};">
+                {% if avatar_path %}
+                    <img src="/{{ avatar_path }}" alt="{{ card.display_name }}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 4px {{ c_header }};">
                 {% endif %}
                 <div>
                     <h1 style="margin:0;">{{ card.display_name }}</h1>
@@ -68,6 +69,12 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.7rem;">
                         <span>📞 {{ card.phone }}</span>
                         <a href="/go/{{ card.slug }}/phone" style="color:{{ c_accent }}; font-size:0.9rem; white-space:nowrap;">{{ trans('card.public.call') }}</a>
+                    </div>
+                {% endif %}
+                {% if card.whatsapp %}
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.7rem;">
+                        <span>💬 {{ card.whatsapp }}</span>
+                        <a href="/go/{{ card.slug }}/whatsapp" target="_blank" rel="noopener" style="color:{{ c_accent }}; font-size:0.9rem; white-space:nowrap;">{{ trans('card.public.whatsapp_action') }}</a>
                     </div>
                 {% endif %}
                 {% if card.email %}

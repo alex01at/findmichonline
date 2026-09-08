@@ -78,6 +78,9 @@
         main.landing {
             max-width: 1100px;
         }
+        main.onboarding {
+            max-width: 980px;
+        }
         main.card-public {
             max-width: 1400px;
             width: 80%;
@@ -420,6 +423,188 @@
             color: var(--muted);
             margin: 0 0 0.4rem 0;
         }
+        .onboarding-progress-wrap {
+            margin: 0 0 1.5rem 0;
+        }
+        .onboarding-progress-label {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin: 0 0 0.5rem 0;
+        }
+        .onboarding-progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .onboarding-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 999px;
+            transition: width 0.2s;
+        }
+        .onboarding-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        .onboarding-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .onboarding-nav button[type=submit] {
+            margin-top: 0;
+        }
+        .onboarding-back-btn {
+            background: var(--border);
+            color: var(--text);
+            margin-top: 0;
+        }
+        .onboarding-back-btn:hover {
+            background: #d8dae2;
+        }
+        .onboarding-skip-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            margin: 1rem 0 0 0;
+            display: inline-block;
+        }
+        .onboarding-help {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin: 0.3rem 0 1.3rem 0;
+        }
+        .onboarding-preview-col {
+            display: none;
+        }
+        .onboarding-preview-label {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin: 0 0 0.6rem 0;
+            font-weight: 600;
+        }
+        .onboarding-preview-frame-wrap {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg);
+            height: 640px;
+        }
+        .onboarding-preview-frame-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .onboarding-preview-toggle {
+            display: block;
+            width: 100%;
+            margin: 1.5rem 0 0 0;
+            background: var(--border);
+            color: var(--text);
+        }
+        .onboarding-preview-toggle:hover {
+            background: #d8dae2;
+        }
+        .onboarding-design-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .onboarding-design-option {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--card-bg);
+            padding: 0;
+            text-align: left;
+        }
+        .onboarding-design-option.active,
+        .onboarding-design-option:has(input:checked) {
+            border-color: var(--primary);
+        }
+        .onboarding-design-thumb-wrap {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg);
+        }
+        .onboarding-design-thumb-wrap iframe {
+            border: none;
+            width: 400%;
+            height: 400%;
+            transform: scale(0.25);
+            transform-origin: top left;
+            pointer-events: none;
+        }
+        .onboarding-design-label {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .onboarding-design-lock {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary);
+            padding: 0.1rem 0.5rem;
+            border-radius: 999px;
+        }
+        .onboarding-slug-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .onboarding-slug-preview {
+            font-size: 0.95rem;
+            color: var(--muted);
+            word-break: break-all;
+        }
+        .onboarding-slug-status {
+            font-size: 0.88rem;
+            margin-top: 0.4rem;
+            min-height: 1.3em;
+        }
+        .onboarding-slug-status.available { color: var(--success); }
+        .onboarding-slug-status.taken { color: var(--danger); }
+        .onboarding-checklist {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        .onboarding-checklist li {
+            padding: 0.4rem 0;
+            color: var(--text);
+        }
+        .onboarding-resume-box {
+            text-align: center;
+        }
+        @media (min-width: 860px) {
+            .onboarding-layout {
+                grid-template-columns: 1fr 380px;
+                align-items: start;
+            }
+            .onboarding-preview-col {
+                display: block;
+                position: sticky;
+                top: 1.5rem;
+            }
+            .onboarding-preview-toggle {
+                display: none;
+            }
+        }
         .footer-lang-btn {
             background: none;
             border: none;
@@ -640,6 +825,63 @@
         });
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && !lightbox.hidden) lightbox.hidden = true;
+        });
+    })();
+
+    (function () {
+        var toggle = document.getElementById('onboarding-preview-toggle');
+        var col = document.getElementById('onboarding-preview-col');
+        if (!toggle || !col) return;
+
+        toggle.addEventListener('click', function () {
+            var showing = col.style.display === 'block';
+            col.style.display = showing ? 'none' : 'block';
+            toggle.textContent = showing ? toggle.dataset.showLabel : toggle.dataset.hideLabel;
+        });
+    })();
+
+    (function () {
+        var radios = document.querySelectorAll('input[name="design"]');
+        var mainFrame = document.getElementById('onboarding-preview-frame');
+        if (!radios.length || !mainFrame) return;
+
+        radios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                if (radio.checked) {
+                    mainFrame.src = '/card/preview?design=' + radio.value;
+                }
+            });
+        });
+    })();
+
+    (function () {
+        var input = document.getElementById('slug');
+        var status = document.getElementById('onboarding-slug-status');
+        if (!input || !status) return;
+
+        var timer = null;
+        input.addEventListener('input', function () {
+            clearTimeout(timer);
+            var value = input.value.trim().toLowerCase();
+            if (!value) {
+                status.textContent = '';
+                status.className = 'onboarding-slug-status';
+                return;
+            }
+            timer = setTimeout(function () {
+                fetch('/onboarding/check-slug?slug=' + encodeURIComponent(value))
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.available) {
+                            status.textContent = '✓ ' + status.dataset.availableText.replace('{slug}', value);
+                            status.className = 'onboarding-slug-status available';
+                        } else {
+                            status.textContent = '✕ ' + status.dataset.takenText;
+                            status.className = 'onboarding-slug-status taken';
+                        }
+                    })
+                    .catch(function () {});
+            }, 400);
         });
     })();
 </script>

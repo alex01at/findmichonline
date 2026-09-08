@@ -21,10 +21,16 @@ final class DashboardController
     public function index(): void
     {
         $user = $this->auth->user();
+        $card = $this->cards->findByUserId((int) $user['id']);
+
+        if ($card === null || $card['onboarding_completed_at'] === null) {
+            header('Location: /onboarding');
+            exit;
+        }
 
         echo $this->view->render('dashboard/index.twig', [
             'user' => $user,
-            'card' => $this->cards->findByUserId((int) $user['id']),
+            'card' => $card,
             'can_view_stats' => $this->auth->can('view_stats'),
         ]);
     }

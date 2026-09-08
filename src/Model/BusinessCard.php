@@ -47,6 +47,7 @@ final class BusinessCard
         'facebook' => 'clicks_facebook',
         'youtube' => 'clicks_youtube',
         'booking' => 'clicks_booking',
+        'whatsapp' => 'clicks_whatsapp',
     ];
 
     public function incrementClickCount(int $id, string $type): void
@@ -100,9 +101,9 @@ final class BusinessCard
         if ($existing === null) {
             $stmt = $this->db->prepare(
                 'INSERT INTO business_cards
-                    (user_id, slug, display_name, job_title, company, category_id, email, phone, website, address, bio, opening_hours, logo_path, linkedin_url, instagram_url, facebook_url, youtube_url, booking_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
+                    (user_id, slug, display_name, job_title, company, category_id, email, phone, whatsapp, website, address, bio, opening_hours, logo_path, photo_path, linkedin_url, instagram_url, facebook_url, youtube_url, booking_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
                  VALUES
-                    (:user_id, :slug, :display_name, :job_title, :company, :category_id, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :booking_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
+                    (:user_id, :slug, :display_name, :job_title, :company, :category_id, :email, :phone, :whatsapp, :website, :address, :bio, :opening_hours, :logo_path, :photo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :booking_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
             );
         } else {
             $stmt = $this->db->prepare(
@@ -114,11 +115,13 @@ final class BusinessCard
                     category_id = :category_id,
                     email = :email,
                     phone = :phone,
+                    whatsapp = :whatsapp,
                     website = :website,
                     address = :address,
                     bio = :bio,
                     opening_hours = :opening_hours,
                     logo_path = :logo_path,
+                    photo_path = :photo_path,
                     linkedin_url = :linkedin_url,
                     instagram_url = :instagram_url,
                     facebook_url = :facebook_url,
@@ -145,12 +148,14 @@ final class BusinessCard
             'category_id' => $data['category_id'],
             'email' => $data['email'],
             'phone' => $data['phone'],
+            'whatsapp' => $data['whatsapp'],
             'website' => $data['website'],
             'design' => $data['design'],
             'address' => $data['address'],
             'bio' => $data['bio'],
             'opening_hours' => $data['opening_hours'],
             'logo_path' => $data['logo_path'],
+            'photo_path' => $data['photo_path'],
             'linkedin_url' => $data['linkedin_url'],
             'instagram_url' => $data['instagram_url'],
             'facebook_url' => $data['facebook_url'],
@@ -163,6 +168,36 @@ final class BusinessCard
             'color_footer' => $data['color_footer'],
             'is_published' => $data['is_published'] ? 1 : 0,
         ]);
+    }
+
+    public function updateOnboardingStep(int $cardId, int $step): void
+    {
+        $stmt = $this->db->prepare('UPDATE business_cards SET onboarding_step = :step WHERE id = :id');
+        $stmt->execute(['step' => $step, 'id' => $cardId]);
+    }
+
+    public function completeOnboarding(int $cardId): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE business_cards SET onboarding_completed_at = NOW(), is_published = 1 WHERE id = :id'
+        );
+        $stmt->execute(['id' => $cardId]);
+    }
+
+    /**
+     * A user who saves via the normal card editor (bookmarked link, or just
+     * skipping the wizard entirely) has effectively finished onboarding too -
+     * without this, DashboardController would keep bouncing them back to
+     * /onboarding forever since onboarding_completed_at would stay null.
+     * Deliberately doesn't touch is_published (unlike completeOnboarding()),
+     * since the normal editor already has its own publish checkbox.
+     */
+    public function markOnboardingDoneIfNeeded(int $cardId): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE business_cards SET onboarding_completed_at = NOW() WHERE id = :id AND onboarding_completed_at IS NULL'
+        );
+        $stmt->execute(['id' => $cardId]);
     }
 
     public static function isValidHexColor(string $value): bool

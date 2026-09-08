@@ -1,0 +1,38 @@
+{% extends 'onboarding/_shell.twig' %}
+
+{% block title %}{{ trans('onboarding.step6.heading') }} – findmichonline{% endblock %}
+
+{% block step_content %}
+    <div class="card">
+        <h1>{{ trans('onboarding.step6.heading') }}</h1>
+        <p class="onboarding-help">{{ trans('onboarding.step6.help') }}</p>
+
+        {% include 'onboarding/_errors.twig' %}
+
+        <form method="post" action="/onboarding/6" enctype="multipart/form-data">
+            <label for="photo">{{ trans('onboarding.step6.photo_label') }}</label>
+            {% if card.photo_path %}
+                <div style="margin-bottom:0.5rem;">
+                    <img src="/{{ card.photo_path }}" alt="" style="max-height:80px; border-radius:50%;">
+                </div>
+            {% endif %}
+            <input type="file" id="photo" name="photo" accept="image/png,image/jpeg,image/webp">
+            <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
+
+            <label for="logo" style="margin-top:1.5rem;">{{ trans('onboarding.step6.logo_label') }}</label>
+            {% if card.logo_path %}
+                <div style="margin-bottom:0.5rem;">
+                    <img src="/{{ card.logo_path }}" alt="" style="max-height:80px; border-radius:8px;">
+                </div>
+            {% endif %}
+            <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
+            <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
+
+            <div class="onboarding-nav">
+                <a class="btn onboarding-back-btn" href="/onboarding/5">← {{ trans('onboarding.back') }}</a>
+                <button type="submit">{{ trans('onboarding.next') }} →</button>
+            </div>
+            <button type="submit" formnovalidate class="onboarding-skip-btn">{{ trans('onboarding.skip') }}</button>
+        </form>
+    </div>
+{% endblock %}
