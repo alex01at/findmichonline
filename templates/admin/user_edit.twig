@@ -79,6 +79,14 @@
                 <label for="company">{{ trans('card.edit.company_label') }}</label>
                 <input type="text" id="company" name="company" value="{{ card.company|default('') }}">
 
+                <label for="category_id">{{ trans('card.edit.category_label') }}</label>
+                <select id="category_id" name="category_id" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem;">
+                    <option value="">{{ trans('card.edit.category_none') }}</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if card.category_id|default(null) == category.id %}selected{% endif %}>{{ locale == 'de' ? category.name_de : category.name_en }}</option>
+                    {% endfor %}
+                </select>
+
                 <label for="card_email">{{ trans('card.edit.email_label') }}</label>
                 <input type="email" id="card_email" name="email" value="{{ card.email|default('') }}">
 

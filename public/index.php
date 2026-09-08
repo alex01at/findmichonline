@@ -250,6 +250,22 @@ $router->post('/admin/legal', function () use ($admin, $requireAdmin) {
     $requireAdmin();
     $admin->updateLegal();
 });
+$router->get('/admin/categories', function () use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->showCategories();
+});
+$router->post('/admin/categories/create', function () use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->createCategory();
+});
+$router->post('/admin/categories/{id}/update', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->updateCategory($params);
+});
+$router->post('/admin/categories/{id}/delete', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->deleteCategory($params);
+});
 
 // Catch-all for published business cards (findmichonline.com/{slug}).
 // Must stay the last GET route registered so every fixed route above

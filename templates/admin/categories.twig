@@ -1,0 +1,52 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('admin.categories.heading') }} – findmichonline{% endblock %}
+{% block main_class %}wide{% endblock %}
+
+{% block body %}
+    <h1>{{ trans('admin.categories.heading') }}</h1>
+    <p class="muted-link">{{ trans('admin.categories.intro') }}</p>
+
+    <div class="card">
+        <h2 style="margin-top:0; font-size:1.1rem;">{{ trans('admin.categories.add_heading') }}</h2>
+        <form method="post" action="/admin/categories/create" style="display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end;">
+            <div style="flex:1; min-width:180px;">
+                <label for="new_name_de" style="margin-top:0;">{{ trans('admin.categories.name_de_label') }}</label>
+                <input type="text" id="new_name_de" name="name_de" required>
+            </div>
+            <div style="flex:1; min-width:180px;">
+                <label for="new_name_en" style="margin-top:0;">{{ trans('admin.categories.name_en_label') }}</label>
+                <input type="text" id="new_name_en" name="name_en" required>
+            </div>
+            <div style="width:110px;">
+                <label for="new_sort_order" style="margin-top:0;">{{ trans('admin.categories.sort_order_label') }}</label>
+                <input type="number" id="new_sort_order" name="sort_order" value="{{ (categories|length + 1) * 10 }}">
+            </div>
+            <button type="submit" style="margin-top:0;">{{ trans('admin.categories.add_button') }}</button>
+        </form>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem; overflow-x:auto;">
+        <div style="min-width:560px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 90px auto; gap:0.6rem; font-size:0.85rem; color:var(--muted); font-weight:600; padding-bottom:0.6rem; border-bottom:1px solid var(--border);">
+                <div>{{ trans('admin.categories.name_de_label') }}</div>
+                <div>{{ trans('admin.categories.name_en_label') }}</div>
+                <div>{{ trans('admin.categories.sort_order_label') }}</div>
+                <div></div>
+            </div>
+            {% for category in categories %}
+                <form method="post" action="/admin/categories/{{ category.id }}/update" style="display:grid; grid-template-columns:1fr 1fr 90px auto; gap:0.6rem; align-items:center; padding:0.6rem 0; border-bottom:1px solid var(--border);">
+                    <input type="text" name="name_de" value="{{ category.name_de }}" required style="margin:0; padding:0.4rem 0.6rem;">
+                    <input type="text" name="name_en" value="{{ category.name_en }}" required style="margin:0; padding:0.4rem 0.6rem;">
+                    <input type="number" name="sort_order" value="{{ category.sort_order }}" style="margin:0; padding:0.4rem 0.6rem;">
+                    <div style="display:flex; gap:0.4rem; white-space:nowrap;">
+                        <button type="submit" style="margin:0; padding:0.35rem 0.6rem; font-size:0.8rem;">{{ trans('admin.categories.save_button') }}</button>
+                        <button type="submit" formaction="/admin/categories/{{ category.id }}/delete" formnovalidate onclick="return confirm('{{ trans('admin.categories.confirm_delete') }}');" style="margin:0; padding:0.35rem 0.6rem; font-size:0.8rem; background:var(--danger);">{{ trans('admin.table.delete') }}</button>
+                    </div>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+
+    <a class="muted-link" href="/admin" style="display:inline-block; margin-top:1rem;">{{ trans('admin.back_to_list') }}</a>
+{% endblock %}

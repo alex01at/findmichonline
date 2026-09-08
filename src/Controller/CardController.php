@@ -7,6 +7,7 @@ namespace Kartenlink\App\Controller;
 use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Model\CardGalleryImage;
 use Kartenlink\App\Model\CardOffering;
+use Kartenlink\App\Model\Category;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Features;
 use Kartenlink\App\Support\GalleryUploader;
@@ -22,6 +23,7 @@ final class CardController
     private BusinessCard $cards;
     private CardGalleryImage $galleryImages;
     private CardOffering $offerings;
+    private Category $categories;
 
     public function __construct(
         private PDO $db,
@@ -35,6 +37,7 @@ final class CardController
         $this->cards = new BusinessCard($db);
         $this->galleryImages = new CardGalleryImage($db);
         $this->offerings = new CardOffering($db);
+        $this->categories = new Category($db);
     }
 
     public function edit(): void
@@ -54,6 +57,7 @@ final class CardController
             'offerings' => $card !== null ? $this->offerings->findByCardId((int) $card['id']) : [],
             'offerings_max' => CardOffering::MAX_OFFERINGS,
             'booking_link_allowed' => $this->auth->can('booking_link'),
+            'categories' => $this->categories->all(),
         ]);
     }
 
@@ -66,6 +70,10 @@ final class CardController
         $displayName = trim($_POST['display_name'] ?? '');
         $jobTitle = trim($_POST['job_title'] ?? '');
         $company = trim($_POST['company'] ?? '');
+        $categoryId = trim($_POST['category_id'] ?? '') !== '' ? (int) $_POST['category_id'] : null;
+        if ($categoryId !== null && !$this->categories->exists($categoryId)) {
+            $categoryId = null;
+        }
         $email = trim($_POST['email'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $website = trim($_POST['website'] ?? '');
@@ -175,6 +183,7 @@ final class CardController
                     'display_name' => $displayName,
                     'job_title' => $jobTitle,
                     'company' => $company,
+                    'category_id' => $categoryId,
                     'email' => $email,
                     'phone' => $phone,
                     'website' => $website,
@@ -205,6 +214,7 @@ final class CardController
                 'offerings' => $existing !== null ? $this->offerings->findByCardId((int) $existing['id']) : [],
                 'offerings_max' => CardOffering::MAX_OFFERINGS,
                 'booking_link_allowed' => $this->auth->can('booking_link'),
+                'categories' => $this->categories->all(),
             ]);
             return;
         }
@@ -218,6 +228,7 @@ final class CardController
             'display_name' => $displayName,
             'job_title' => $jobTitle !== '' ? $jobTitle : null,
             'company' => $company !== '' ? $company : null,
+            'category_id' => $categoryId,
             'email' => $email !== '' ? $email : null,
             'phone' => $phone !== '' ? $phone : null,
             'website' => $website !== '' ? $website : null,
@@ -435,6 +446,9 @@ final class CardController
         $design = in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
         $cardUrl = $this->appUrl . '/' . $card['slug'];
         $logoUrl = $card['logo_path'] ? $this->appUrl . '/' . $card['logo_path'] : null;
+        $categoryName = $card['category_id']
+            ? ($this->translator->locale() === 'de' ? $card['category_name_de'] : $card['category_name_en'])
+            : null;
 
         echo $this->view->render("card/designs/{$design}.twig", [
             'card' => $card,
@@ -443,6 +457,7 @@ final class CardController
             'structured_data_json' => $this->buildStructuredData($card, $cardUrl, $logoUrl),
             'gallery_images' => $this->galleryImages->findByCardId((int) $card['id']),
             'offerings' => $this->offerings->findByCardId((int) $card['id']),
+            'category_name' => $categoryName,
         ]);
     }
 

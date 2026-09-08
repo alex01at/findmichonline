@@ -63,9 +63,10 @@ final class BusinessCard
     public function findPublishedBySlug(string $slug): ?array
     {
         $stmt = $this->db->prepare(
-            'SELECT c.*, u.plan AS owner_plan
+            'SELECT c.*, u.plan AS owner_plan, cat.name_de AS category_name_de, cat.name_en AS category_name_en
              FROM business_cards c
              JOIN users u ON u.id = c.user_id
+             LEFT JOIN categories cat ON cat.id = c.category_id
              WHERE c.slug = :slug AND c.is_published = 1'
         );
         $stmt->execute(['slug' => $slug]);
@@ -99,9 +100,9 @@ final class BusinessCard
         if ($existing === null) {
             $stmt = $this->db->prepare(
                 'INSERT INTO business_cards
-                    (user_id, slug, display_name, job_title, company, email, phone, website, address, bio, opening_hours, logo_path, linkedin_url, instagram_url, facebook_url, youtube_url, booking_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
+                    (user_id, slug, display_name, job_title, company, category_id, email, phone, website, address, bio, opening_hours, logo_path, linkedin_url, instagram_url, facebook_url, youtube_url, booking_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
                  VALUES
-                    (:user_id, :slug, :display_name, :job_title, :company, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :booking_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
+                    (:user_id, :slug, :display_name, :job_title, :company, :category_id, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :booking_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
             );
         } else {
             $stmt = $this->db->prepare(
@@ -110,6 +111,7 @@ final class BusinessCard
                     display_name = :display_name,
                     job_title = :job_title,
                     company = :company,
+                    category_id = :category_id,
                     email = :email,
                     phone = :phone,
                     website = :website,
@@ -140,6 +142,7 @@ final class BusinessCard
             'display_name' => $data['display_name'],
             'job_title' => $data['job_title'],
             'company' => $data['company'],
+            'category_id' => $data['category_id'],
             'email' => $data['email'],
             'phone' => $data['phone'],
             'website' => $data['website'],

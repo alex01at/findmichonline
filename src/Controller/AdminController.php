@@ -7,6 +7,7 @@ namespace Kartenlink\App\Controller;
 use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Model\CardGalleryImage;
 use Kartenlink\App\Model\CardOffering;
+use Kartenlink\App\Model\Category;
 use Kartenlink\App\Model\LegalPage;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
@@ -27,6 +28,7 @@ final class AdminController
     private LegalPage $legalPages;
     private CardGalleryImage $galleryImages;
     private CardOffering $offerings;
+    private Category $categories;
 
     public function __construct(
         private PDO $db,
@@ -41,6 +43,7 @@ final class AdminController
         $this->legalPages = new LegalPage($db);
         $this->galleryImages = new CardGalleryImage($db);
         $this->offerings = new CardOffering($db);
+        $this->categories = new Category($db);
     }
 
     public function index(): void
@@ -209,6 +212,10 @@ final class AdminController
         $displayName = trim($_POST['display_name'] ?? '');
         $jobTitle = trim($_POST['job_title'] ?? '');
         $company = trim($_POST['company'] ?? '');
+        $categoryId = trim($_POST['category_id'] ?? '') !== '' ? (int) $_POST['category_id'] : null;
+        if ($categoryId !== null && !$this->categories->exists($categoryId)) {
+            $categoryId = null;
+        }
         $email = trim($_POST['email'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $website = trim($_POST['website'] ?? '');
@@ -301,6 +308,7 @@ final class AdminController
                 'display_name' => $displayName,
                 'job_title' => $jobTitle,
                 'company' => $company,
+                'category_id' => $categoryId,
                 'email' => $email,
                 'phone' => $phone,
                 'website' => $website,
@@ -333,6 +341,7 @@ final class AdminController
             'display_name' => $displayName,
             'job_title' => $jobTitle !== '' ? $jobTitle : null,
             'company' => $company !== '' ? $company : null,
+            'category_id' => $categoryId,
             'email' => $email !== '' ? $email : null,
             'phone' => $phone !== '' ? $phone : null,
             'website' => $website !== '' ? $website : null,
@@ -421,6 +430,58 @@ final class AdminController
         exit;
     }
 
+    public function showCategories(): void
+    {
+        echo $this->view->render('admin/categories.twig', [
+            'categories' => $this->categories->all(),
+        ]);
+    }
+
+    public function createCategory(): void
+    {
+        $nameDe = trim($_POST['name_de'] ?? '');
+        $nameEn = trim($_POST['name_en'] ?? '');
+        $sortOrder = (int) ($_POST['sort_order'] ?? 0);
+
+        if ($nameDe === '' || $nameEn === '') {
+            Session::flash('error', $this->translator->trans('admin.categories.errors.name_required'));
+            header('Location: /admin/categories');
+            exit;
+        }
+
+        $this->categories->create($nameDe, $nameEn, $sortOrder);
+        Session::flash('success', $this->translator->trans('admin.categories.created'));
+        header('Location: /admin/categories');
+        exit;
+    }
+
+    public function updateCategory(array $params): void
+    {
+        $id = (int) $params['id'];
+        $nameDe = trim($_POST['name_de'] ?? '');
+        $nameEn = trim($_POST['name_en'] ?? '');
+        $sortOrder = (int) ($_POST['sort_order'] ?? 0);
+
+        if ($nameDe === '' || $nameEn === '') {
+            Session::flash('error', $this->translator->trans('admin.categories.errors.name_required'));
+            header('Location: /admin/categories');
+            exit;
+        }
+
+        $this->categories->update($id, $nameDe, $nameEn, $sortOrder);
+        Session::flash('success', $this->translator->trans('admin.categories.updated'));
+        header('Location: /admin/categories');
+        exit;
+    }
+
+    public function deleteCategory(array $params): void
+    {
+        $this->categories->delete((int) $params['id']);
+        Session::flash('success', $this->translator->trans('admin.categories.deleted'));
+        header('Location: /admin/categories');
+        exit;
+    }
+
     private function renderEditUser(array $user, ?array $card, array $errors = []): void
     {
         echo $this->view->render('admin/user_edit.twig', [
@@ -428,6 +489,7 @@ final class AdminController
             'card' => $card,
             'gallery_images' => $card !== null ? $this->galleryImages->findByCardId((int) $card['id']) : [],
             'offerings' => $card !== null ? $this->offerings->findByCardId((int) $card['id']) : [],
+            'categories' => $this->categories->all(),
             'errors' => $errors,
         ]);
     }
