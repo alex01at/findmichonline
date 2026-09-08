@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Kartenlink{% endblock %}</title>
+    <title>{% block title %}findmichonline{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}{{ trans('seo.default_description') }}{% endblock %}">
     <meta name="robots" content="{% block robots %}noindex, nofollow{% endblock %}">
     <link rel="canonical" href="{% block canonical_url %}{{ current_url }}{% endblock %}">
-    <meta property="og:site_name" content="Kartenlink">
+    <meta property="og:site_name" content="findmichonline">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ block('meta_description') }}{% endblock %}">
@@ -174,7 +174,7 @@
 </head>
 <body>
 <header class="site">
-    <a class="brand" href="/">Kartenlink</a>
+    <a class="brand" href="/">findmichonline</a>
     <nav>
         <a href="/pricing">{{ trans('nav.pricing') }}</a>
         {% if auth_check %}

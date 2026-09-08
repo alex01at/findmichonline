@@ -30,6 +30,12 @@ final class BusinessCard
         return $card ?: null;
     }
 
+    public function incrementViewCount(int $id): void
+    {
+        $stmt = $this->db->prepare('UPDATE business_cards SET view_count = view_count + 1 WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
     public function findPublishedBySlug(string $slug): ?array
     {
         $stmt = $this->db->prepare(

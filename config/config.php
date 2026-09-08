@@ -32,6 +32,6 @@ return [
     ],
     'mail' => [
         'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@localhost',
-        'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Kartenlink',
+        'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'findmichonline',
     ],
 ];

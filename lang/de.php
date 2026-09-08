@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'seo.default_description' => 'Kartenlink – erstelle deine digitale Visitenkarte mit eigenem Link, individuellem Design und QR-Code.',
+    'seo.default_description' => 'findmichonline – erstelle deine digitale Visitenkarte mit eigenem Link, individuellem Design und QR-Code.',
 
     'nav.dashboard' => 'Dashboard',
     'nav.logout' => 'Abmelden',
@@ -16,8 +16,8 @@ return [
     'home.subtitle' => 'Erstelle in wenigen Minuten eine digitale Visitenkarte mit eigenem Link und QR-Code.',
     'home.cta_start' => 'Kostenlos starten',
     'home.cta_login' => 'Ich habe bereits ein Konto',
-    'home.meta_description' => 'Kartenlink: Erstelle kostenlos deine digitale Visitenkarte mit eigenem Kurzlink, individuellem Design (Classic/Modern), QR-Code zum Teilen und mehrsprachiger Darstellung. In wenigen Minuten startklar – ganz ohne Druckkosten.',
-    'pricing.meta_description' => 'Vergleiche die Kartenlink-Tarife: Free für den Einstieg, Pro mit modernem Design und allen Zusatzfunktionen. Jederzeit wechselbar.',
+    'home.meta_description' => 'findmichonline: Erstelle kostenlos deine digitale Visitenkarte mit eigenem Kurzlink, individuellem Design (Classic/Modern), QR-Code zum Teilen und mehrsprachiger Darstellung. In wenigen Minuten startklar – ganz ohne Druckkosten.',
+    'pricing.meta_description' => 'Vergleiche die findmichonline-Tarife: Free für den Einstieg, Pro mit modernem Design und allen Zusatzfunktionen. Jederzeit wechselbar.',
 
     'auth.register.heading' => 'Konto erstellen',
     'auth.register.name_label' => 'Name',
@@ -36,7 +36,7 @@ return [
     'auth.password_strength.medium' => 'Mittel',
     'auth.password_strength.strong' => 'Stark',
     'auth.password_toggle_show' => 'Passwort anzeigen',
-    'auth.register.success' => 'Willkommen bei Kartenlink!',
+    'auth.register.success' => 'Willkommen bei findmichonline!',
 
     'auth.login.heading' => 'Anmelden',
     'auth.login.email_label' => 'E-Mail-Adresse',
@@ -51,8 +51,8 @@ return [
     'auth.forgot_password.intro' => 'Gib deine E-Mail-Adresse ein, wir schicken dir einen Link zum Zurücksetzen.',
     'auth.forgot_password.submit' => 'Link anfordern',
     'auth.forgot_password.sent' => 'Falls diese E-Mail-Adresse registriert ist, haben wir einen Link zum Zurücksetzen geschickt.',
-    'auth.forgot_password.email_subject' => 'Passwort zurücksetzen – Kartenlink',
-    'auth.forgot_password.email_body' => "Hallo,\n\ndu (oder jemand anderes) hat angefordert, das Passwort für dein Kartenlink-Konto zurückzusetzen.\n\nLink zum Zurücksetzen (1 Stunde gültig):\n{link}\n\nWenn du das nicht warst, kannst du diese E-Mail ignorieren.",
+    'auth.forgot_password.email_subject' => 'Passwort zurücksetzen – findmichonline',
+    'auth.forgot_password.email_body' => "Hallo,\n\ndu (oder jemand anderes) hat angefordert, das Passwort für dein findmichonline-Konto zurückzusetzen.\n\nLink zum Zurücksetzen (1 Stunde gültig):\n{link}\n\nWenn du das nicht warst, kannst du diese E-Mail ignorieren.",
 
     'auth.reset_password.heading' => 'Neues Passwort festlegen',
     'auth.reset_password.new_password_label' => 'Neues Passwort',
@@ -72,6 +72,10 @@ return [
     'dashboard.plan_free' => 'Free',
     'dashboard.plan_pro' => 'Pro',
     'dashboard.view_pricing' => 'Tarife ansehen',
+    'dashboard.stats_heading' => 'Besucherzähler',
+    'dashboard.stats_views_label' => 'Aufrufe insgesamt',
+    'dashboard.stats_locked_text' => 'Zugriffe werden nur Premiumkunden angezeigt',
+    'dashboard.stats_locked_cta' => 'Jetzt Premium werden',
 
     'card.edit.heading' => 'Visitenkarte bearbeiten',
     'card.edit.published_notice' => 'Deine Karte ist veröffentlicht unter',
@@ -125,7 +129,7 @@ return [
     'card.public.website_action' => 'Website öffnen',
     'card.public.route' => 'Route',
     'card.public.qr_caption' => 'Kontaktdaten als QR-Code',
-    'card.public.footer_branding' => 'Erstellt mit Kartenlink',
+    'card.public.footer_branding' => 'Erstellt mit findmichonline',
 
     'card.not_found.heading' => 'Diese Visitenkarte gibt es nicht (mehr)',
     'card.not_found.text' => 'Der Link ist entweder falsch oder die Karte wurde noch nicht veröffentlicht.',

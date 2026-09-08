@@ -1,6 +1,6 @@
 {% extends 'layout/base.twig' %}
 
-{% block title %}Dashboard – Kartenlink{% endblock %}
+{% block title %}Dashboard – findmichonline{% endblock %}
 {% block main_class %}wide{% endblock %}
 
 {% block body %}
@@ -27,4 +27,18 @@
             <a class="btn" href="/card/edit">{{ trans('dashboard.create_card') }}</a>
         {% endif %}
     </div>
+
+    {% if card %}
+        <div class="card" style="margin-top:1.5rem;">
+            <h1 style="font-size:1.2rem;">{{ trans('dashboard.stats_heading') }}</h1>
+            {% if can_view_stats %}
+                <p style="font-size:2.2rem; font-weight:700; margin:0.3rem 0 0 0;">{{ card.view_count }}</p>
+                <p class="muted-link" style="margin-top:0.1rem;">{{ trans('dashboard.stats_views_label') }}</p>
+            {% else %}
+                <p class="muted-link" style="margin-top:0.5rem;">
+                    {{ trans('dashboard.stats_locked_text') }} → <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a>
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}

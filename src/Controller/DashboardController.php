@@ -25,6 +25,7 @@ final class DashboardController
         echo $this->view->render('dashboard/index.twig', [
             'user' => $user,
             'card' => $this->cards->findByUserId((int) $user['id']),
+            'can_view_stats' => $this->auth->can('view_stats'),
         ]);
     }
 }

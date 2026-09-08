@@ -18,6 +18,11 @@ final class View
         $this->twig = new Environment($loader, [
             'cache' => $debug ? false : $cachePath,
             'debug' => $debug,
+            // Without this, auto_reload defaults to the debug flag, so in
+            // production (debug=false) Twig never re-checks whether a .twig
+            // source file changed since it was compiled — it just keeps
+            // serving the stale cached version forever after a deploy.
+            'auto_reload' => true,
         ]);
 
         $this->twig->addGlobal('flashes', Session::pullFlashes());

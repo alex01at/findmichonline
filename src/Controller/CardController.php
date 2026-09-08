@@ -189,6 +189,8 @@ final class CardController
             return;
         }
 
+        $this->cards->incrementViewCount((int) $card['id']);
+
         $design = in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
         $cardUrl = $this->appUrl . '/' . $card['slug'];
         $logoUrl = $card['logo_path'] ? $this->appUrl . '/' . $card['logo_path'] : null;

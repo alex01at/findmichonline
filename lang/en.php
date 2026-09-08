@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'seo.default_description' => 'Kartenlink – create your digital business card with your own link, custom design and QR code.',
+    'seo.default_description' => 'findmichonline – create your digital business card with your own link, custom design and QR code.',
 
     'nav.dashboard' => 'Dashboard',
     'nav.logout' => 'Log out',
@@ -16,8 +16,8 @@ return [
     'home.subtitle' => 'Create a digital business card with your own link and QR code in minutes.',
     'home.cta_start' => 'Start for free',
     'home.cta_login' => 'I already have an account',
-    'home.meta_description' => 'Kartenlink: create your digital business card for free with your own short link, custom design (Classic/Modern), a shareable QR code, and multilingual display. Ready in minutes — no printing costs.',
-    'pricing.meta_description' => 'Compare Kartenlink plans: Free to get started, Pro with the modern design and all extra features. Switch anytime.',
+    'home.meta_description' => 'findmichonline: create your digital business card for free with your own short link, custom design (Classic/Modern), a shareable QR code, and multilingual display. Ready in minutes — no printing costs.',
+    'pricing.meta_description' => 'Compare findmichonline plans: Free to get started, Pro with the modern design and all extra features. Switch anytime.',
 
     'auth.register.heading' => 'Create an account',
     'auth.register.name_label' => 'Name',
@@ -36,7 +36,7 @@ return [
     'auth.password_strength.medium' => 'Medium',
     'auth.password_strength.strong' => 'Strong',
     'auth.password_toggle_show' => 'Show password',
-    'auth.register.success' => 'Welcome to Kartenlink!',
+    'auth.register.success' => 'Welcome to findmichonline!',
 
     'auth.login.heading' => 'Log in',
     'auth.login.email_label' => 'Email address',
@@ -51,8 +51,8 @@ return [
     'auth.forgot_password.intro' => "Enter your email address and we'll send you a reset link.",
     'auth.forgot_password.submit' => 'Send reset link',
     'auth.forgot_password.sent' => "If that email address is registered, we've sent a password reset link.",
-    'auth.forgot_password.email_subject' => 'Reset your password – Kartenlink',
-    'auth.forgot_password.email_body' => "Hi,\n\nsomeone (hopefully you) requested a password reset for your Kartenlink account.\n\nReset link (valid for 1 hour):\n{link}\n\nIf this wasn't you, you can safely ignore this email.",
+    'auth.forgot_password.email_subject' => 'Reset your password – findmichonline',
+    'auth.forgot_password.email_body' => "Hi,\n\nsomeone (hopefully you) requested a password reset for your findmichonline account.\n\nReset link (valid for 1 hour):\n{link}\n\nIf this wasn't you, you can safely ignore this email.",
 
     'auth.reset_password.heading' => 'Set a new password',
     'auth.reset_password.new_password_label' => 'New password',
@@ -72,6 +72,10 @@ return [
     'dashboard.plan_free' => 'Free',
     'dashboard.plan_pro' => 'Pro',
     'dashboard.view_pricing' => 'View pricing',
+    'dashboard.stats_heading' => 'Visitor counter',
+    'dashboard.stats_views_label' => 'Total views',
+    'dashboard.stats_locked_text' => 'Visit stats are only shown to Premium customers',
+    'dashboard.stats_locked_cta' => 'Upgrade to Premium',
 
     'card.edit.heading' => 'Edit business card',
     'card.edit.published_notice' => 'Your card is published at',
@@ -125,7 +129,7 @@ return [
     'card.public.website_action' => 'Open website',
     'card.public.route' => 'Directions',
     'card.public.qr_caption' => 'Contact details as QR code',
-    'card.public.footer_branding' => 'Made with Kartenlink',
+    'card.public.footer_branding' => 'Made with findmichonline',
 
     'card.not_found.heading' => "This business card doesn't exist (anymore)",
     'card.not_found.text' => "The link is either wrong or the card hasn't been published yet.",

@@ -16,6 +16,7 @@ final class Features
     /** @var array<string, list<string>> feature => plans that include it */
     private const MATRIX = [
         'design_modern' => [self::PRO],
+        'view_stats' => [self::PRO],
     ];
 
     public static function allows(string $plan, string $feature): bool
