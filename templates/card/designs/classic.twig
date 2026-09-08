@@ -27,7 +27,7 @@
 
         <div style="background:{{ c_header }};">
             {% if card.logo_path or card.company %}
-                <div style="display:flex; align-items:center; gap:0.8rem; padding:1.8rem 2rem 0 2rem;">
+                <div class="card-header-row" style="display:flex; align-items:center; gap:0.8rem; padding:1.8rem 2rem 0 2rem;">
                     {% if card.logo_path %}
                         <img src="/{{ card.logo_path }}" alt="" style="width:44px; height:44px; object-fit:contain; border-radius:8px; flex-shrink:0;">
                     {% endif %}
@@ -37,7 +37,7 @@
                 </div>
             {% endif %}
 
-            <div style="display:flex; align-items:center; gap:1.3rem; padding:1.5rem 2rem; flex-wrap:wrap;">
+            <div class="card-header-row" style="display:flex; align-items:center; gap:1.3rem; padding:1.5rem 2rem; flex-wrap:wrap;">
                 {% if card.logo_path %}
                     <img src="/{{ card.logo_path }}" alt="{{ card.display_name }}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 4px {{ c_header }};">
                 {% endif %}
