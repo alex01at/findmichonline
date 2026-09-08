@@ -15,7 +15,8 @@ final class BusinessCard
     public const RESERVED_SLUGS = [
         'login', 'register', 'logout', 'dashboard', 'pricing', 'card',
         'billing', 'lang', 'webhook', 'account', 'c', 'public', 'admin',
-        'forgot-password', 'reset-password',
+        'forgot-password', 'reset-password', 'onboarding', 'qr', 'go',
+        'vcard', 'impressum', 'datenschutz', 'kontakt',
     ];
 
     public function __construct(private PDO $db)
