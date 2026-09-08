@@ -211,4 +211,10 @@ return [
     'admin.card_deleted' => 'Visitenkarte wurde gelöscht.',
     'admin.errors.cannot_delete_self' => 'Du kannst dich nicht selbst löschen.',
     'admin.errors.cannot_remove_own_admin' => 'Du kannst dir nicht selbst die Admin-Rechte entziehen.',
+
+    'footer.impressum' => 'Impressum',
+    'footer.datenschutz' => 'Datenschutz',
+    'footer.kontakt' => 'Kontakt',
+    'footer.widerruf' => 'Widerruf',
+    'legal.placeholder_text' => 'Inhalt folgt in Kürze.',
 ];

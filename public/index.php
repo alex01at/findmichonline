@@ -21,6 +21,7 @@ use Kartenlink\App\Controller\BillingController;
 use Kartenlink\App\Controller\CardController;
 use Kartenlink\App\Controller\DashboardController;
 use Kartenlink\App\Controller\HomeController;
+use Kartenlink\App\Controller\LegalController;
 use Kartenlink\App\Controller\PricingController;
 use Kartenlink\App\Controller\QrCodeController;
 use Kartenlink\App\Controller\StripeWebhookController;
@@ -139,6 +140,11 @@ $stripe = new StripeService(
 
 $pricing = new PricingController($view, $auth, $stripe);
 $router->get('/pricing', fn () => $pricing->index());
+
+$legal = new LegalController($view, $translator);
+$router->get('/impressum', fn () => $legal->show('impressum'));
+$router->get('/datenschutz', fn () => $legal->show('datenschutz'));
+$router->get('/kontakt', fn () => $legal->show('kontakt'));
 
 $account = new AccountController($db, $auth, $translator);
 $router->post('/account/plan', function () use ($account, $requireAuth) {

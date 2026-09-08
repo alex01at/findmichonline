@@ -211,4 +211,10 @@ return [
     'admin.card_deleted' => 'Business card deleted.',
     'admin.errors.cannot_delete_self' => "You can't delete your own account.",
     'admin.errors.cannot_remove_own_admin' => "You can't remove your own admin rights.",
+
+    'footer.impressum' => 'Imprint',
+    'footer.datenschutz' => 'Privacy Policy',
+    'footer.kontakt' => 'Contact',
+    'footer.widerruf' => 'Right of withdrawal',
+    'legal.placeholder_text' => 'Content coming soon.',
 ];

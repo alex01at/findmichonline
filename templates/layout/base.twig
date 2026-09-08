@@ -228,6 +228,34 @@
         .switch input:checked + .slider::before {
             transform: translateX(20px);
         }
+        footer.site-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            padding: 1.2rem 2rem 2rem 2rem;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        footer.site-footer .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+        footer.site-footer .footer-links a:hover {
+            color: var(--text);
+        }
+        .footer-revoke-btn {
+            background: #e5e7eb;
+            color: var(--muted);
+            border: none;
+            border-radius: 6px;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: default;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -255,6 +283,14 @@
     {% endfor %}
     {% block body %}{% endblock %}
 </main>
+<footer class="site-footer">
+    <div class="footer-links">
+        <a href="/impressum">{{ trans('footer.impressum') }}</a> |
+        <a href="/datenschutz">{{ trans('footer.datenschutz') }}</a> |
+        <a href="/kontakt">{{ trans('footer.kontakt') }}</a>
+    </div>
+    <button type="button" class="footer-revoke-btn">{{ trans('footer.widerruf') }}</button>
+</footer>
 <script>
     document.querySelectorAll('.password-toggle').forEach(function (btn) {
         btn.addEventListener('click', function () {

@@ -32,16 +32,19 @@
         <div class="card" style="flex:1; min-width:260px; max-width:320px; border-color:var(--primary);">
             <h2 style="margin-top:0;">{{ trans('pricing.pro.name') }}</h2>
 
-            <label class="switch" style="margin-bottom:0.6rem;">
-                <input type="checkbox" id="billing-yearly-toggle">
-                <span class="slider"></span>
-            </label>
-            <span id="billing-toggle-label" style="font-size:0.9rem; color:var(--muted); margin-left:0.5rem;" data-monthly="{{ trans('pricing.toggle_monthly') }}" data-yearly="{{ trans('pricing.toggle_yearly') }}">{{ trans('pricing.toggle_monthly') }}</span>
+            <div style="display:flex; align-items:center; justify-content:center; gap:0.6rem; margin-bottom:0.6rem;">
+                <span id="billing-label-monthly" style="font-size:0.9rem; color:var(--muted);">{{ trans('pricing.toggle_monthly') }}</span>
+                <label class="switch">
+                    <input type="checkbox" id="billing-yearly-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <span id="billing-label-yearly" style="font-size:0.9rem; color:var(--text); font-weight:600;">{{ trans('pricing.toggle_yearly') }}</span>
+            </div>
 
             <p style="font-size:1.5rem; font-weight:700; margin:0.6rem 0 0.2rem 0;">
-                <span id="billing-price" data-monthly="{{ trans('pricing.pro.price') }}" data-yearly="{{ trans('pricing.pro.price_yearly') }}">{{ trans('pricing.pro.price') }}</span>
+                <span id="billing-price" data-monthly="{{ trans('pricing.pro.price') }}" data-yearly="{{ trans('pricing.pro.price_yearly') }}">{{ trans('pricing.pro.price_yearly') }}</span>
             </p>
-            <p id="billing-savings" class="muted-link" style="margin:0 0 1rem 0;" hidden>{{ trans('pricing.pro.savings_yearly') }}</p>
+            <p id="billing-savings" class="muted-link" style="margin:0 0 1rem 0;">{{ trans('pricing.pro.savings_yearly') }}</p>
 
             <ul style="padding-left:1.2rem; line-height:1.9;">
                 <li>{{ trans('pricing.feature.card') }}</li>
@@ -69,7 +72,7 @@
             {% elseif current_plan == 'free' %}
                 {% if stripe_configured %}
                     <form method="post" action="/billing/checkout">
-                        <input type="hidden" name="interval" id="checkout-interval" value="monthly">
+                        <input type="hidden" name="interval" id="checkout-interval" value="yearly">
                         <button type="submit">{{ trans('pricing.cta.upgrade') }}</button>
                     </form>
                 {% else %}
@@ -91,19 +94,26 @@
     <script>
         (function () {
             var toggle = document.getElementById('billing-yearly-toggle');
-            var label = document.getElementById('billing-toggle-label');
+            var labelMonthly = document.getElementById('billing-label-monthly');
+            var labelYearly = document.getElementById('billing-label-yearly');
             var price = document.getElementById('billing-price');
             var savings = document.getElementById('billing-savings');
             var checkoutInterval = document.getElementById('checkout-interval');
             if (!toggle) return;
 
-            toggle.addEventListener('change', function () {
+            function render() {
                 var yearly = toggle.checked;
-                label.textContent = yearly ? label.dataset.yearly : label.dataset.monthly;
                 price.textContent = yearly ? price.dataset.yearly : price.dataset.monthly;
                 savings.hidden = !yearly;
+                labelMonthly.style.color = yearly ? 'var(--muted)' : 'var(--text)';
+                labelMonthly.style.fontWeight = yearly ? 'normal' : '600';
+                labelYearly.style.color = yearly ? 'var(--text)' : 'var(--muted)';
+                labelYearly.style.fontWeight = yearly ? '600' : 'normal';
                 if (checkoutInterval) checkoutInterval.value = yearly ? 'yearly' : 'monthly';
-            });
+            }
+
+            toggle.addEventListener('change', render);
+            render();
         })();
     </script>
 {% endblock %}
