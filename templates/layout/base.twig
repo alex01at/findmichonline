@@ -414,6 +414,69 @@
             color: var(--muted);
             margin: 0 0 0.4rem 0;
         }
+        .footer-lang-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.05rem;
+            padding: 0;
+            margin: 0 0 0 0.2rem;
+            line-height: 1;
+            vertical-align: middle;
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 20, 35, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 100;
+        }
+        .modal {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 1.6rem;
+            max-width: 320px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(15, 20, 35, 0.25);
+        }
+        .modal h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+        }
+        .modal-lang-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .modal-lang-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .modal-lang-option:hover {
+            border-color: var(--primary);
+        }
+        .modal-lang-option.active {
+            border-color: var(--primary);
+            background: rgba(59, 91, 253, 0.06);
+            font-weight: 600;
+        }
+        .modal-close {
+            margin-top: 1.2rem;
+            width: 100%;
+            background: var(--border);
+            color: var(--text);
+        }
+        .modal-close:hover { background: #d8dae2; }
     </style>
 </head>
 <body>
@@ -431,8 +494,6 @@
             <a href="/login">{{ trans('nav.login') }}</a>
             <a href="/register">{{ trans('nav.register') }}</a>
         {% endif %}
-        <a href="/lang/de" style="margin-left:1rem; {% if locale == 'de' %}font-weight:700; color:var(--text);{% endif %}">DE</a>
-        <a href="/lang/en" style="{% if locale == 'en' %}font-weight:700; color:var(--text);{% endif %}">EN</a>
     </nav>
 </header>
 <main class="{% block main_class %}{% endblock %}">
@@ -445,10 +506,28 @@
     <div class="footer-links">
         <a href="/impressum">{{ trans('footer.impressum') }}</a> |
         <a href="/datenschutz">{{ trans('footer.datenschutz') }}</a> |
-        <a href="/kontakt">{{ trans('footer.kontakt') }}</a>
+        <a href="/kontakt">{{ trans('footer.kontakt') }}</a> |
+        <button type="button" id="lang-switcher-btn" class="footer-lang-btn" aria-haspopup="dialog" title="{{ trans('footer.language_modal_heading') }}">🌐</button>
     </div>
     <button type="button" class="footer-revoke-btn">{{ trans('footer.widerruf') }}</button>
 </footer>
+
+<div id="lang-modal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="{{ trans('footer.language_modal_heading') }}">
+        <h2>{{ trans('footer.language_modal_heading') }}</h2>
+        <div class="modal-lang-list">
+            <a href="/lang/de" class="modal-lang-option {% if locale == 'de' %}active{% endif %}">
+                {{ trans('footer.language_de') }}
+                {% if locale == 'de' %}<span>✓</span>{% endif %}
+            </a>
+            <a href="/lang/en" class="modal-lang-option {% if locale == 'en' %}active{% endif %}">
+                {{ trans('footer.language_en') }}
+                {% if locale == 'en' %}<span>✓</span>{% endif %}
+            </a>
+        </div>
+        <button type="button" class="modal-close" id="lang-modal-close">{{ trans('footer.language_modal_close') }}</button>
+    </div>
+</div>
 <script>
     document.querySelectorAll('.password-toggle').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -508,6 +587,25 @@
             if (panel) panel.hidden = false;
         });
     });
+
+    (function () {
+        var btn = document.getElementById('lang-switcher-btn');
+        var modal = document.getElementById('lang-modal');
+        var closeBtn = document.getElementById('lang-modal-close');
+        if (!btn || !modal) return;
+
+        function open() { modal.hidden = false; }
+        function close() { modal.hidden = true; }
+
+        btn.addEventListener('click', open);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) close();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !modal.hidden) close();
+        });
+    })();
 </script>
 </body>
 </html>
