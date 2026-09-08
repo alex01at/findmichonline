@@ -53,13 +53,15 @@ jobs:
       # skips .git, .github and .env on its own, so the live server's
       # database/Stripe credentials are never touched by a deploy.
       #
-      # The very first deploy uploads the whole tree (~1000 files) at a
-      # throttled pace (verified necessary against this host's firewall)
-      # and can take up to ~30 minutes. Every deploy after that only
-      # uploads files whose content actually changed and should finish in
-      # well under a minute.
+      # A full sweep (no manifest cache yet, or the cache entry aged out)
+      # uploads the whole tree (~1000 files) at a throttled pace (verified
+      # necessary against this host's firewall) — a real run timed out at
+      # 40 minutes, longer than the synthetic-file test that set that
+      # number suggested, so this has headroom now. Every deploy after a
+      # successful full sweep only uploads files whose content actually
+      # changed and should finish in well under a minute.
       - name: Deploy over FTPS
-        timeout-minutes: 40
+        timeout-minutes: 60
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
           FTP_USER: ${{ secrets.FTP_USERNAME }}
