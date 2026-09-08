@@ -17,6 +17,7 @@
                         <input type="radio" name="design" value="{{ design }}" {% if locked %}disabled{% endif %} {% if (old.design|default(card.design)|default('classic')) == design %}checked{% endif %} style="position:absolute; opacity:0; pointer-events:none;">
                         <div class="onboarding-design-thumb-wrap">
                             <iframe src="/card/preview?design={{ design }}" tabindex="-1"></iframe>
+                            <div class="onboarding-design-thumb-overlay"></div>
                         </div>
                         <div class="onboarding-design-label">
                             {{ trans('card.edit.design_' ~ design) }}

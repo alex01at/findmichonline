@@ -551,6 +551,7 @@
         }
         .onboarding-design-option {
             display: block;
+            position: relative;
             border: 2px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
@@ -576,6 +577,11 @@
             transform: scale(0.25);
             transform-origin: top left;
             pointer-events: none;
+        }
+        .onboarding-design-thumb-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
         }
         .onboarding-design-label {
             padding: 0.6rem 0.8rem;
@@ -889,13 +895,26 @@
     (function () {
         var radios = document.querySelectorAll('input[name="design"]');
         var mainFrame = document.getElementById('onboarding-preview-frame');
-        if (!radios.length || !mainFrame) return;
+        if (!radios.length) return;
 
         radios.forEach(function (radio) {
             radio.addEventListener('change', function () {
-                if (radio.checked) {
+                if (radio.checked && mainFrame) {
                     mainFrame.src = '/card/preview?design=' + radio.value;
                 }
+            });
+        });
+
+        // Belt-and-suspenders: explicitly select the radio on click instead
+        // of relying solely on native label-click-forwarding, since the
+        // label wraps an <iframe> (a separate browsing context that can
+        // interfere with click handling in some browsers).
+        document.querySelectorAll('.onboarding-design-option').forEach(function (option) {
+            option.addEventListener('click', function () {
+                var input = option.querySelector('input[type="radio"]');
+                if (!input || input.disabled || input.checked) return;
+                input.checked = true;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
             });
         });
     })();
