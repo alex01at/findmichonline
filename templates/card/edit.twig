@@ -26,6 +26,7 @@
             <button type="button" class="tab-btn active" data-tab="content">{{ trans('card.edit.tab_content') }}</button>
             <button type="button" class="tab-btn" data-tab="design">{{ trans('card.edit.tab_design') }}</button>
             <button type="button" class="tab-btn" data-tab="gallery">{{ trans('card.edit.tab_gallery') }}</button>
+            <button type="button" class="tab-btn" data-tab="offerings">{{ trans('card.edit.tab_offerings') }}</button>
         </div>
 
         <form method="post" action="/card/edit" enctype="multipart/form-data">
@@ -82,6 +83,12 @@
 
                 <label for="youtube_url">{{ trans('card.edit.youtube_label') }}</label>
                 <input type="url" id="youtube_url" name="youtube_url" value="{{ old.youtube_url|default('') }}" placeholder="https://youtube.com/@...">
+
+                <label for="booking_url" style="{% if not booking_link_allowed %}opacity:0.5;{% endif %}">{{ trans('card.edit.booking_url_label') }} {% if not booking_link_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}</label>
+                <input type="url" id="booking_url" name="booking_url" value="{{ old.booking_url|default('') }}" placeholder="https://calendly.com/..." {% if not booking_link_allowed %}disabled style="opacity:0.5;"{% endif %}>
+                {% if not booking_link_allowed %}
+                    <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.edit.booking_pro_hint') }} <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a></p>
+                {% endif %}
 
                 <label for="slug">{{ trans('card.edit.slug_label') }}</label>
                 <input type="text" id="slug" name="slug" value="{{ old.slug|default('') }}" placeholder="{{ trans('card.edit.slug_placeholder') }}">
@@ -182,6 +189,47 @@
                     <p id="gallery-error" class="muted-link" style="color:var(--danger); display:none; margin-top:0.5rem;"></p>
                 </div>
                 <p id="gallery-limit-hint" class="muted-link" style="margin-top:1rem; display:{% if gallery_images|length >= gallery_max %}block{% else %}none{% endif %};">{{ trans('card.gallery.limit_reached_hint') }}</p>
+            {% endif %}
+        </div>
+
+        <div class="tab-panel" data-tab-panel="offerings" hidden>
+            <label style="margin-top:0; font-weight:600; color:var(--text);">{{ trans('card.offerings.heading') }}</label>
+
+            {% if not offerings_allowed %}
+                <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.offerings.pro_hint') }} <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a></p>
+            {% elseif not card %}
+                <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.offerings.needs_card_hint') }}</p>
+            {% else %}
+                <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.offerings.hint', {max: offerings_max}) }}</p>
+
+                <div id="offerings-list" style="display:{% if offerings|length > 0 %}block{% else %}none{% endif %}; margin-top:1rem;">
+                    {% for offering in offerings %}
+                        <div class="offering-item" style="position:relative; padding:0.8rem 2.2rem 0.8rem 0; border-bottom:1px solid var(--border);">
+                            <div style="font-weight:600;">{{ offering.title }}{% if offering.price %} <span style="font-weight:normal; color:var(--muted);">– {{ offering.price }}</span>{% endif %}</div>
+                            {% if offering.description %}<div style="color:var(--muted); font-size:0.9rem; margin-top:0.2rem;">{{ offering.description }}</div>{% endif %}
+                            <form method="post" action="/card/offerings/{{ offering.id }}/delete" class="offering-delete-form" data-offering-id="{{ offering.id }}" style="margin:0;">
+                                <button type="submit" style="position:absolute; top:0.7rem; right:0; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="offerings-add-wrap" {% if offerings|length >= offerings_max %}hidden{% endif %} style="margin-top:1.2rem;">
+                    <form id="offering-add-form" method="post" action="/card/offerings/add">
+                        <label for="offering-title" style="margin-top:0;">{{ trans('card.offerings.title_label') }}</label>
+                        <input type="text" id="offering-title" name="title" required>
+
+                        <label for="offering-description">{{ trans('card.offerings.description_label') }}</label>
+                        <input type="text" id="offering-description" name="description">
+
+                        <label for="offering-price">{{ trans('card.offerings.price_label') }}</label>
+                        <input type="text" id="offering-price" name="price" placeholder="z. B. ab 49 €">
+
+                        <button type="submit" id="offering-add-btn">{{ trans('card.offerings.add_button') }}</button>
+                    </form>
+                    <p id="offering-error" class="muted-link" style="color:var(--danger); display:none; margin-top:0.5rem;"></p>
+                </div>
+                <p id="offerings-limit-hint" class="muted-link" style="margin-top:1rem; display:{% if offerings|length >= offerings_max %}block{% else %}none{% endif %};">{{ trans('card.offerings.limit_reached_hint') }}</p>
             {% endif %}
         </div>
     </div>
@@ -305,6 +353,122 @@
                 xhr.onerror = function () {
                     uploadBtn.disabled = false;
                     progressWrap.hidden = true;
+                    showError(null);
+                };
+
+                xhr.send(formData);
+            });
+        })();
+
+        (function () {
+            var form = document.getElementById('offering-add-form');
+            if (!form) return;
+
+            var titleInput = document.getElementById('offering-title');
+            var descriptionInput = document.getElementById('offering-description');
+            var priceInput = document.getElementById('offering-price');
+            var addBtn = document.getElementById('offering-add-btn');
+            var errorEl = document.getElementById('offering-error');
+            var list = document.getElementById('offerings-list');
+            var addWrap = document.getElementById('offerings-add-wrap');
+            var limitHint = document.getElementById('offerings-limit-hint');
+            var confirmText = {{ trans('card.offerings.confirm_delete')|json_encode|raw }};
+            var genericError = {{ trans('card.offerings.errors.generic')|json_encode|raw }};
+
+            function showError(message) {
+                errorEl.textContent = message || genericError;
+                errorEl.style.display = 'block';
+            }
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function bindDeleteForm(formEl) {
+                formEl.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    if (!confirm(confirmText)) return;
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', formEl.getAttribute('action'));
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    xhr.onload = function () {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            formEl.closest('.offering-item').remove();
+                            if (!list.querySelector('.offering-item')) {
+                                list.style.display = 'none';
+                            }
+                            addWrap.hidden = false;
+                            limitHint.style.display = 'none';
+                        }
+                    };
+                    xhr.send();
+                });
+            }
+
+            function addItem(offering) {
+                var div = document.createElement('div');
+                div.className = 'offering-item';
+                div.style.position = 'relative';
+                div.style.padding = '0.8rem 2.2rem 0.8rem 0';
+                div.style.borderBottom = '1px solid var(--border)';
+                var priceHtml = offering.price ? ' <span style="font-weight:normal; color:var(--muted);">– ' + escapeHtml(offering.price) + '</span>' : '';
+                var descHtml = offering.description ? '<div style="color:var(--muted); font-size:0.9rem; margin-top:0.2rem;">' + escapeHtml(offering.description) + '</div>' : '';
+                div.innerHTML =
+                    '<div style="font-weight:600;">' + escapeHtml(offering.title) + priceHtml + '</div>' +
+                    descHtml +
+                    '<form method="post" action="/card/offerings/' + offering.id + '/delete" class="offering-delete-form" data-offering-id="' + offering.id + '" style="margin:0;">' +
+                    '<button type="submit" style="position:absolute; top:0.7rem; right:0; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>' +
+                    '</form>';
+                list.appendChild(div);
+                list.style.display = 'block';
+                bindDeleteForm(div.querySelector('.offering-delete-form'));
+            }
+
+            list.querySelectorAll('.offering-delete-form').forEach(bindDeleteForm);
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!titleInput.value.trim()) return;
+
+                errorEl.style.display = 'none';
+                addBtn.disabled = true;
+
+                var formData = new FormData();
+                formData.append('title', titleInput.value);
+                formData.append('description', descriptionInput.value);
+                formData.append('price', priceInput.value);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', form.getAttribute('action'));
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.onload = function () {
+                    addBtn.disabled = false;
+
+                    var data = null;
+                    try {
+                        data = JSON.parse(xhr.responseText);
+                    } catch (err) {
+                        data = null;
+                    }
+
+                    if (data && data.success && data.offering) {
+                        addItem(data.offering);
+                        form.reset();
+                        if (data.remaining <= 0) {
+                            addWrap.hidden = true;
+                            limitHint.style.display = 'block';
+                        }
+                    } else {
+                        showError(data ? data.error : null);
+                    }
+                };
+
+                xhr.onerror = function () {
+                    addBtn.disabled = false;
                     showError(null);
                 };
 

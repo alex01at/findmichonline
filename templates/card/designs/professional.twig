@@ -85,11 +85,28 @@
             <div style="text-align:center;">
                 <img src="/qr/{{ card.slug }}.png" alt="QR" width="140" height="140" style="border-radius:6px; border:1px solid var(--border);">
                 <p style="font-size:0.78rem; color:var(--muted); margin:0.5rem 0 0 0; max-width:140px;">{{ trans('card.public.qr_caption') }}</p>
+                {% if is_pro and card.booking_url %}
+                    <a href="/go/{{ card.slug }}/booking" target="_blank" rel="noopener" style="margin-top:0.8rem; display:block; background:{{ c_accent }}; border:1.5px solid {{ c_accent }}; color:#fff; font-size:0.78rem; font-weight:600; padding:0.5rem 1.1rem; border-radius:6px; text-decoration:none;">{{ trans('card.public.booking_button') }}</a>
+                {% endif %}
                 {% if is_pro %}
-                    <a href="/vcard/{{ card.slug }}.vcf" style="margin-top:0.8rem; display:inline-block; background:transparent; border:1.5px solid {{ c_accent }}; color:{{ c_accent }}; font-size:0.78rem; font-weight:600; padding:0.5rem 1.1rem; border-radius:6px; text-decoration:none;">{{ trans('card.public.save_contact') }}</a>
+                    <a href="/vcard/{{ card.slug }}.vcf" style="margin-top:0.6rem; display:block; background:transparent; border:1.5px solid {{ c_accent }}; color:{{ c_accent }}; font-size:0.78rem; font-weight:600; padding:0.5rem 1.1rem; border-radius:6px; text-decoration:none;">{{ trans('card.public.save_contact') }}</a>
                 {% endif %}
             </div>
         </div>
+
+        {% if is_pro and offerings|length > 0 %}
+            <div style="margin:0 2.4rem 1.8rem 2.4rem; padding-top:1.3rem; border-top:1px solid var(--border);">
+                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); font-weight:700;">{{ trans('card.public.offerings_heading') }}</span>
+                <div style="margin-top:0.8rem;">
+                    {% for offering in offerings %}
+                        <div style="padding:0.6rem 0; border-bottom:1px solid var(--border);">
+                            <div style="font-weight:600;">{{ offering.title }}{% if offering.price %} <span style="font-weight:normal; color:var(--muted);">– {{ offering.price }}</span>{% endif %}</div>
+                            {% if offering.description %}<div style="color:var(--muted); font-size:0.9rem; margin-top:0.2rem;">{{ offering.description }}</div>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
 
         {% if is_pro and gallery_images|length > 0 %}
             <div style="margin:0 2.4rem 1.8rem 2.4rem; padding-top:1.3rem; border-top:1px solid var(--border);">

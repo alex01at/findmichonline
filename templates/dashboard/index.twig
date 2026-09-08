@@ -62,6 +62,9 @@
                         {% if card.youtube_url %}
                             <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">YouTube</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_youtube }}</td></tr>
                         {% endif %}
+                        {% if card.booking_url %}
+                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">📅 {{ trans('card.public.booking_button') }}</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_booking }}</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             {% else %}

@@ -46,6 +46,7 @@ final class BusinessCard
         'instagram' => 'clicks_instagram',
         'facebook' => 'clicks_facebook',
         'youtube' => 'clicks_youtube',
+        'booking' => 'clicks_booking',
     ];
 
     public function incrementClickCount(int $id, string $type): void
@@ -98,9 +99,9 @@ final class BusinessCard
         if ($existing === null) {
             $stmt = $this->db->prepare(
                 'INSERT INTO business_cards
-                    (user_id, slug, display_name, job_title, company, email, phone, website, address, bio, opening_hours, logo_path, linkedin_url, instagram_url, facebook_url, youtube_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
+                    (user_id, slug, display_name, job_title, company, email, phone, website, address, bio, opening_hours, logo_path, linkedin_url, instagram_url, facebook_url, youtube_url, booking_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
                  VALUES
-                    (:user_id, :slug, :display_name, :job_title, :company, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
+                    (:user_id, :slug, :display_name, :job_title, :company, :email, :phone, :website, :address, :bio, :opening_hours, :logo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :booking_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
             );
         } else {
             $stmt = $this->db->prepare(
@@ -120,6 +121,7 @@ final class BusinessCard
                     instagram_url = :instagram_url,
                     facebook_url = :facebook_url,
                     youtube_url = :youtube_url,
+                    booking_url = :booking_url,
                     design = :design,
                     use_custom_colors = :use_custom_colors,
                     color_background = :color_background,
@@ -150,6 +152,7 @@ final class BusinessCard
             'instagram_url' => $data['instagram_url'],
             'facebook_url' => $data['facebook_url'],
             'youtube_url' => $data['youtube_url'],
+            'booking_url' => $data['booking_url'],
             'use_custom_colors' => $data['use_custom_colors'] ? 1 : 0,
             'color_background' => $data['color_background'],
             'color_header' => $data['color_header'],

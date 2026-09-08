@@ -123,6 +123,9 @@
                 <label for="youtube_url">{{ trans('card.edit.youtube_label') }}</label>
                 <input type="url" id="youtube_url" name="youtube_url" value="{{ card.youtube_url|default('') }}" placeholder="https://youtube.com/@...">
 
+                <label for="booking_url">{{ trans('card.edit.booking_url_label') }}</label>
+                <input type="url" id="booking_url" name="booking_url" value="{{ card.booking_url|default('') }}" placeholder="https://calendly.com/...">
+
                 <label for="slug">{{ trans('card.edit.slug_label') }}</label>
                 <input type="text" id="slug" name="slug" value="{{ card.slug|default('') }}" placeholder="{{ trans('card.edit.slug_placeholder') }}">
 
@@ -198,6 +201,23 @@
                     </div>
                 {% else %}
                     <p class="muted-link" style="margin-top:0.4rem;">{{ trans('admin.gallery_empty') }}</p>
+                {% endif %}
+            </div>
+
+            <div style="margin-top:1.5rem;">
+                <label style="margin-top:0; font-weight:600; color:var(--text);">{{ trans('card.offerings.heading') }}</label>
+                {% if offerings|length > 0 %}
+                    {% for offering in offerings %}
+                        <div style="position:relative; padding:0.8rem 2.2rem 0.8rem 0; border-bottom:1px solid var(--border);">
+                            <div style="font-weight:600;">{{ offering.title }}{% if offering.price %} <span style="font-weight:normal; color:var(--muted);">– {{ offering.price }}</span>{% endif %}</div>
+                            {% if offering.description %}<div style="color:var(--muted); font-size:0.9rem; margin-top:0.2rem;">{{ offering.description }}</div>{% endif %}
+                            <form method="post" action="/admin/users/{{ target_user.id }}/offerings/{{ offering.id }}/delete" style="margin:0;" onsubmit="return confirm('{{ trans('card.offerings.confirm_delete') }}');">
+                                <button type="submit" style="position:absolute; top:0.7rem; right:0; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="muted-link" style="margin-top:0.4rem;">{{ trans('admin.offerings_empty') }}</p>
                 {% endif %}
             </div>
         {% endif %}

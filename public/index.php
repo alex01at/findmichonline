@@ -127,6 +127,14 @@ $router->post('/card/gallery/{id}/delete', function (array $params) use ($card, 
     $requireAuth();
     $card->deleteGalleryImage($params);
 });
+$router->post('/card/offerings/add', function () use ($card, $requireAuth) {
+    $requireAuth();
+    $card->addOffering();
+});
+$router->post('/card/offerings/{id}/delete', function (array $params) use ($card, $requireAuth) {
+    $requireAuth();
+    $card->deleteOffering($params);
+});
 
 $qrCode = new QrCodeController($db, $auth, $config['app']['url'], $translator);
 $router->get('/card/qr.png', function () use ($qrCode, $requireAuth) {
@@ -229,6 +237,10 @@ $router->post('/admin/users/{id}/card/delete', function (array $params) use ($ad
 $router->post('/admin/users/{id}/gallery/{imageId}/delete', function (array $params) use ($admin, $requireAdmin) {
     $requireAdmin();
     $admin->deleteGalleryImage($params);
+});
+$router->post('/admin/users/{id}/offerings/{offeringId}/delete', function (array $params) use ($admin, $requireAdmin) {
+    $requireAdmin();
+    $admin->deleteOffering($params);
 });
 $router->get('/admin/legal', function () use ($admin, $requireAdmin) {
     $requireAdmin();

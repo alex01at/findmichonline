@@ -6,6 +6,7 @@ namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Model\CardGalleryImage;
+use Kartenlink\App\Model\CardOffering;
 use Kartenlink\App\Model\LegalPage;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
@@ -25,6 +26,7 @@ final class AdminController
     private BusinessCard $cards;
     private LegalPage $legalPages;
     private CardGalleryImage $galleryImages;
+    private CardOffering $offerings;
 
     public function __construct(
         private PDO $db,
@@ -38,6 +40,7 @@ final class AdminController
         $this->cards = new BusinessCard($db);
         $this->legalPages = new LegalPage($db);
         $this->galleryImages = new CardGalleryImage($db);
+        $this->offerings = new CardOffering($db);
     }
 
     public function index(): void
@@ -216,6 +219,7 @@ final class AdminController
         $instagramUrl = trim($_POST['instagram_url'] ?? '');
         $facebookUrl = trim($_POST['facebook_url'] ?? '');
         $youtubeUrl = trim($_POST['youtube_url'] ?? '');
+        $bookingUrl = trim($_POST['booking_url'] ?? '');
         $slugInput = trim(strtolower($_POST['slug'] ?? ''));
         $isPublished = isset($_POST['is_published']);
         $removeLogo = isset($_POST['remove_logo']);
@@ -247,6 +251,10 @@ final class AdminController
                 $errors[] = $this->translator->trans('card.edit.errors.social_url_invalid');
                 break;
             }
+        }
+
+        if ($bookingUrl !== '' && !filter_var($bookingUrl, FILTER_VALIDATE_URL)) {
+            $errors[] = $this->translator->trans('card.edit.errors.booking_url_invalid');
         }
 
         if ($useCustomColors) {
@@ -304,6 +312,7 @@ final class AdminController
                 'instagram_url' => $instagramUrl,
                 'facebook_url' => $facebookUrl,
                 'youtube_url' => $youtubeUrl,
+                'booking_url' => $bookingUrl,
                 'design' => $design,
                 'use_custom_colors' => $useCustomColors,
                 'color_background' => $colorBackground,
@@ -335,6 +344,7 @@ final class AdminController
             'instagram_url' => $instagramUrl !== '' ? $instagramUrl : null,
             'facebook_url' => $facebookUrl !== '' ? $facebookUrl : null,
             'youtube_url' => $youtubeUrl !== '' ? $youtubeUrl : null,
+            'booking_url' => $bookingUrl !== '' ? $bookingUrl : null,
             'design' => $design,
             'use_custom_colors' => $useCustomColors,
             'color_background' => $useCustomColors && $colorBackground !== '' ? $colorBackground : null,
@@ -397,12 +407,27 @@ final class AdminController
         exit;
     }
 
+    public function deleteOffering(array $params): void
+    {
+        $userId = (int) $params['id'];
+        $card = $this->cards->findByUserId($userId);
+        $offering = $this->offerings->find((int) $params['offeringId']);
+
+        if ($card !== null && $offering !== null && (int) $offering['business_card_id'] === (int) $card['id']) {
+            $this->offerings->delete((int) $offering['id']);
+        }
+
+        header('Location: /admin/users/' . $userId);
+        exit;
+    }
+
     private function renderEditUser(array $user, ?array $card, array $errors = []): void
     {
         echo $this->view->render('admin/user_edit.twig', [
             'target_user' => $user,
             'card' => $card,
             'gallery_images' => $card !== null ? $this->galleryImages->findByCardId((int) $card['id']) : [],
+            'offerings' => $card !== null ? $this->offerings->findByCardId((int) $card['id']) : [],
             'errors' => $errors,
         ]);
     }

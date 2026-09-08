@@ -6,6 +6,7 @@ namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Model\CardGalleryImage;
+use Kartenlink\App\Model\CardOffering;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Features;
 use Kartenlink\App\Support\GalleryUploader;
@@ -20,6 +21,7 @@ final class CardController
 {
     private BusinessCard $cards;
     private CardGalleryImage $galleryImages;
+    private CardOffering $offerings;
 
     public function __construct(
         private PDO $db,
@@ -32,6 +34,7 @@ final class CardController
     ) {
         $this->cards = new BusinessCard($db);
         $this->galleryImages = new CardGalleryImage($db);
+        $this->offerings = new CardOffering($db);
     }
 
     public function edit(): void
@@ -47,6 +50,10 @@ final class CardController
             'gallery_allowed' => $this->auth->can('gallery'),
             'gallery_images' => $card !== null ? $this->galleryImages->findByCardId((int) $card['id']) : [],
             'gallery_max' => CardGalleryImage::MAX_IMAGES,
+            'offerings_allowed' => $this->auth->can('offerings'),
+            'offerings' => $card !== null ? $this->offerings->findByCardId((int) $card['id']) : [],
+            'offerings_max' => CardOffering::MAX_OFFERINGS,
+            'booking_link_allowed' => $this->auth->can('booking_link'),
         ]);
     }
 
@@ -69,6 +76,7 @@ final class CardController
         $instagramUrl = trim($_POST['instagram_url'] ?? '');
         $facebookUrl = trim($_POST['facebook_url'] ?? '');
         $youtubeUrl = trim($_POST['youtube_url'] ?? '');
+        $bookingUrl = trim($_POST['booking_url'] ?? '');
         $slugInput = trim(strtolower($_POST['slug'] ?? ''));
         $isPublished = isset($_POST['is_published']);
         $removeLogo = isset($_POST['remove_logo']);
@@ -92,6 +100,12 @@ final class CardController
         if ($useCustomColors && !$this->auth->can('custom_colors')) {
             $useCustomColors = false;
             $colorsDowngraded = true;
+        }
+
+        $bookingDowngraded = false;
+        if ($bookingUrl !== '' && !$this->auth->can('booking_link')) {
+            $bookingUrl = '';
+            $bookingDowngraded = true;
         }
 
         $errors = [];
@@ -118,6 +132,10 @@ final class CardController
                 $errors[] = $this->translator->trans('card.edit.errors.social_url_invalid');
                 break;
             }
+        }
+
+        if ($bookingUrl !== '' && !filter_var($bookingUrl, FILTER_VALIDATE_URL)) {
+            $errors[] = $this->translator->trans('card.edit.errors.booking_url_invalid');
         }
 
         if ($slugInput === '') {
@@ -168,6 +186,7 @@ final class CardController
                     'instagram_url' => $instagramUrl,
                     'facebook_url' => $facebookUrl,
                     'youtube_url' => $youtubeUrl,
+                    'booking_url' => $bookingUrl,
                     'design' => $design,
                     'use_custom_colors' => $useCustomColors,
                     'color_background' => $colorBackground,
@@ -179,6 +198,13 @@ final class CardController
                 'errors' => $errors,
                 'design_pro_allowed' => $this->auth->can('design_pro'),
                 'custom_colors_allowed' => $this->auth->can('custom_colors'),
+                'gallery_allowed' => $this->auth->can('gallery'),
+                'gallery_images' => $existing !== null ? $this->galleryImages->findByCardId((int) $existing['id']) : [],
+                'gallery_max' => CardGalleryImage::MAX_IMAGES,
+                'offerings_allowed' => $this->auth->can('offerings'),
+                'offerings' => $existing !== null ? $this->offerings->findByCardId((int) $existing['id']) : [],
+                'offerings_max' => CardOffering::MAX_OFFERINGS,
+                'booking_link_allowed' => $this->auth->can('booking_link'),
             ]);
             return;
         }
@@ -203,6 +229,7 @@ final class CardController
             'instagram_url' => $instagramUrl !== '' ? $instagramUrl : null,
             'facebook_url' => $facebookUrl !== '' ? $facebookUrl : null,
             'youtube_url' => $youtubeUrl !== '' ? $youtubeUrl : null,
+            'booking_url' => $bookingUrl !== '' ? $bookingUrl : null,
             'design' => $design,
             'use_custom_colors' => $useCustomColors,
             'color_background' => $useCustomColors && $colorBackground !== '' ? $colorBackground : null,
@@ -219,14 +246,13 @@ final class CardController
         if ($colorsDowngraded) {
             Session::flash('error', $this->translator->trans('card.edit.colors_downgraded'));
         }
+        if ($bookingDowngraded) {
+            Session::flash('error', $this->translator->trans('card.edit.booking_downgraded'));
+        }
         header('Location: /card/edit');
         exit;
     }
 
-    /**
-     * Pro-gated: uploading is checked against the feature flag here (not just
-     * hidden in the UI), same as every other Pro-only card feature.
-     */
     /**
      * The gallery tab uploads via XHR so it can show a progress bar and
      * avoid a full page reload (which used to reset the tabs back to
@@ -309,6 +335,91 @@ final class CardController
         exit;
     }
 
+    /**
+     * Same AJAX-with-redirect-fallback pattern as the gallery, for the same
+     * reason: a plain form POST here would reload the page and reset the
+     * tabs back to "Inhalt".
+     */
+    public function addOffering(): void
+    {
+        $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+        $user = $this->auth->user();
+        $card = $this->cards->findByUserId((int) $user['id']);
+
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $price = trim($_POST['price'] ?? '');
+
+        $error = null;
+        $offering = null;
+
+        if ($card === null || !$this->auth->can('offerings')) {
+            $error = $this->translator->trans('card.offerings.errors.generic');
+        } elseif ($title === '') {
+            $error = $this->translator->trans('card.offerings.errors.title_required');
+        } elseif ($this->offerings->countByCardId((int) $card['id']) >= CardOffering::MAX_OFFERINGS) {
+            $error = $this->translator->trans('card.offerings.errors.limit_reached');
+        } else {
+            $sortOrder = $this->offerings->countByCardId((int) $card['id']);
+            $this->offerings->add(
+                (int) $card['id'],
+                $title,
+                $description !== '' ? $description : null,
+                $price !== '' ? $price : null,
+                $sortOrder
+            );
+            $rows = $this->offerings->findByCardId((int) $card['id']);
+            $offering = end($rows);
+        }
+
+        $remaining = $card !== null
+            ? CardOffering::MAX_OFFERINGS - $this->offerings->countByCardId((int) $card['id'])
+            : 0;
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => $error === null,
+                'error' => $error,
+                'offering' => $offering !== null ? [
+                    'id' => (int) $offering['id'],
+                    'title' => $offering['title'],
+                    'description' => $offering['description'],
+                    'price' => $offering['price'],
+                ] : null,
+                'remaining' => $remaining,
+            ]);
+            return;
+        }
+
+        Session::flash($error === null ? 'success' : 'error', $error ?? $this->translator->trans('card.offerings.add_success'));
+        header('Location: /card/edit');
+        exit;
+    }
+
+    public function deleteOffering(array $params): void
+    {
+        $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+        $user = $this->auth->user();
+        $card = $this->cards->findByUserId((int) $user['id']);
+        $offering = $this->offerings->find((int) $params['id']);
+
+        $deleted = false;
+        if ($card !== null && $offering !== null && (int) $offering['business_card_id'] === (int) $card['id']) {
+            $this->offerings->delete((int) $offering['id']);
+            $deleted = true;
+        }
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => $deleted]);
+            return;
+        }
+
+        header('Location: /card/edit');
+        exit;
+    }
+
     public function showPublic(array $params): void
     {
         $card = $this->cards->findPublishedBySlug($params['slug']);
@@ -331,6 +442,7 @@ final class CardController
             'og_image_url' => $logoUrl,
             'structured_data_json' => $this->buildStructuredData($card, $cardUrl, $logoUrl),
             'gallery_images' => $this->galleryImages->findByCardId((int) $card['id']),
+            'offerings' => $this->offerings->findByCardId((int) $card['id']),
         ]);
     }
 
@@ -441,6 +553,7 @@ final class CardController
             'instagram' => $card['instagram_url'] ?: null,
             'facebook' => $card['facebook_url'] ?: null,
             'youtube' => $card['youtube_url'] ?: null,
+            'booking' => ($card['owner_plan'] ?? null) === Features::PRO ? ($card['booking_url'] ?: null) : null,
             default => null,
         };
     }

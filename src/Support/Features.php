@@ -20,6 +20,8 @@ final class Features
         'custom_colors' => [self::PRO],
         'vcard' => [self::PRO],
         'gallery' => [self::PRO],
+        'offerings' => [self::PRO],
+        'booking_link' => [self::PRO],
     ];
 
     public static function allows(string $plan, string $feature): bool
