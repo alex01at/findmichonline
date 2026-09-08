@@ -66,7 +66,8 @@ jobs:
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
           FTP_DIR: ${{ secrets.FTP_SERVER_DIR }}
           FTP_MANIFEST_PATH: /tmp/deploy-manifest.json
-        run: python3 .github/scripts/deploy_ftps.py
+          PYTHONUNBUFFERED: '1'
+        run: python3 -u .github/scripts/deploy_ftps.py
 
       - name: Save deploy manifest
         uses: actions/cache/save@v4

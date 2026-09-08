@@ -105,9 +105,12 @@ def main() -> int:
             if previous_manifest.get(rel_file) != file_hash:
                 to_upload.append((rel_file, local_file))
 
-    print(f"{len(new_manifest)} files tracked, {len(to_upload)} need uploading.")
+    print(f"{len(new_manifest)} files tracked, {len(to_upload)} need uploading.", flush=True)
 
     if to_upload:
+        eta_minutes = round(len(to_upload) * UPLOAD_DELAY / 60, 1)
+        print(f"Uploading at {UPLOAD_DELAY}s/file, ~{eta_minutes} min expected.", flush=True)
+
         context = ssl._create_unverified_context()
         ftp = ftplib.FTP_TLS(context=context, timeout=30)
         ftp.connect(HOST, 21)
@@ -120,7 +123,7 @@ def main() -> int:
             ensure_remote_dir(ftp, REMOTE_ROOT)
 
         ensured_dirs = set()
-        for rel_file, local_file in to_upload:
+        for i, (rel_file, local_file) in enumerate(to_upload, start=1):
             rel_root = os.path.dirname(rel_file)
             if rel_root and rel_root not in ensured_dirs:
                 ensure_remote_dir(ftp, remote_path(rel_root))
@@ -128,12 +131,20 @@ def main() -> int:
 
             with open(local_file, "rb") as fh:
                 ftp.storbinary(f"STOR {remote_path(rel_file)}", fh)
+
+            # Printed for every file (not just every N) so a run never goes
+            # more than one file without touching the log — the previous
+            # version only printed a summary line before/after the whole
+            # loop, which (combined with Python buffering stdout when it's
+            # not a TTY, as under GitHub Actions) made a slow-but-healthy
+            # run look identical to a hung one for the entire ~25 minutes.
+            print(f"[{i}/{len(to_upload)}] {rel_file}", flush=True)
             time.sleep(UPLOAD_DELAY)
 
         ftp.quit()
 
     save_manifest(new_manifest)
-    print(f"Uploaded {len(to_upload)} files, {len(new_manifest) - len(to_upload)} unchanged, to {REMOTE_ROOT or '/'} on {HOST}.")
+    print(f"Uploaded {len(to_upload)} files, {len(new_manifest) - len(to_upload)} unchanged, to {REMOTE_ROOT or '/'} on {HOST}.", flush=True)
     return 0
 
 
