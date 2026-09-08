@@ -12,9 +12,10 @@ final class Category
     {
     }
 
-    public function all(): array
+    public function all(string $locale = 'de'): array
     {
-        return $this->db->query('SELECT * FROM categories ORDER BY sort_order ASC, name_de ASC')->fetchAll();
+        $column = $locale === 'en' ? 'name_en' : 'name_de';
+        return $this->db->query("SELECT * FROM categories ORDER BY {$column} ASC")->fetchAll();
     }
 
     public function find(int $id): ?array

@@ -57,7 +57,7 @@ final class CardController
             'offerings' => $card !== null ? $this->offerings->findByCardId((int) $card['id']) : [],
             'offerings_max' => CardOffering::MAX_OFFERINGS,
             'booking_link_allowed' => $this->auth->can('booking_link'),
-            'categories' => $this->categories->all(),
+            'categories' => $this->categories->all($this->translator->locale()),
         ]);
     }
 
@@ -214,7 +214,7 @@ final class CardController
                 'offerings' => $existing !== null ? $this->offerings->findByCardId((int) $existing['id']) : [],
                 'offerings_max' => CardOffering::MAX_OFFERINGS,
                 'booking_link_allowed' => $this->auth->can('booking_link'),
-                'categories' => $this->categories->all(),
+                'categories' => $this->categories->all($this->translator->locale()),
             ]);
             return;
         }

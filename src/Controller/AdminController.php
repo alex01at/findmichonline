@@ -433,7 +433,7 @@ final class AdminController
     public function showCategories(): void
     {
         echo $this->view->render('admin/categories.twig', [
-            'categories' => $this->categories->all(),
+            'categories' => $this->categories->all($this->translator->locale()),
         ]);
     }
 
@@ -489,7 +489,7 @@ final class AdminController
             'card' => $card,
             'gallery_images' => $card !== null ? $this->galleryImages->findByCardId((int) $card['id']) : [],
             'offerings' => $card !== null ? $this->offerings->findByCardId((int) $card['id']) : [],
-            'categories' => $this->categories->all(),
+            'categories' => $this->categories->all($this->translator->locale()),
             'errors' => $errors,
         ]);
     }
