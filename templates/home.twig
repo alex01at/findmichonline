@@ -1,14 +1,101 @@
 {% extends 'layout/base.twig' %}
 
-{% block title %}findmichonline – Deine digitale Visitenkarte{% endblock %}
+{% block title %}findmichonline – Digitale Visitenkarte mit QR-Code & eigenem Link{% endblock %}
 {% block meta_description %}{{ trans('home.meta_description') }}{% endblock %}
 {% block robots %}index, follow{% endblock %}
+{% block main_class %}landing{% endblock %}
 
 {% block body %}
-    <div class="card">
+    <div class="hero">
+        <span class="eyebrow">{{ trans('home.hero_eyebrow') }}</span>
         <h1>{{ trans('home.heading') }}</h1>
         <p>{{ trans('home.subtitle') }}</p>
-        <a class="btn" href="/register">{{ trans('home.cta_start') }}</a>
-        <a class="muted-link" href="/login">{{ trans('home.cta_login') }}</a>
+        <div class="cta-row">
+            <a class="btn btn-light" href="/register">{{ trans('home.cta_start') }}</a>
+            <a class="cta-secondary" href="/login">{{ trans('home.cta_login') }}</a>
+        </div>
+        <p class="hero-note">{{ trans('home.hero_note') }}</p>
+    </div>
+
+    <div class="section-heading">
+        <h2>{{ trans('home.features_heading') }}</h2>
+        <p>{{ trans('home.features_subtitle') }}</p>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <span class="icon">🔗</span>
+            <h3>{{ trans('home.feature.link_title') }}</h3>
+            <p>{{ trans('home.feature.link_text') }}</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">🎨</span>
+            <h3>{{ trans('home.feature.design_title') }}</h3>
+            <p>{{ trans('home.feature.design_text') }}</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">💾</span>
+            <h3>{{ trans('home.feature.vcard_title') }}<span class="badge-pro">{{ trans('home.badge_pro') }}</span></h3>
+            <p>{{ trans('home.feature.vcard_text') }}</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">📊</span>
+            <h3>{{ trans('home.feature.stats_title') }}<span class="badge-pro">{{ trans('home.badge_pro') }}</span></h3>
+            <p>{{ trans('home.feature.stats_text') }}</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">🖼️</span>
+            <h3>{{ trans('home.feature.profile_title') }}</h3>
+            <p>{{ trans('home.feature.profile_text') }}</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">📱</span>
+            <h3>{{ trans('home.feature.social_title') }}</h3>
+            <p>{{ trans('home.feature.social_text') }}</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">🌍</span>
+            <h3>{{ trans('home.feature.lang_title') }}</h3>
+            <p>{{ trans('home.feature.lang_text') }}</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">⚡</span>
+            <h3>{{ trans('home.feature.fast_title') }}</h3>
+            <p>{{ trans('home.feature.fast_text') }}</p>
+        </div>
+    </div>
+
+    <div class="section-heading">
+        <h2>{{ trans('home.steps_heading') }}</h2>
+    </div>
+
+    <div class="steps">
+        <div>
+            <div class="step-number">1</div>
+            <h3>{{ trans('home.step1_title') }}</h3>
+            <p>{{ trans('home.step1_text') }}</p>
+        </div>
+        <div>
+            <div class="step-number">2</div>
+            <h3>{{ trans('home.step2_title') }}</h3>
+            <p>{{ trans('home.step2_text') }}</p>
+        </div>
+        <div>
+            <div class="step-number">3</div>
+            <h3>{{ trans('home.step3_title') }}</h3>
+            <p>{{ trans('home.step3_text') }}</p>
+        </div>
+    </div>
+
+    <div class="cta-banner" style="margin-top:3.5rem;">
+        <h2 style="font-size:1.2rem;">{{ trans('home.pricing_teaser_heading') }}</h2>
+        <p>{{ trans('home.pricing_teaser_text') }}</p>
+        <a class="btn" href="/pricing">{{ trans('home.pricing_teaser_cta') }}</a>
+    </div>
+
+    <div class="cta-banner">
+        <h2>{{ trans('home.final_cta_heading') }}</h2>
+        <p>{{ trans('home.final_cta_text') }}</p>
+        <a class="btn" href="/register">{{ trans('home.final_cta_button') }}</a>
     </div>
 {% endblock %}
