@@ -6,6 +6,7 @@
 {% block og_type %}profile{% endblock %}
 {% block structured_data %}<script type="application/ld+json">{{ structured_data_json|raw }}</script>{% endblock %}
 {% block main_class %}card-public{% endblock %}
+{% block header_nav %}{% endblock %}
 
 {% block body %}
     {% set is_pro = card.owner_plan == 'pro' %}

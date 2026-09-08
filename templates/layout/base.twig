@@ -81,6 +81,7 @@
         main.card-public {
             max-width: 1400px;
             width: 80%;
+            margin: 1.2rem auto;
         }
         @media (max-width: 640px) {
             main.card-public {
@@ -485,19 +486,21 @@
 <body>
 <header class="site">
     <a class="brand" href="/"><img src="/assets/logo.webp" alt="findmichonline" style="height:30px; width:auto; display:block;"></a>
-    <nav>
-        <a href="/pricing">{{ trans('nav.pricing') }}</a>
-        {% if auth_check %}
-            <a href="/dashboard">{{ trans('nav.dashboard') }}</a>
-            {% if is_admin %}
-                <a href="/admin">{{ trans('nav.admin') }}</a>
+    {% block header_nav %}
+        <nav>
+            <a href="/pricing">{{ trans('nav.pricing') }}</a>
+            {% if auth_check %}
+                <a href="/dashboard">{{ trans('nav.dashboard') }}</a>
+                {% if is_admin %}
+                    <a href="/admin">{{ trans('nav.admin') }}</a>
+                {% endif %}
+                <a href="/logout">{{ trans('nav.logout') }}</a>
+            {% else %}
+                <a href="/login">{{ trans('nav.login') }}</a>
+                <a href="/register">{{ trans('nav.register') }}</a>
             {% endif %}
-            <a href="/logout">{{ trans('nav.logout') }}</a>
-        {% else %}
-            <a href="/login">{{ trans('nav.login') }}</a>
-            <a href="/register">{{ trans('nav.register') }}</a>
-        {% endif %}
-    </nav>
+        </nav>
+    {% endblock %}
 </header>
 <main class="{% block main_class %}{% endblock %}">
     {% for type, message in flashes %}
