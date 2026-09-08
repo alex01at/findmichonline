@@ -28,6 +28,7 @@ use Kartenlink\App\Controller\QrCodeController;
 use Kartenlink\App\Controller\StripeWebhookController;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Database;
+use Kartenlink\App\Support\GalleryUploader;
 use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\Mailer;
 use Kartenlink\App\Support\Router;
@@ -108,7 +109,8 @@ $router->get('/dashboard', function () use ($dashboard, $requireAuth) {
 });
 
 $logoUploader = new LogoUploader(dirname(__DIR__) . '/public');
-$card = new CardController($db, $view, $auth, $translator, $logoUploader, $config['app']['url']);
+$galleryUploader = new GalleryUploader(dirname(__DIR__) . '/public');
+$card = new CardController($db, $view, $auth, $translator, $logoUploader, $galleryUploader, $config['app']['url']);
 $router->get('/card/edit', function () use ($card, $requireAuth) {
     $requireAuth();
     $card->edit();
@@ -116,6 +118,14 @@ $router->get('/card/edit', function () use ($card, $requireAuth) {
 $router->post('/card/edit', function () use ($card, $requireAuth) {
     $requireAuth();
     $card->save();
+});
+$router->post('/card/gallery/add', function () use ($card, $requireAuth) {
+    $requireAuth();
+    $card->uploadGalleryImage();
+});
+$router->post('/card/gallery/{id}/delete', function (array $params) use ($card, $requireAuth) {
+    $requireAuth();
+    $card->deleteGalleryImage($params);
 });
 
 $qrCode = new QrCodeController($db, $auth, $config['app']['url'], $translator);

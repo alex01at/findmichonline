@@ -25,6 +25,7 @@
         <div class="tabs">
             <button type="button" class="tab-btn active" data-tab="content">{{ trans('card.edit.tab_content') }}</button>
             <button type="button" class="tab-btn" data-tab="design">{{ trans('card.edit.tab_design') }}</button>
+            <button type="button" class="tab-btn" data-tab="gallery">{{ trans('card.edit.tab_gallery') }}</button>
         </div>
 
         <form method="post" action="/card/edit" enctype="multipart/form-data">
@@ -146,6 +147,40 @@
 
             <button type="submit">{{ trans('card.edit.submit') }}</button>
         </form>
+
+        <div class="tab-panel" data-tab-panel="gallery" hidden>
+            <label style="margin-top:0; font-weight:600; color:var(--text);">{{ trans('card.gallery.heading') }}</label>
+
+            {% if not gallery_allowed %}
+                <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.gallery.pro_hint') }} <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a></p>
+            {% elseif not card %}
+                <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.gallery.needs_card_hint') }}</p>
+            {% else %}
+                <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.gallery.hint', {max: gallery_max}) }}</p>
+
+                {% if gallery_images|length > 0 %}
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:0.8rem; margin-top:1rem;">
+                        {% for image in gallery_images %}
+                            <div style="position:relative;">
+                                <img src="/{{ image.image_path }}" alt="" style="width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block;">
+                                <form method="post" action="/card/gallery/{{ image.id }}/delete" style="margin:0;" onsubmit="return confirm('{{ trans('card.gallery.confirm_delete') }}');">
+                                    <button type="submit" style="position:absolute; top:6px; right:6px; margin:0; padding:0.2rem 0.55rem; font-size:0.75rem; background:var(--danger);">✕</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if gallery_images|length < gallery_max %}
+                    <form method="post" action="/card/gallery/add" enctype="multipart/form-data" style="margin-top:1.2rem;">
+                        <input type="file" name="gallery_image" accept="image/png,image/jpeg,image/webp" required>
+                        <button type="submit">{{ trans('card.gallery.upload_button') }}</button>
+                    </form>
+                {% else %}
+                    <p class="muted-link" style="margin-top:1rem;">{{ trans('card.gallery.limit_reached_hint') }}</p>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
 
     {% if card %}

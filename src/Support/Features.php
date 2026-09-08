@@ -19,6 +19,7 @@ final class Features
         'view_stats' => [self::PRO],
         'custom_colors' => [self::PRO],
         'vcard' => [self::PRO],
+        'gallery' => [self::PRO],
     ];
 
     public static function allows(string $plan, string $feature): bool

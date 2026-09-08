@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
+use Kartenlink\App\Model\CardGalleryImage;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Features;
+use Kartenlink\App\Support\GalleryUploader;
 use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\Translator;
@@ -17,6 +19,7 @@ use RuntimeException;
 final class CardController
 {
     private BusinessCard $cards;
+    private CardGalleryImage $galleryImages;
 
     public function __construct(
         private PDO $db,
@@ -24,9 +27,11 @@ final class CardController
         private Auth $auth,
         private Translator $translator,
         private LogoUploader $logoUploader,
+        private GalleryUploader $galleryUploader,
         private string $appUrl
     ) {
         $this->cards = new BusinessCard($db);
+        $this->galleryImages = new CardGalleryImage($db);
     }
 
     public function edit(): void
@@ -39,6 +44,9 @@ final class CardController
             'old' => $card,
             'design_pro_allowed' => $this->auth->can('design_pro'),
             'custom_colors_allowed' => $this->auth->can('custom_colors'),
+            'gallery_allowed' => $this->auth->can('gallery'),
+            'gallery_images' => $card !== null ? $this->galleryImages->findByCardId((int) $card['id']) : [],
+            'gallery_max' => CardGalleryImage::MAX_IMAGES,
         ]);
     }
 
@@ -215,6 +223,60 @@ final class CardController
         exit;
     }
 
+    /**
+     * Pro-gated: uploading is checked against the feature flag here (not just
+     * hidden in the UI), same as every other Pro-only card feature.
+     */
+    public function uploadGalleryImage(): void
+    {
+        $user = $this->auth->user();
+        $card = $this->cards->findByUserId((int) $user['id']);
+
+        if ($card === null || !$this->auth->can('gallery')) {
+            header('Location: /card/edit');
+            exit;
+        }
+
+        $count = $this->galleryImages->countByCardId((int) $card['id']);
+        if ($count >= CardGalleryImage::MAX_IMAGES) {
+            Session::flash('error', $this->translator->trans('card.gallery.errors.limit_reached'));
+            header('Location: /card/edit');
+            exit;
+        }
+
+        try {
+            $path = $this->galleryUploader->upload((int) $card['id'], $_FILES['gallery_image'] ?? null);
+        } catch (RuntimeException $e) {
+            Session::flash('error', $this->translator->trans($e->getMessage()));
+            header('Location: /card/edit');
+            exit;
+        }
+
+        if ($path !== null) {
+            $this->galleryImages->add((int) $card['id'], $path, $count);
+            Session::flash('success', $this->translator->trans('card.gallery.upload_success'));
+        }
+
+        header('Location: /card/edit');
+        exit;
+    }
+
+    public function deleteGalleryImage(array $params): void
+    {
+        $user = $this->auth->user();
+        $card = $this->cards->findByUserId((int) $user['id']);
+        $image = $this->galleryImages->find((int) $params['id']);
+
+        // Only ever act if the image actually belongs to the logged-in user's own card.
+        if ($card !== null && $image !== null && (int) $image['business_card_id'] === (int) $card['id']) {
+            $this->galleryImages->delete((int) $image['id']);
+            $this->galleryUploader->remove($image['image_path']);
+        }
+
+        header('Location: /card/edit');
+        exit;
+    }
+
     public function showPublic(array $params): void
     {
         $card = $this->cards->findPublishedBySlug($params['slug']);
@@ -236,6 +298,7 @@ final class CardController
             'meta_description' => $this->buildMetaDescription($card),
             'og_image_url' => $logoUrl,
             'structured_data_json' => $this->buildStructuredData($card, $cardUrl, $logoUrl),
+            'gallery_images' => $this->galleryImages->findByCardId((int) $card['id']),
         ]);
     }
 
