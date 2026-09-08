@@ -28,10 +28,16 @@ final class DashboardController
             exit;
         }
 
+        $trialDaysLeft = null;
+        if (($user['plan'] ?? 'free') !== 'pro' && Auth::hasActiveTrial($user)) {
+            $trialDaysLeft = (int) ceil((strtotime($user['trial_ends_at']) - time()) / 86400);
+        }
+
         echo $this->view->render('dashboard/index.twig', [
             'user' => $user,
             'card' => $card,
             'can_view_stats' => $this->auth->can('view_stats'),
+            'trial_days_left' => $trialDaysLeft,
         ]);
     }
 }

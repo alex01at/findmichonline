@@ -92,7 +92,7 @@
 
         <div style="text-align:center; padding:1.5rem 2rem;">
             <div style="display:inline-block; padding:0.6rem; border:3px dashed {{ c_accent }}; border-radius:20px;">
-                <img src="/qr/{{ card.slug }}.png" alt="QR" width="130" height="130" style="border-radius:12px; display:block;">
+                <img src="{{ qr_url|default('/qr/' ~ card.slug ~ '.png') }}" alt="QR" width="130" height="130" style="border-radius:12px; display:block;">
             </div>
             <p style="font-size:0.8rem; color:var(--muted); margin:0.7rem 0 0 0;">{{ trans('card.public.qr_caption') }}</p>
             {% if is_pro and card.booking_url %}

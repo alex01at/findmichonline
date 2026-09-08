@@ -60,6 +60,9 @@
                 <li>{{ trans('pricing.feature.booking_link') }}</li>
             </ul>
 
+            {% if trial_days_left is not null %}
+                <p class="muted-link" style="color:var(--success); font-weight:600;">{{ trans('pricing.trial_active', {days: trial_days_left}) }}</p>
+            {% endif %}
             {% if current_plan == 'pro' %}
                 <p class="muted-link">{{ trans('pricing.current_plan') }}</p>
                 {% if cancel_at_period_end %}

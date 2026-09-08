@@ -485,11 +485,36 @@
         .onboarding-preview-col {
             display: none;
         }
+        .onboarding-preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin: 0 0 0.6rem 0;
+        }
         .onboarding-preview-label {
             font-size: 0.9rem;
             color: var(--muted);
-            margin: 0 0 0.6rem 0;
             font-weight: 600;
+            margin: 0;
+        }
+        .onboarding-preview-mode-toggle {
+            display: flex;
+            gap: 0.3rem;
+        }
+        .onboarding-preview-mode-btn {
+            background: var(--border);
+            border: none;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.5;
+        }
+        .onboarding-preview-mode-btn.active {
+            background: var(--primary);
+            opacity: 1;
         }
         .onboarding-preview-frame-wrap {
             border: 1px solid var(--border);
@@ -502,6 +527,12 @@
             width: 100%;
             height: 100%;
             border: none;
+        }
+        .onboarding-preview-frame-wrap.desktop-mode iframe {
+            width: 1400px;
+            height: 2100px;
+            transform: scale(0.271);
+            transform-origin: top left;
         }
         .onboarding-preview-toggle {
             display: block;
@@ -519,6 +550,7 @@
             gap: 1rem;
         }
         .onboarding-design-option {
+            display: block;
             border: 2px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
@@ -837,6 +869,20 @@
             var showing = col.style.display === 'block';
             col.style.display = showing ? 'none' : 'block';
             toggle.textContent = showing ? toggle.dataset.showLabel : toggle.dataset.hideLabel;
+        });
+    })();
+
+    (function () {
+        var wrap = document.getElementById('onboarding-preview-frame-wrap');
+        var modeButtons = document.querySelectorAll('.onboarding-preview-mode-btn');
+        if (!wrap || !modeButtons.length) return;
+
+        modeButtons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                modeButtons.forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                wrap.classList.toggle('desktop-mode', btn.dataset.mode === 'desktop');
+            });
         });
     })();
 

@@ -107,7 +107,7 @@
             </div>
 
             <div style="text-align:center;">
-                <img src="/qr/{{ card.slug }}.png" alt="QR" width="140" height="140" style="border-radius:8px; border:1px solid var(--border);">
+                <img src="{{ qr_url|default('/qr/' ~ card.slug ~ '.png') }}" alt="QR" width="140" height="140" style="border-radius:8px; border:1px solid var(--border);">
                 <p style="font-size:0.8rem; color:var(--muted); margin:0.4rem 0 0 0; max-width:140px;">{{ trans('card.public.qr_caption') }}</p>
                 {% if is_pro and card.booking_url %}
                     <a class="btn" href="/go/{{ card.slug }}/booking" target="_blank" rel="noopener" style="margin-top:0.7rem; background:{{ c_accent }}; font-size:0.85rem; padding:0.5rem 1rem; display:block;">📅 {{ trans('card.public.booking_button') }}</a>

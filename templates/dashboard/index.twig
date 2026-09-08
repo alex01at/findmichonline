@@ -4,11 +4,18 @@
 {% block main_class %}wide{% endblock %}
 
 {% block body %}
+    {% if trial_days_left is not null %}
+        <div class="flash success" style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+            <span>{{ trans('dashboard.trial_banner', {days: trial_days_left}) }}</span>
+            <a href="/pricing" style="font-weight:600;">{{ trans('dashboard.view_pricing') }}</a>
+        </div>
+    {% endif %}
+
     <div class="card">
         <h1>{{ trans('dashboard.welcome', {name: user.name}) }}</h1>
         <p>{{ trans('dashboard.email_label', {email: user.email}) }}</p>
         <p>
-            {{ trans('dashboard.plan_label', {plan: trans(user.plan == 'pro' ? 'dashboard.plan_pro' : 'dashboard.plan_free')}) }}
+            {{ trans('dashboard.plan_label', {plan: trans(user.plan == 'pro' ? 'dashboard.plan_pro' : (trial_days_left is not null ? 'dashboard.plan_trial' : 'dashboard.plan_free'))}) }}
             &middot; <a href="/pricing">{{ trans('dashboard.view_pricing') }}</a>
         </p>
 

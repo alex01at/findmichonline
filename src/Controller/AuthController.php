@@ -16,6 +16,7 @@ use PDO;
 final class AuthController
 {
     private const RESET_TOKEN_TTL_SECONDS = 3600;
+    private const TRIAL_DAYS = 7;
 
     private User $users;
 
@@ -73,6 +74,7 @@ final class AuthController
         }
 
         $userId = $this->users->create($name, $email, password_hash($password, PASSWORD_DEFAULT));
+        $this->users->startTrial($userId, self::TRIAL_DAYS);
         $this->auth->login(['id' => $userId]);
 
         Session::flash('success', $this->translator->trans('auth.register.success'));

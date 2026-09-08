@@ -18,11 +18,17 @@ final class PricingController
     {
         $user = $this->auth->check() ? $this->auth->user() : null;
 
+        $trialDaysLeft = null;
+        if ($user !== null && ($user['plan'] ?? 'free') !== 'pro' && Auth::hasActiveTrial($user)) {
+            $trialDaysLeft = (int) ceil((strtotime($user['trial_ends_at']) - time()) / 86400);
+        }
+
         echo $this->view->render('pricing.twig', [
             'current_plan' => $user['plan'] ?? null,
             'cancel_at_period_end' => (bool) ($user['cancel_at_period_end'] ?? false),
             'stripe_configured' => $this->stripe->isConfigured(),
             'has_stripe_customer' => !empty($user['stripe_customer_id'] ?? null),
+            'trial_days_left' => $trialDaysLeft,
         ]);
     }
 }

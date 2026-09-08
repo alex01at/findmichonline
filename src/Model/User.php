@@ -48,6 +48,12 @@ final class User
         $stmt->execute(['plan' => $plan, 'id' => $id]);
     }
 
+    public function startTrial(int $id, int $days): void
+    {
+        $stmt = $this->db->prepare('UPDATE users SET trial_ends_at = DATE_ADD(NOW(), INTERVAL :days DAY) WHERE id = :id');
+        $stmt->execute(['days' => $days, 'id' => $id]);
+    }
+
     /** @return array<int, array<string, mixed>> */
     public function findAllWithCardInfo(): array
     {

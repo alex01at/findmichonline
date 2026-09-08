@@ -64,11 +64,13 @@ final class BusinessCard
     public function findPublishedBySlug(string $slug): ?array
     {
         $stmt = $this->db->prepare(
-            'SELECT c.*, u.plan AS owner_plan, cat.name_de AS category_name_de, cat.name_en AS category_name_en
+            "SELECT c.*,
+                    CASE WHEN u.plan = 'pro' OR u.trial_ends_at > NOW() THEN 'pro' ELSE 'free' END AS owner_plan,
+                    cat.name_de AS category_name_de, cat.name_en AS category_name_en
              FROM business_cards c
              JOIN users u ON u.id = c.user_id
              LEFT JOIN categories cat ON cat.id = c.category_id
-             WHERE c.slug = :slug AND c.is_published = 1'
+             WHERE c.slug = :slug AND c.is_published = 1"
         );
         $stmt->execute(['slug' => $slug]);
         $card = $stmt->fetch();

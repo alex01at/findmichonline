@@ -210,14 +210,19 @@ final class OnboardingController
 
         // Free users previewing a Pro-only design see it exactly as a real
         // visitor would (gray/plain) - same owner_plan gate the templates
-        // already use for the live public page.
-        $card['owner_plan'] = $user['plan'];
+        // already use for the live public page. Uses Auth::plan() rather
+        // than the raw stored plan so an active trial is reflected too.
+        $card['owner_plan'] = $this->auth->plan();
 
         echo $this->view->render("card/designs/{$design}.twig", [
             'card' => $card,
             'meta_description' => '',
             'og_image_url' => null,
             'structured_data_json' => '{}',
+            // The public /qr/{slug}.png route requires a published card, which
+            // a draft never is - reuse the existing logged-in-owner QR route
+            // instead so the preview's QR code actually renders.
+            'qr_url' => '/card/qr.png',
         ]);
     }
 

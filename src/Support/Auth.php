@@ -75,10 +75,35 @@ final class Auth
         return (new User($this->db))->findById((int) $userId);
     }
 
+    /**
+     * A user's "effective" plan for gating purposes: their real stored plan,
+     * or Pro while an active free trial is running. Every Pro-only feature
+     * already re-checks this at render/action time rather than caching it,
+     * so a trial expiring behaves exactly like a manual downgrade - the
+     * existing graceful-degradation logic for that (colors, gallery, extra
+     * designs falling back, etc.) needs no separate handling here.
+     */
     public function plan(): string
     {
         $user = $this->user();
-        return $user['plan'] ?? Features::FREE;
+        if ($user === null) {
+            return Features::FREE;
+        }
+
+        if (($user['plan'] ?? Features::FREE) === Features::PRO) {
+            return Features::PRO;
+        }
+
+        if (self::hasActiveTrial($user)) {
+            return Features::PRO;
+        }
+
+        return Features::FREE;
+    }
+
+    public static function hasActiveTrial(array $user): bool
+    {
+        return !empty($user['trial_ends_at']) && strtotime($user['trial_ends_at']) > time();
     }
 
     public function can(string $feature): bool

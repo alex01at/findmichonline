@@ -17,8 +17,14 @@
         </div>
 
         <div class="onboarding-preview-col" id="onboarding-preview-col">
-            <p class="onboarding-preview-label">{{ trans('onboarding.preview_label') }}</p>
-            <div class="onboarding-preview-frame-wrap">
+            <div class="onboarding-preview-header">
+                <p class="onboarding-preview-label">{{ trans('onboarding.preview_label') }}</p>
+                <div class="onboarding-preview-mode-toggle">
+                    <button type="button" class="onboarding-preview-mode-btn active" data-mode="mobile" title="{{ trans('onboarding.preview_mobile') }}">📱</button>
+                    <button type="button" class="onboarding-preview-mode-btn" data-mode="desktop" title="{{ trans('onboarding.preview_desktop') }}">🖥️</button>
+                </div>
+            </div>
+            <div class="onboarding-preview-frame-wrap" id="onboarding-preview-frame-wrap">
                 <iframe id="onboarding-preview-frame" src="/card/preview" title="{{ trans('onboarding.preview_label') }}"></iframe>
             </div>
         </div>
