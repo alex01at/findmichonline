@@ -1,5 +1,18 @@
 Options -Indexes
 
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp "access plus 1 week"
+    ExpiresByType image/png "access plus 1 week"
+    ExpiresByType image/jpeg "access plus 1 week"
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(webp|png|jpe?g)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+</IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f

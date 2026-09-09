@@ -32,3 +32,7 @@
 
     <button type="button" class="onboarding-preview-toggle" id="onboarding-preview-toggle" data-show-label="{{ trans('onboarding.show_preview') }}" data-hide-label="{{ trans('onboarding.hide_preview') }}">{{ trans('onboarding.show_preview') }}</button>
 {% endblock %}
+
+{% block extra_scripts %}
+<script src="/assets/onboarding.js" defer></script>
+{% endblock %}
