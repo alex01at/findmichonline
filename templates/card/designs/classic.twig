@@ -17,7 +17,7 @@
     {# Free cards get no brand color at all — everything that would normally
        use the blue accent (job title, action links, phone/social icons)
        falls back to plain gray instead. #}
-    {% set c_accent = has_custom and card.color_content ? card.color_content : (is_pro ? '#3b5bfd' : '#6b7280') %}
+    {% set c_accent = has_custom and card.color_content ? card.color_content : (is_pro ? '#1d4dd8' : '#6b7280') %}
     {% set c_footer = has_custom and card.color_footer ? card.color_footer : '#f5f6fa' %}
     {% set social_linkedin = is_pro ? '#0A66C2' : c_accent %}
     {% set social_instagram = is_pro ? '#E4405F' : c_accent %}

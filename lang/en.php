@@ -165,7 +165,7 @@ return [
     'card.edit.errors.slug_invalid' => 'The link may only contain lowercase letters, digits and hyphens (min. 3 characters).',
     'card.edit.errors.slug_taken' => 'This link is already taken. Please choose another one.',
     'card.edit.errors.social_url_invalid' => 'Please enter a valid URL for the social media links (e.g. https://...).',
-    'card.edit.errors.color_invalid' => 'Please enter valid color values (e.g. #3b5bfd).',
+    'card.edit.errors.color_invalid' => 'Please enter valid color values (e.g. #1d4dd8).',
     'card.edit.tab_content' => 'Content',
     'card.edit.tab_design' => 'Design',
     'card.edit.tab_gallery' => 'Gallery',

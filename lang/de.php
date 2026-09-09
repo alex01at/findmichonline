@@ -165,7 +165,7 @@ return [
     'card.edit.errors.slug_invalid' => 'Der Link darf nur Kleinbuchstaben, Ziffern und Bindestriche enthalten (mind. 3 Zeichen).',
     'card.edit.errors.slug_taken' => 'Dieser Link ist bereits vergeben. Bitte wähle einen anderen.',
     'card.edit.errors.social_url_invalid' => 'Bitte gib eine gültige URL für die Social-Media-Links ein (z. B. https://...).',
-    'card.edit.errors.color_invalid' => 'Bitte gib gültige Farbwerte an (z. B. #3b5bfd).',
+    'card.edit.errors.color_invalid' => 'Bitte gib gültige Farbwerte an (z. B. #1d4dd8).',
     'card.edit.tab_content' => 'Inhalt',
     'card.edit.tab_design' => 'Design',
     'card.edit.tab_gallery' => 'Galerie',
