@@ -25,6 +25,7 @@ return [
     'home.features_heading' => 'Alles, was deine Visitenkarte braucht',
     'home.features_subtitle' => 'Vom ersten Kontakt bis zum gespeicherten Kontakteintrag – findmichonline deckt alles ab.',
     'home.badge_pro' => 'Pro',
+    'home.badge_firma' => 'Firma',
     'home.feature.link_title' => 'Eigener Link & QR-Code',
     'home.feature.link_text' => 'Deine persönliche Adresse findmichonline.com/dein-name – zum Teilen per Link oder QR-Code-Scan.',
     'home.feature.design_title' => 'Vier Designs zur Wahl',
@@ -47,6 +48,9 @@ return [
     'home.feature.offerings_text' => 'Liste deine Dienstleistungen, Produkte oder Pakete mit Titel, Beschreibung und Preis direkt auf deiner Karte.',
     'home.feature.booking_title' => 'Terminbuchung',
     'home.feature.booking_text' => 'Verlinke deinen Buchungskalender (z. B. Calendly) direkt als Button auf deiner Karte.',
+    'home.feature.firma_title' => 'Für Teams & Unternehmen',
+    'home.feature.firma_text' => 'Ein Hauptaccount verwaltet beliebig viele Mitarbeiter-Konten mit vollem Pro-Zugriff und einheitlichem Branding – ab 5 Mitarbeitern für 0,49 € pro Mitarbeiter im Monat.',
+    'home.feature.firma_link' => 'Mehr erfahren →',
 
     'home.steps_heading' => 'So einfach geht\'s',
     'home.step1_title' => 'Registrieren',

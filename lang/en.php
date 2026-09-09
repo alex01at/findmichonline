@@ -25,6 +25,7 @@ return [
     'home.features_heading' => 'Everything your business card needs',
     'home.features_subtitle' => 'From the first contact to a saved address book entry – findmichonline covers it all.',
     'home.badge_pro' => 'Pro',
+    'home.badge_firma' => 'Firma',
     'home.feature.link_title' => 'Your own link & QR code',
     'home.feature.link_text' => 'Your personal address findmichonline.com/your-name – share it as a link or a QR code scan.',
     'home.feature.design_title' => 'Four designs to choose from',
@@ -47,6 +48,9 @@ return [
     'home.feature.offerings_text' => 'List your services, products, or packages with title, description, and price right on your card.',
     'home.feature.booking_title' => 'Appointment booking',
     'home.feature.booking_text' => 'Link your booking calendar (e.g. Calendly) as a button right on your card.',
+    'home.feature.firma_title' => 'For teams & companies',
+    'home.feature.firma_text' => 'One main account manages any number of employee accounts with full Pro access and shared branding - starting at 5 employees for €0.49 per employee/month.',
+    'home.feature.firma_link' => 'Learn more →',
 
     'home.steps_heading' => 'How it works',
     'home.step1_title' => 'Sign up',
