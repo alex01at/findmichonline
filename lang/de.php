@@ -10,6 +10,8 @@ return [
     'nav.login' => 'Anmelden',
     'nav.register' => 'Registrieren',
     'nav.pricing' => 'Tarife',
+    'nav.menu_open' => 'Menü öffnen',
+    'nav.menu_close' => 'Menü schließen',
     'nav.admin' => 'Admin',
 
     'home.hero_eyebrow' => 'Digitale Visitenkarte statt Papier',

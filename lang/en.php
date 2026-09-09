@@ -10,6 +10,8 @@ return [
     'nav.login' => 'Log in',
     'nav.register' => 'Sign up',
     'nav.pricing' => 'Pricing',
+    'nav.menu_open' => 'Open menu',
+    'nav.menu_close' => 'Close menu',
     'nav.admin' => 'Admin',
 
     'home.hero_eyebrow' => 'Digital business card, no paper needed',

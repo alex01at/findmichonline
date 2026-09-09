@@ -65,6 +65,83 @@
             font-size: 0.95rem;
         }
         nav a:hover { color: var(--text); }
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.4rem;
+            margin: 0;
+            color: var(--text);
+            line-height: 1;
+        }
+        .mobile-nav-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 20, 35, 0.45);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .mobile-nav-overlay[hidden] {
+            display: none;
+        }
+        .mobile-nav-overlay.open {
+            opacity: 1;
+        }
+        .mobile-nav-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 78%;
+            max-width: 300px;
+            background: var(--card-bg);
+            box-shadow: -4px 0 24px rgba(15, 20, 35, 0.18);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+        }
+        .mobile-nav-overlay.open .mobile-nav-drawer {
+            transform: translateX(0);
+        }
+        .mobile-nav-drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .mobile-nav-close {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1;
+        }
+        .mobile-nav-drawer nav {
+            display: flex;
+            flex-direction: column;
+        }
+        .mobile-nav-drawer nav a {
+            margin-left: 0;
+            padding: 0.9rem 0.2rem;
+            font-size: 1.05rem;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+        }
+        @media (max-width: 640px) {
+            header.site nav#site-nav {
+                display: none;
+            }
+            .hamburger-btn {
+                display: block;
+            }
+        }
         main {
             flex: 1 0 auto;
             width: 100%;
@@ -715,7 +792,7 @@
 <header class="site">
     <a class="brand" href="/"><img src="/assets/logo.webp" alt="findmichonline" style="height:30px; width:auto; display:block;"></a>
     {% block header_nav %}
-        <nav>
+        <nav id="site-nav">
             <a href="/pricing">{{ trans('nav.pricing') }}</a>
             {% if auth_check %}
                 <a href="/dashboard">{{ trans('nav.dashboard') }}</a>
@@ -728,6 +805,30 @@
                 <a href="/register">{{ trans('nav.register') }}</a>
             {% endif %}
         </nav>
+        <button type="button" id="mobile-nav-toggle" class="hamburger-btn" aria-label="{{ trans('nav.menu_open') }}" aria-expanded="false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div id="mobile-nav-overlay" class="mobile-nav-overlay" hidden>
+            <div class="mobile-nav-drawer">
+                <div class="mobile-nav-drawer-header">
+                    <a class="brand" href="/"><img src="/assets/logo.webp" alt="findmichonline" style="height:26px; width:auto; display:block;"></a>
+                    <button type="button" id="mobile-nav-close" class="mobile-nav-close" aria-label="{{ trans('nav.menu_close') }}">✕</button>
+                </div>
+                <nav>
+                    <a href="/pricing">{{ trans('nav.pricing') }}</a>
+                    {% if auth_check %}
+                        <a href="/dashboard">{{ trans('nav.dashboard') }}</a>
+                        {% if is_admin %}
+                            <a href="/admin">{{ trans('nav.admin') }}</a>
+                        {% endif %}
+                        <a href="/logout">{{ trans('nav.logout') }}</a>
+                    {% else %}
+                        <a href="/login">{{ trans('nav.login') }}</a>
+                        <a href="/register">{{ trans('nav.register') }}</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
     {% endblock %}
 </header>
 <main class="{% block main_class %}{% endblock %}">
@@ -842,6 +943,38 @@
         });
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && !modal.hidden) close();
+        });
+    })();
+
+    (function () {
+        var toggle = document.getElementById('mobile-nav-toggle');
+        var closeBtn = document.getElementById('mobile-nav-close');
+        var overlay = document.getElementById('mobile-nav-overlay');
+        if (!toggle || !overlay) return;
+
+        function open() {
+            overlay.hidden = false;
+            toggle.setAttribute('aria-expanded', 'true');
+            requestAnimationFrame(function () {
+                overlay.classList.add('open');
+            });
+        }
+
+        function close() {
+            overlay.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+            setTimeout(function () {
+                overlay.hidden = true;
+            }, 250);
+        }
+
+        toggle.addEventListener('click', open);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) close();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !overlay.hidden) close();
         });
     })();
 
