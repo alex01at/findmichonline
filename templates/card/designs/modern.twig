@@ -15,7 +15,11 @@
     {% set c_bg = has_custom and card.color_background ? card.color_background : 'var(--card-bg)' %}
     {# Free cards get the plain gray hero instead of the dark navy/teal gradient. #}
     {% set c_header = has_custom and card.color_header ? card.color_header : (is_pro ? '#0f1b3d' : '#f5f6fa') %}
-    {% set c_accent = has_custom and card.color_content ? card.color_content : (is_pro ? '#14b8a6' : '#9ca3af') %}
+    {% set c_accent = has_custom and card.color_content ? card.color_content : (is_pro ? '#14b8a6' : '#6b7280') %}
+    {# Darker variant of c_accent, used only where it's a solid background behind white
+       button text (c_accent itself stays bright since it also colors the job title text
+       sitting on the dark navy header, where the brighter teal is what keeps that legible). #}
+    {% set c_accent_solid = has_custom and card.color_content ? card.color_content : (is_pro ? '#0c6f65' : '#6b7280') %}
     {% set c_footer = has_custom and card.color_footer ? card.color_footer : '#0f1b3d' %}
     {# Text stays white only for the default dark navy header; a custom header color or
        the plain Free header both get dark text since we don't know a custom color's luminance. #}
@@ -121,10 +125,10 @@
                 <img src="{{ qr_url|default('/qr/' ~ card.slug ~ '.png') }}" alt="QR" width="130" height="130" style="border-radius:8px; border:1px solid var(--border);">
                 <p style="font-size:0.8rem; color:var(--muted); margin:0.4rem 0 0 0; max-width:130px;">{{ trans('card.public.qr_caption') }}</p>
                 {% if is_pro and card.booking_url %}
-                    <a class="btn" href="/go/{{ card.slug }}/booking" target="_blank" rel="noopener" style="margin-top:0.7rem; background:{{ c_accent }}; font-size:0.85rem; padding:0.5rem 1rem; display:block;">📅 {{ trans('card.public.booking_button') }}</a>
+                    <a class="btn" href="/go/{{ card.slug }}/booking" target="_blank" rel="noopener" style="margin-top:0.7rem; background:{{ c_accent_solid }}; font-size:0.85rem; padding:0.5rem 1rem; display:block;">📅 {{ trans('card.public.booking_button') }}</a>
                 {% endif %}
                 {% if is_pro %}
-                    <a class="btn" href="/vcard/{{ card.slug }}.vcf" style="margin-top:0.7rem; background:{{ c_accent }}; font-size:0.85rem; padding:0.5rem 1rem; display:block;">💾 {{ trans('card.public.save_contact') }}</a>
+                    <a class="btn" href="/vcard/{{ card.slug }}.vcf" style="margin-top:0.7rem; background:{{ c_accent_solid }}; font-size:0.85rem; padding:0.5rem 1rem; display:block;">💾 {{ trans('card.public.save_contact') }}</a>
                 {% endif %}
             </div>
         </div>
