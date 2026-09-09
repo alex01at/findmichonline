@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kartenlink\App\Controller;
 
+use Kartenlink\App\Model\Organization;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Features;
 use Kartenlink\App\Support\StripeService;
@@ -13,10 +14,12 @@ use Stripe\Exception\SignatureVerificationException;
 final class StripeWebhookController
 {
     private User $users;
+    private Organization $organizations;
 
     public function __construct(private PDO $db, private StripeService $stripe, private string $webhookSecret)
     {
         $this->users = new User($db);
+        $this->organizations = new Organization($db);
     }
 
     public function handle(): void
@@ -45,6 +48,17 @@ final class StripeWebhookController
 
     private function handleCheckoutCompleted(object $session): void
     {
+        $orgId = (int) ($session->metadata->organization_id ?? 0);
+        if ($orgId > 0 && $session->customer !== null) {
+            $this->organizations->syncStripeSubscription($orgId, [
+                'stripe_customer_id' => $session->customer,
+                'stripe_subscription_id' => $session->subscription,
+                'subscription_status' => 'active',
+                'cancel_at_period_end' => false,
+            ]);
+            return;
+        }
+
         $userId = (int) ($session->client_reference_id ?? 0);
         if ($userId <= 0 || $session->customer === null) {
             return;
@@ -61,6 +75,18 @@ final class StripeWebhookController
 
     private function handleSubscriptionChange(object $subscription, bool $isDeleted): void
     {
+        $org = $this->organizations->findByStripeCustomerId($subscription->customer);
+        if ($org !== null) {
+            $this->organizations->syncStripeSubscription((int) $org['id'], [
+                'stripe_customer_id' => $subscription->customer,
+                'stripe_subscription_id' => $isDeleted ? null : $subscription->id,
+                'stripe_subscription_item_id' => $isDeleted ? null : ($subscription->items->data[0]->id ?? null),
+                'subscription_status' => $isDeleted ? 'canceled' : $subscription->status,
+                'cancel_at_period_end' => $isDeleted ? false : (bool) $subscription->cancel_at_period_end,
+            ]);
+            return;
+        }
+
         $user = $this->users->findByStripeCustomerId($subscription->customer);
         if ($user === null) {
             return;

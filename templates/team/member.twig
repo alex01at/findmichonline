@@ -1,0 +1,11 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('team.member.heading') }} – findmichonline{% endblock %}
+
+{% block body %}
+    <div class="card" style="max-width:480px; margin:0 auto;">
+        <h1 style="margin-top:0;">{{ trans('team.member.heading') }}</h1>
+        <p>{{ trans('team.member.text', {organization: organization.name, owner: owner.name}) }}</p>
+        <a class="btn" href="/dashboard">{{ trans('team.member.dashboard_link') }}</a>
+    </div>
+{% endblock %}

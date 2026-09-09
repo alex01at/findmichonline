@@ -8,6 +8,7 @@ use Stripe\BillingPortal\Session as BillingPortalSession;
 use Stripe\Checkout\Session as CheckoutSession;
 use Stripe\Event;
 use Stripe\Stripe;
+use Stripe\SubscriptionItem;
 use Stripe\Webhook;
 
 final class StripeService
@@ -16,6 +17,7 @@ final class StripeService
         private string $secretKey,
         private string $priceIdProMonthly,
         private string $priceIdProYearly,
+        private string $priceIdFirmaMonthly,
         private string $appUrl
     ) {
         if ($this->secretKey !== '') {
@@ -26,6 +28,11 @@ final class StripeService
     public function isConfigured(): bool
     {
         return $this->secretKey !== '' && $this->priceIdProMonthly !== '' && $this->priceIdProYearly !== '';
+    }
+
+    public function isFirmaConfigured(): bool
+    {
+        return $this->secretKey !== '' && $this->priceIdFirmaMonthly !== '';
     }
 
     public function createCheckoutSession(array $user, string $interval): CheckoutSession
@@ -50,6 +57,35 @@ final class StripeService
         }
 
         return CheckoutSession::create($params);
+    }
+
+    public function createFirmaCheckoutSession(array $org, int $seats): CheckoutSession
+    {
+        $params = [
+            'mode' => 'subscription',
+            'line_items' => [[
+                'price' => $this->priceIdFirmaMonthly,
+                'quantity' => $seats,
+            ]],
+            'success_url' => $this->appUrl . '/team',
+            'cancel_url' => $this->appUrl . '/team',
+            'metadata' => [
+                'organization_id' => (string) $org['id'],
+            ],
+        ];
+
+        if (!empty($org['stripe_customer_id'])) {
+            $params['customer'] = $org['stripe_customer_id'];
+        } elseif (!empty($org['owner_email'])) {
+            $params['customer_email'] = $org['owner_email'];
+        }
+
+        return CheckoutSession::create($params);
+    }
+
+    public function updateSubscriptionItemQuantity(string $subscriptionItemId, int $quantity): void
+    {
+        SubscriptionItem::update($subscriptionItemId, ['quantity' => $quantity]);
     }
 
     public function createBillingPortalSession(string $customerId): BillingPortalSession

@@ -27,6 +27,7 @@ use Kartenlink\App\Controller\OnboardingController;
 use Kartenlink\App\Controller\PricingController;
 use Kartenlink\App\Controller\QrCodeController;
 use Kartenlink\App\Controller\StripeWebhookController;
+use Kartenlink\App\Controller\TeamController;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Database;
 use Kartenlink\App\Support\GalleryUploader;
@@ -83,6 +84,17 @@ $requireAdmin = function () use ($auth): void {
         exit;
     }
     if (!$auth->isAdmin()) {
+        http_response_code(403);
+        exit('403 - Kein Zugriff');
+    }
+};
+
+$requireOrgOwner = function () use ($auth): void {
+    if (!$auth->check()) {
+        header('Location: /login');
+        exit;
+    }
+    if (!$auth->isOrgOwner()) {
         http_response_code(403);
         exit('403 - Kein Zugriff');
     }
@@ -188,6 +200,7 @@ $stripe = new StripeService(
     $config['stripe']['secret_key'],
     $config['stripe']['price_id_pro_monthly'],
     $config['stripe']['price_id_pro_yearly'],
+    $config['stripe']['price_id_firma_monthly'],
     $config['app']['url']
 );
 
@@ -224,6 +237,36 @@ $router->get('/billing/success', function () use ($billing, $requireAuth) {
 
 $stripeWebhook = new StripeWebhookController($db, $stripe, $config['stripe']['webhook_secret']);
 $router->post('/webhook/stripe', fn () => $stripeWebhook->handle());
+
+$team = new TeamController($db, $auth, $view, $translator, $stripe);
+$router->get('/team', function () use ($team, $requireAuth) {
+    $requireAuth();
+    $team->index();
+});
+$router->post('/team/create', function () use ($team, $requireAuth) {
+    $requireAuth();
+    $team->create();
+});
+$router->post('/team/invite', function () use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->invite();
+});
+$router->post('/team/remove/{userId}', function (array $params) use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->remove($params);
+});
+$router->post('/team/checkout', function () use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->checkout();
+});
+$router->post('/team/portal', function () use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->portal();
+});
+$router->post('/team/dev-activate', function () use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->devActivate();
+});
 
 $router->get('/lang/{locale}', function (array $params) {
     if (in_array($params['locale'], Translator::SUPPORTED_LOCALES, true)) {

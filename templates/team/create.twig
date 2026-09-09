@@ -1,0 +1,18 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('team.create.heading') }} – findmichonline{% endblock %}
+
+{% block body %}
+    <div class="card" style="max-width:480px; margin:0 auto;">
+        <h1 style="margin-top:0;">{{ trans('team.create.heading') }}</h1>
+        <p class="muted-link">{{ trans('team.create.text') }}</p>
+        <p class="muted-link">{{ trans('team.create.price_note') }}</p>
+
+        <form method="post" action="/team/create">
+            <label for="name">{{ trans('team.create.name_label') }}</label>
+            <input type="text" id="name" name="name" required maxlength="255">
+
+            <button type="submit">{{ trans('team.create.submit') }}</button>
+        </form>
+    </div>
+{% endblock %}

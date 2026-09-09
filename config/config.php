@@ -30,6 +30,7 @@ return [
         'webhook_secret' => $_ENV['STRIPE_WEBHOOK_SECRET'] ?? '',
         'price_id_pro_monthly' => $_ENV['STRIPE_PRICE_ID_PRO_MONTHLY'] ?? '',
         'price_id_pro_yearly' => $_ENV['STRIPE_PRICE_ID_PRO_YEARLY'] ?? '',
+        'price_id_firma_monthly' => $_ENV['STRIPE_PRICE_ID_FIRMA_MONTHLY'] ?? '',
     ],
     'mail' => [
         'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@localhost',

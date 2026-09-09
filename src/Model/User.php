@@ -54,6 +54,12 @@ final class User
         $stmt->execute(['days' => $days, 'id' => $id]);
     }
 
+    public function assignToOrganization(int $id, ?int $organizationId): void
+    {
+        $stmt = $this->db->prepare('UPDATE users SET organization_id = :organization_id WHERE id = :id');
+        $stmt->execute(['organization_id' => $organizationId, 'id' => $id]);
+    }
+
     /** @return array<int, array<string, mixed>> */
     public function findAllWithCardInfo(): array
     {

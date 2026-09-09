@@ -94,6 +94,27 @@
                 <a class="btn" href="/login">{{ trans('pricing.cta.login_required') }}</a>
             {% endif %}
         </div>
+
+        <div class="card" style="flex:1; min-width:260px; max-width:320px;">
+            <h2 style="margin-top:0;">{{ trans('pricing.firma.name') }}</h2>
+            <p style="font-size:1.5rem; font-weight:700; margin:0.6rem 0 0.2rem 0;">{{ trans('pricing.firma.price') }}</p>
+            <p class="muted-link" style="margin:0 0 1rem 0;">{{ trans('pricing.firma.min_note') }}</p>
+
+            <ul style="padding-left:1.2rem; line-height:1.9;">
+                <li>{{ trans('pricing.feature.pro_designs') }}</li>
+                <li>{{ trans('pricing.feature.custom_colors') }}</li>
+                <li>{{ trans('pricing.feature.vcard') }}</li>
+                <li>{{ trans('pricing.feature.view_stats') }}</li>
+                <li>{{ trans('pricing.feature.no_branding') }}</li>
+                <li>{{ trans('pricing.feature.gallery') }}</li>
+                <li>{{ trans('pricing.feature.offerings') }}</li>
+                <li>{{ trans('pricing.feature.booking_link') }}</li>
+                <li>{{ trans('pricing.firma.feature_team') }}</li>
+                <li>{{ trans('pricing.firma.feature_admin') }}</li>
+            </ul>
+
+            <a class="btn" href="/team">{{ trans('pricing.firma.cta') }}</a>
+        </div>
     </div>
 
     <p class="muted-link" style="text-align:center; margin-top:2rem;">

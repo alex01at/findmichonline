@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kartenlink\App\Support;
 
+use Kartenlink\App\Model\Organization;
 use Kartenlink\App\Model\User;
 use PDO;
 
@@ -90,6 +91,13 @@ final class Auth
             return Features::FREE;
         }
 
+        if (!empty($user['organization_id'])) {
+            $org = (new Organization($this->db))->findById((int) $user['organization_id']);
+            if ($org !== null && self::hasActiveOrgSubscription($org)) {
+                return Features::PRO;
+            }
+        }
+
         if (($user['plan'] ?? Features::FREE) === Features::PRO) {
             return Features::PRO;
         }
@@ -106,6 +114,12 @@ final class Auth
         return !empty($user['trial_ends_at']) && strtotime($user['trial_ends_at']) > time();
     }
 
+    public static function hasActiveOrgSubscription(array $org): bool
+    {
+        return ($org['subscription_status'] ?? null) === 'active'
+            || (!empty($org['trial_ends_at']) && strtotime($org['trial_ends_at']) > time());
+    }
+
     public function can(string $feature): bool
     {
         return Features::allows($this->plan(), $feature);
@@ -115,6 +129,24 @@ final class Auth
     {
         $user = $this->user();
         return $user !== null && (bool) $user['is_admin'];
+    }
+
+    public function organization(): ?array
+    {
+        $user = $this->user();
+        if ($user === null || empty($user['organization_id'])) {
+            return null;
+        }
+
+        return (new Organization($this->db))->findById((int) $user['organization_id']);
+    }
+
+    public function isOrgOwner(): bool
+    {
+        $user = $this->user();
+        $org = $this->organization();
+
+        return $user !== null && $org !== null && (int) $org['owner_user_id'] === (int) $user['id'];
     }
 
     private function issueRememberToken(int $userId): void

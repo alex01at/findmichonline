@@ -1,0 +1,90 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ organization.name }} – findmichonline{% endblock %}
+{% block main_class %}wide{% endblock %}
+
+{% block body %}
+    {% if trial_days_left is not null %}
+        <div class="flash success" style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+            <span>{{ trans('team.dashboard.trial_banner', {days: trial_days_left}) }}</span>
+        </div>
+    {% endif %}
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
+        <h1 style="margin:0;">{{ organization.name }}</h1>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-top:0;">{{ trans('team.dashboard.billing_heading') }}</h2>
+        <p>{{ trans('team.dashboard.seats_label', {seats: organization.seats, min: min_seats}) }}</p>
+        <p>{{ trans('team.dashboard.price_label', {price: (organization.seats * 0.49)|number_format(2, ',', '.')}) }}</p>
+
+        {% if organization.subscription_status == 'active' %}
+            <p class="muted-link" style="color:var(--success); font-weight:600;">{{ trans('team.dashboard.status_active') }}</p>
+            {% if organization.cancel_at_period_end %}
+                <p class="muted-link">{{ trans('pricing.cancel_scheduled') }}</p>
+            {% endif %}
+            {% if stripe_configured %}
+                <form method="post" action="/team/portal">
+                    <button type="submit">{{ trans('pricing.cta.manage_subscription') }}</button>
+                </form>
+            {% endif %}
+        {% elseif stripe_configured %}
+            <form method="post" action="/team/checkout">
+                <button type="submit">{{ trans('team.dashboard.checkout_cta') }}</button>
+            </form>
+        {% else %}
+            <p class="muted-link">{{ trans('pricing.note_dev_mode') }}</p>
+            <form method="post" action="/team/dev-activate">
+                <button type="submit">{{ trans('team.dashboard.dev_activate_cta') }}</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+        <h2 style="margin-top:0;">{{ trans('team.dashboard.members_heading') }}</h2>
+        <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
+            <thead>
+                <tr style="text-align:left; border-bottom:1px solid var(--border);">
+                    <th style="padding:0.5rem;">{{ trans('team.dashboard.table.name') }}</th>
+                    <th style="padding:0.5rem;">{{ trans('team.dashboard.table.email') }}</th>
+                    <th style="padding:0.5rem;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:0.5rem;">
+                            {{ member.name }}
+                            {% if member.id == organization.owner_user_id %}
+                                <span class="muted-link">({{ trans('team.dashboard.owner_badge') }})</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding:0.5rem;">{{ member.email }}</td>
+                        <td style="padding:0.5rem; white-space:nowrap;">
+                            {% if member.id != organization.owner_user_id %}
+                                <form method="post" action="/team/remove/{{ member.id }}" style="display:inline;" onsubmit="return confirm('{{ trans('team.dashboard.confirm_remove') }}');">
+                                    <button type="submit" style="margin:0; padding:0.2rem 0.6rem; background:var(--danger); font-size:0.85rem;">{{ trans('team.dashboard.remove_button') }}</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-top:0;">{{ trans('team.dashboard.invite_heading') }}</h2>
+        <p class="muted-link">{{ trans('team.dashboard.invite_text') }}</p>
+        <form method="post" action="/team/invite">
+            <label for="invite_email">{{ trans('team.dashboard.invite_email_label') }}</label>
+            <input type="email" id="invite_email" name="email" required>
+
+            <label for="invite_name">{{ trans('team.dashboard.invite_name_label') }}</label>
+            <input type="text" id="invite_name" name="name" maxlength="255">
+
+            <button type="submit">{{ trans('team.dashboard.invite_submit') }}</button>
+        </form>
+    </div>
+{% endblock %}

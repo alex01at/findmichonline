@@ -16,7 +16,7 @@ final class BusinessCard
         'login', 'register', 'logout', 'dashboard', 'pricing', 'card',
         'billing', 'lang', 'webhook', 'account', 'c', 'public', 'admin',
         'forgot-password', 'reset-password', 'onboarding', 'qr', 'go',
-        'vcard', 'impressum', 'datenschutz', 'kontakt',
+        'vcard', 'impressum', 'datenschutz', 'kontakt', 'team',
     ];
 
     public function __construct(private PDO $db)
@@ -66,10 +66,13 @@ final class BusinessCard
     {
         $stmt = $this->db->prepare(
             "SELECT c.*,
-                    CASE WHEN u.plan = 'pro' OR u.trial_ends_at > NOW() THEN 'pro' ELSE 'free' END AS owner_plan,
+                    CASE WHEN u.plan = 'pro' OR u.trial_ends_at > NOW()
+                              OR o.subscription_status = 'active' OR o.trial_ends_at > NOW()
+                         THEN 'pro' ELSE 'free' END AS owner_plan,
                     cat.name_de AS category_name_de, cat.name_en AS category_name_en
              FROM business_cards c
              JOIN users u ON u.id = c.user_id
+             LEFT JOIN organizations o ON o.id = u.organization_id
              LEFT JOIN categories cat ON cat.id = c.category_id
              WHERE c.slug = :slug AND c.is_published = 1"
         );

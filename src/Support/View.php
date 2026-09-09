@@ -28,6 +28,7 @@ final class View
         $this->twig->addGlobal('flashes', Session::pullFlashes());
         $this->twig->addGlobal('auth_check', Session::get('user_id') !== null);
         $this->twig->addGlobal('is_admin', $auth->isAdmin());
+        $this->twig->addGlobal('in_organization', $auth->organization() !== null);
         $this->twig->addGlobal('locale', $translator->locale());
         $this->twig->addGlobal('app_url', $appUrl);
         $this->twig->addGlobal('current_url', $appUrl . ($_SERVER['REQUEST_URI'] ?? '/'));
