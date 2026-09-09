@@ -77,7 +77,7 @@
                 {% if card.whatsapp %}<div style="margin-bottom:0.35rem;">💬 {{ card.whatsapp }}</div>{% endif %}
                 {% if card.email %}<div style="margin-bottom:0.35rem;">✉️ {{ card.email }}</div>{% endif %}
                 {% if card.website %}<div style="margin-bottom:0.35rem;">🌐 {{ card.website }}</div>{% endif %}
-                {% if card.address %}<div style="margin-bottom:0.35rem;">📍 {{ card.address }}</div>{% endif %}
+                {% if card.address %}<div style="margin-bottom:0.35rem;">📍 {{ card.address }}{% if card.workplace %}, {{ card.workplace }}{% endif %}</div>{% endif %}
             </div>
         {% endif %}
 

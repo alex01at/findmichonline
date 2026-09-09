@@ -91,7 +91,7 @@
                 {% endif %}
                 {% if card.address %}
                     <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:0.7rem;">
-                        <span>📍 {{ card.address }}</span>
+                        <span>📍 {{ card.address }}{% if card.workplace %}, {{ card.workplace }}{% endif %}</span>
                         <a href="/go/{{ card.slug }}/address" target="_blank" rel="noopener" style="color:{{ c_accent }}; font-size:0.9rem; white-space:nowrap;">{{ trans('card.public.route') }}</a>
                     </div>
                 {% endif %}

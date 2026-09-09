@@ -8,6 +8,7 @@ use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Model\CardGalleryImage;
 use Kartenlink\App\Model\CardOffering;
 use Kartenlink\App\Model\Category;
+use Kartenlink\App\Model\Organization;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\Features;
 use Kartenlink\App\Support\GalleryUploader;
@@ -45,10 +46,18 @@ final class CardController
     {
         $user = $this->auth->user();
         $card = $this->cards->findByUserId((int) $user['id']);
+        $org = $this->auth->organization();
+        $isTeamMember = $org !== null && !$this->auth->isOrgOwner();
+
+        if ($isTeamMember && $card !== null) {
+            $card = Organization::applyBranding($card, $org);
+        }
 
         echo $this->view->render('card/edit.twig', [
             'card' => $card,
             'old' => $card,
+            'is_team_member' => $isTeamMember,
+            'organization' => $org,
             'design_pro_allowed' => $this->auth->can('design_pro'),
             'custom_colors_allowed' => $this->auth->can('custom_colors'),
             'gallery_allowed' => $this->auth->can('gallery'),
@@ -67,10 +76,12 @@ final class CardController
         $user = $this->auth->user();
         $userId = (int) $user['id'];
         $existing = $this->cards->findByUserId($userId);
+        $org = $this->auth->organization();
+        $isTeamMember = $org !== null && !$this->auth->isOrgOwner();
 
         $displayName = trim($_POST['display_name'] ?? '');
         $jobTitle = trim($_POST['job_title'] ?? '');
-        $company = trim($_POST['company'] ?? '');
+        $company = $isTeamMember ? '' : trim($_POST['company'] ?? '');
         $categoryId = trim($_POST['category_id'] ?? '') !== '' ? (int) $_POST['category_id'] : null;
         if ($categoryId !== null && !$this->categories->exists($categoryId)) {
             $categoryId = null;
@@ -79,7 +90,8 @@ final class CardController
         $phone = trim($_POST['phone'] ?? '');
         $whatsapp = trim($_POST['whatsapp'] ?? '');
         $website = trim($_POST['website'] ?? '');
-        $address = trim($_POST['address'] ?? '');
+        $address = $isTeamMember ? '' : trim($_POST['address'] ?? '');
+        $workplace = trim($_POST['workplace'] ?? '');
         $bio = trim($_POST['bio'] ?? '');
         $openingHours = trim($_POST['opening_hours'] ?? '');
         $linkedinUrl = trim($_POST['linkedin_url'] ?? '');
@@ -100,6 +112,13 @@ final class CardController
         if ($design !== 'classic' && !$this->auth->can('design_pro')) {
             $design = 'classic';
             $designDowngraded = true;
+        }
+        if ($isTeamMember) {
+            // The organization's design is applied live at render time
+            // (Organization::applyBranding()) regardless of what's stored
+            // here - keep whatever the row already had rather than letting
+            // a tampered request change it to no effect.
+            $design = $existing['design'] ?? 'classic';
         }
 
         $useCustomColors = isset($_POST['use_custom_colors']);
@@ -165,7 +184,10 @@ final class CardController
         }
 
         $logoPath = $existing['logo_path'] ?? null;
-        if ($removeLogo) {
+        if ($isTeamMember) {
+            // Company logo is fixed by the organization owner (/team/branding);
+            // an employee's own upload/remove intent is ignored entirely.
+        } elseif ($removeLogo) {
             $logoPath = null;
         } elseif (isset($_FILES['logo'])) {
             try {
@@ -206,6 +228,7 @@ final class CardController
                     'whatsapp' => $whatsapp,
                     'website' => $website,
                     'address' => $address,
+                    'workplace' => $workplace,
                     'bio' => $bio,
                     'opening_hours' => $openingHours,
                     'logo_path' => $logoPath,
@@ -224,6 +247,8 @@ final class CardController
                     'is_published' => $isPublished,
                 ],
                 'errors' => $errors,
+                'is_team_member' => $isTeamMember,
+                'organization' => $org,
                 'design_pro_allowed' => $this->auth->can('design_pro'),
                 'custom_colors_allowed' => $this->auth->can('custom_colors'),
                 'gallery_allowed' => $this->auth->can('gallery'),
@@ -238,7 +263,7 @@ final class CardController
             return;
         }
 
-        if ($removeLogo) {
+        if ($removeLogo && !$isTeamMember) {
             $this->logoUploader->remove($userId);
         }
         if ($removePhoto) {
@@ -256,6 +281,7 @@ final class CardController
             'whatsapp' => $whatsapp !== '' ? $whatsapp : null,
             'website' => $website !== '' ? $website : null,
             'address' => $address !== '' ? $address : null,
+            'workplace' => $workplace !== '' ? $workplace : null,
             'bio' => $bio !== '' ? $bio : null,
             'opening_hours' => $openingHours !== '' ? $openingHours : null,
             'logo_path' => $logoPath,
@@ -468,6 +494,7 @@ final class CardController
             return;
         }
 
+        $card = $this->withOrgBranding($card);
         $this->cards->incrementViewCount((int) $card['id']);
 
         $design = in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
@@ -500,6 +527,7 @@ final class CardController
     public function trackClick(array $params): void
     {
         $card = $this->cards->findPublishedBySlug($params['slug']);
+        $card = $card !== null ? $this->withOrgBranding($card) : null;
         $target = $card !== null ? $this->buildLinkTarget($card, $params['type']) : null;
 
         if ($target === null) {
@@ -529,6 +557,7 @@ final class CardController
             return;
         }
 
+        $card = $this->withOrgBranding($card);
         $avatarPath = $card['photo_path'] ?: $card['logo_path'];
         $avatarUrl = $avatarPath ? $this->appUrl . '/' . $avatarPath : null;
         $vcard = $this->buildVCard($card, $avatarUrl);
@@ -562,7 +591,8 @@ final class CardController
             $lines[] = 'URL:' . $this->escapeVCardValue($url);
         }
         if (!empty($card['address'])) {
-            $lines[] = 'ADR;TYPE=WORK:;;' . $this->escapeVCardValue($card['address']) . ';;;;';
+            $addressLine = $card['address'] . (!empty($card['workplace']) ? ', ' . $card['workplace'] : '');
+            $lines[] = 'ADR;TYPE=WORK:;;' . $this->escapeVCardValue($addressLine) . ';;;;';
         }
         if (!empty($card['bio'])) {
             $lines[] = 'NOTE:' . $this->escapeVCardValue($card['bio']);
@@ -583,6 +613,29 @@ final class CardController
             ['\\\\', '\\,', '\\;', '\\n', '\\n'],
             $value
         );
+    }
+
+    /**
+     * A Firma-plan employee's card shows the organization's fixed company
+     * name/logo/address/design instead of whatever ended up stored on their
+     * own row (the onboarding wizard and editor never let them set those
+     * fields in the first place) - resolved live here so an owner changing
+     * the branding later takes effect immediately, without the employee
+     * needing to re-save their card. findPublishedBySlug() already joins
+     * the org columns onto $card, so this is a cheap in-memory check.
+     */
+    private function withOrgBranding(array $card): array
+    {
+        if (empty($card['org_id']) || (int) $card['org_owner_user_id'] === (int) $card['user_id']) {
+            return $card;
+        }
+
+        return Organization::applyBranding($card, [
+            'name' => $card['org_name'],
+            'logo_path' => $card['org_logo_path'],
+            'address' => $card['org_address'],
+            'design' => $card['org_design'],
+        ]);
     }
 
     private function buildLinkTarget(array $card, string $type): ?string

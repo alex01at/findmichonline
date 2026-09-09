@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Kartenlink\App\Controller;
 
+use Kartenlink\App\Model\BusinessCard;
 use Kartenlink\App\Model\Organization;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
+use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\StripeService;
 use Kartenlink\App\Support\Translator;
 use Kartenlink\App\Support\View;
 use PDO;
+use RuntimeException;
 
 final class TeamController
 {
@@ -26,7 +29,8 @@ final class TeamController
         private Auth $auth,
         private View $view,
         private Translator $translator,
-        private StripeService $stripe
+        private StripeService $stripe,
+        private LogoUploader $logoUploader
     ) {
         $this->organizations = new Organization($db);
         $this->users = new User($db);
@@ -182,6 +186,46 @@ final class TeamController
         }
 
         $this->redirect($session->url);
+    }
+
+    public function branding(): void
+    {
+        $org = $this->auth->organization();
+        $orgId = (int) $org['id'];
+
+        $design = $_POST['design'] ?? ($org['design'] ?? 'classic');
+        if (!in_array($design, BusinessCard::AVAILABLE_DESIGNS, true)) {
+            $design = 'classic';
+        }
+
+        $street = trim($_POST['street'] ?? '');
+        $postalCode = trim($_POST['postal_code'] ?? '');
+        $city = trim($_POST['city'] ?? '');
+        $country = trim($_POST['country'] ?? '');
+        $cityLine = trim($postalCode . ' ' . $city);
+        $parts = array_filter([$street, $cityLine, $country], fn ($p) => $p !== '');
+        $address = $parts !== [] ? implode(', ', $parts) : null;
+
+        $logoPath = $org['logo_path'] ?? null;
+        if (isset($_POST['remove_logo'])) {
+            $this->logoUploader->remove($orgId);
+            $logoPath = null;
+        } elseif (isset($_FILES['logo'])) {
+            try {
+                $uploaded = $this->logoUploader->upload($orgId, $_FILES['logo']);
+                if ($uploaded !== null) {
+                    $logoPath = $uploaded;
+                }
+            } catch (RuntimeException $e) {
+                Session::flash('error', $this->translator->trans($e->getMessage()));
+                $this->redirect('/team');
+            }
+        }
+
+        $this->organizations->updateBranding($orgId, $logoPath, $address, $design);
+
+        Session::flash('success', $this->translator->trans('team.branding.success'));
+        $this->redirect('/team');
     }
 
     public function devActivate(): void

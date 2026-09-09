@@ -37,8 +37,12 @@
                 <label for="job_title">{{ trans('card.edit.job_title_label') }}</label>
                 <input type="text" id="job_title" name="job_title" value="{{ old.job_title|default('') }}">
 
-                <label for="company">{{ trans('card.edit.company_label') }}</label>
-                <input type="text" id="company" name="company" value="{{ old.company|default('') }}">
+                <label>{{ trans('card.edit.company_label') }}</label>
+                {% if is_team_member %}
+                    <p class="muted-link" style="margin-top:0.2rem;">{{ organization.name }} <span class="onboarding-design-lock">{{ trans('onboarding.step2.company_fixed') }}</span></p>
+                {% else %}
+                    <input type="text" id="company" name="company" value="{{ old.company|default('') }}">
+                {% endif %}
 
                 <label for="category_id">{{ trans('card.edit.category_label') }}</label>
                 <select id="category_id" name="category_id" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem;">
@@ -60,8 +64,16 @@
                 <label for="website">{{ trans('card.edit.website_label') }}</label>
                 <input type="text" id="website" name="website" value="{{ old.website|default('') }}">
 
-                <label for="address">{{ trans('card.edit.address_label') }}</label>
-                <input type="text" id="address" name="address" value="{{ old.address|default('') }}">
+                {% if is_team_member %}
+                    <label for="workplace">{{ trans('onboarding.step4.workplace_label') }}</label>
+                    {% if organization.address %}
+                        <p class="muted-link">{{ trans('onboarding.step4.current_label') }} {{ organization.address }}</p>
+                    {% endif %}
+                    <input type="text" id="workplace" name="workplace" value="{{ old.workplace|default('') }}" placeholder="{{ trans('onboarding.step4.workplace_placeholder') }}">
+                {% else %}
+                    <label for="address">{{ trans('card.edit.address_label') }}</label>
+                    <input type="text" id="address" name="address" value="{{ old.address|default('') }}">
+                {% endif %}
 
                 <label for="bio">{{ trans('card.edit.bio_label') }}</label>
                 <input type="text" id="bio" name="bio" value="{{ old.bio|default('') }}">
@@ -82,18 +94,28 @@
                 <input type="file" id="photo" name="photo" accept="image/png,image/jpeg,image/webp">
                 <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
 
-                <label for="logo" style="margin-top:1.5rem;">{{ trans('card.edit.logo_label') }}</label>
-                {% if old.logo_path is defined and old.logo_path %}
-                    <div style="margin-bottom:0.5rem;">
-                        <img src="/{{ old.logo_path }}" alt="Logo" style="max-height:80px; border-radius:8px;">
-                    </div>
-                    <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
-                        <input type="checkbox" name="remove_logo" value="1">
-                        {{ trans('card.edit.logo_remove') }}
-                    </label>
+                {% if is_team_member %}
+                    <label style="margin-top:1.5rem;">{{ trans('card.edit.logo_label') }}</label>
+                    {% if organization.logo_path %}
+                        <div style="margin-bottom:0.5rem;">
+                            <img src="/{{ organization.logo_path }}" alt="Logo" style="max-height:80px; border-radius:8px;">
+                        </div>
+                    {% endif %}
+                    <p class="muted-link">{{ trans('onboarding.step6.logo_fixed') }}</p>
+                {% else %}
+                    <label for="logo" style="margin-top:1.5rem;">{{ trans('card.edit.logo_label') }}</label>
+                    {% if old.logo_path is defined and old.logo_path %}
+                        <div style="margin-bottom:0.5rem;">
+                            <img src="/{{ old.logo_path }}" alt="Logo" style="max-height:80px; border-radius:8px;">
+                        </div>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
+                            <input type="checkbox" name="remove_logo" value="1">
+                            {{ trans('card.edit.logo_remove') }}
+                        </label>
+                    {% endif %}
+                    <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
+                    <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
                 {% endif %}
-                <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
-                <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.logo_hint') }}</p>
 
                 <label style="margin-top:1.5rem; font-weight:600; color:var(--text);">{{ trans('card.edit.social_heading') }}</label>
                 <label for="linkedin_url">{{ trans('card.edit.linkedin_label') }}</label>
@@ -125,26 +147,30 @@
 
             <div class="tab-panel" data-tab-panel="design" hidden>
                 <label>{{ trans('card.edit.design_label') }}</label>
-                <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.3rem;">
-                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0;">
-                        <input type="radio" name="design" value="classic" {% if (old.design|default('classic')) == 'classic' %}checked{% endif %}>
-                        {{ trans('card.edit.design_classic') }}
-                    </label>
-                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
-                        <input type="radio" name="design" value="modern" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'modern' %}checked{% endif %}>
-                        {{ trans('card.edit.design_modern') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
-                    </label>
-                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
-                        <input type="radio" name="design" value="professional" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'professional' %}checked{% endif %}>
-                        {{ trans('card.edit.design_professional') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
-                    </label>
-                    <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
-                        <input type="radio" name="design" value="playful" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'playful' %}checked{% endif %}>
-                        {{ trans('card.edit.design_playful') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
-                    </label>
-                </div>
-                {% if not design_pro_allowed %}
-                    <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.edit.design_pro_hint') }}</p>
+                {% if is_team_member %}
+                    <p class="muted-link" style="margin-top:0.3rem;">{{ trans('card.edit.design_fixed_by_org') }}</p>
+                {% else %}
+                    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.3rem;">
+                        <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0;">
+                            <input type="radio" name="design" value="classic" {% if (old.design|default('classic')) == 'classic' %}checked{% endif %}>
+                            {{ trans('card.edit.design_classic') }}
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
+                            <input type="radio" name="design" value="modern" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'modern' %}checked{% endif %}>
+                            {{ trans('card.edit.design_modern') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
+                            <input type="radio" name="design" value="professional" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'professional' %}checked{% endif %}>
+                            {{ trans('card.edit.design_professional') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.4rem; font-weight:normal; margin-top:0; {% if not design_pro_allowed %}opacity:0.5;{% endif %}">
+                            <input type="radio" name="design" value="playful" {% if not design_pro_allowed %}disabled{% endif %} {% if (old.design|default('classic')) == 'playful' %}checked{% endif %}>
+                            {{ trans('card.edit.design_playful') }} {% if not design_pro_allowed %}{{ trans('card.edit.design_pro_only') }}{% endif %}
+                        </label>
+                    </div>
+                    {% if not design_pro_allowed %}
+                        <p class="muted-link" style="margin-top:0.4rem;">{{ trans('card.edit.design_pro_hint') }}</p>
+                    {% endif %}
                 {% endif %}
 
                 <label style="margin-top:1.5rem; font-weight:600; color:var(--text);">{{ trans('card.edit.colors_heading') }}</label>

@@ -66,6 +66,43 @@ final class Organization
         $stmt->execute(['seats' => $seats, 'id' => $id]);
     }
 
+    public function updateBranding(int $id, ?string $logoPath, ?string $address, string $design): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE organizations SET logo_path = :logo_path, address = :address, design = :design WHERE id = :id'
+        );
+        $stmt->execute([
+            'logo_path' => $logoPath,
+            'address' => $address,
+            'design' => $design,
+            'id' => $id,
+        ]);
+    }
+
+    /**
+     * Resolves the branding fields (company name, logo, address, design) an
+     * employee's card should display - always live from the organization,
+     * never copied into business_cards, so an owner changing the branding
+     * later takes effect immediately on every member's card without anyone
+     * needing to re-save. No-op (returns $card unchanged) when $org is null,
+     * which callers use for the owner's own card and any non-org card.
+     */
+    public static function applyBranding(array $card, ?array $org): array
+    {
+        if ($org === null) {
+            return $card;
+        }
+
+        $card['company'] = $org['name'];
+        $card['logo_path'] = $org['logo_path'] ?: null;
+        $card['address'] = $org['address'] ?: null;
+        $card['design'] = in_array($org['design'] ?? null, BusinessCard::AVAILABLE_DESIGNS, true)
+            ? $org['design']
+            : 'classic';
+
+        return $card;
+    }
+
     public function syncStripeSubscription(int $id, array $data): void
     {
         $stmt = $this->db->prepare(

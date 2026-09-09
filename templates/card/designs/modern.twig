@@ -105,7 +105,7 @@
             {% if card.whatsapp %}<div style="margin-bottom:0.6rem;">💬 {{ card.whatsapp }}</div>{% endif %}
             {% if card.email %}<div style="margin-bottom:0.6rem;">✉️ {{ card.email }}</div>{% endif %}
             {% if card.website %}<div style="margin-bottom:0.6rem;">🌐 {{ card.website }}</div>{% endif %}
-            {% if card.address %}<div style="margin-bottom:0.6rem;">📍 {{ card.address }}</div>{% endif %}
+            {% if card.address %}<div style="margin-bottom:0.6rem;">📍 {{ card.address }}{% if card.workplace %}, {{ card.workplace }}{% endif %}</div>{% endif %}
         </div>
 
         {% if card.linkedin_url or card.instagram_url or card.facebook_url or card.youtube_url %}

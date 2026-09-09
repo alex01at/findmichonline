@@ -10,14 +10,18 @@
         {% include 'onboarding/_errors.twig' %}
 
         <form method="post" action="/onboarding/2">
-            <label for="company">{{ trans('card.edit.company_label') }}</label>
-            <input type="text" id="company" name="company" value="{{ card.company|default('') }}" autofocus>
+            <label>{{ trans('card.edit.company_label') }}</label>
+            {% if is_team_member %}
+                <p class="muted-link" style="margin-top:0.2rem;">{{ organization.name }} <span class="onboarding-design-lock">{{ trans('onboarding.step2.company_fixed') }}</span></p>
+            {% else %}
+                <input type="text" id="company" name="company" value="{{ card.company|default('') }}" autofocus>
+            {% endif %}
 
             <label for="job_title">{{ trans('card.edit.job_title_label') }}</label>
-            <input type="text" id="job_title" name="job_title" value="{{ card.job_title|default('') }}">
+            <input type="text" id="job_title" name="job_title" value="{{ card.job_title|default('') }}" {% if is_team_member %}autofocus{% endif %}>
 
             <label for="bio">{{ trans('card.edit.bio_label') }}</label>
-            <textarea id="bio" name="bio" rows="4" placeholder="{{ trans('onboarding.step2.bio_placeholder') }}" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; font-family:inherit;">{{ card.bio|default('') }}</textarea>
+            <textarea id="bio" name="bio" rows="4" placeholder="{{ is_team_member ? trans('onboarding.step2.bio_placeholder_team') : trans('onboarding.step2.bio_placeholder') }}" style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; font-family:inherit;">{{ card.bio|default('') }}</textarea>
 
             <div class="onboarding-nav">
                 <a class="btn onboarding-back-btn" href="/onboarding/1">← {{ trans('onboarding.back') }}</a>

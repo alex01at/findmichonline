@@ -123,6 +123,7 @@ $router->get('/dashboard', function () use ($dashboard, $requireAuth) {
 
 $logoUploader = new LogoUploader(dirname(__DIR__) . '/public');
 $photoUploader = new LogoUploader(dirname(__DIR__) . '/public', 'photos');
+$orgLogoUploader = new LogoUploader(dirname(__DIR__) . '/public', 'org_logos');
 $galleryUploader = new GalleryUploader(dirname(__DIR__) . '/public');
 $card = new CardController($db, $view, $auth, $translator, $logoUploader, $photoUploader, $galleryUploader, $config['app']['url']);
 $router->get('/card/edit', function () use ($card, $requireAuth) {
@@ -238,7 +239,7 @@ $router->get('/billing/success', function () use ($billing, $requireAuth) {
 $stripeWebhook = new StripeWebhookController($db, $stripe, $config['stripe']['webhook_secret']);
 $router->post('/webhook/stripe', fn () => $stripeWebhook->handle());
 
-$team = new TeamController($db, $auth, $view, $translator, $stripe);
+$team = new TeamController($db, $auth, $view, $translator, $stripe, $orgLogoUploader);
 $router->get('/team', function () use ($team, $requireAuth) {
     $requireAuth();
     $team->index();
@@ -246,6 +247,10 @@ $router->get('/team', function () use ($team, $requireAuth) {
 $router->post('/team/create', function () use ($team, $requireAuth) {
     $requireAuth();
     $team->create();
+});
+$router->post('/team/branding', function () use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->branding();
 });
 $router->post('/team/invite', function () use ($team, $requireOrgOwner) {
     $requireOrgOwner();

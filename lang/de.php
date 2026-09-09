@@ -161,6 +161,7 @@ return [
     'card.edit.design_playful' => 'Verspielt',
     'card.edit.design_pro_only' => '(nur mit Pro)',
     'card.edit.design_pro_hint' => 'Dieses Design ist Teil des Pro-Tarifs.',
+    'card.edit.design_fixed_by_org' => 'Das Design wird von deiner Firma vorgegeben.',
     'card.edit.publish_label' => 'Visitenkarte veröffentlichen',
     'card.edit.submit' => 'Speichern',
     'card.edit.errors.name_required' => 'Bitte gib deinen Namen ein.',
@@ -296,6 +297,15 @@ return [
     'team.dashboard.status_active' => 'Abo aktiv',
     'team.dashboard.checkout_cta' => 'Jetzt zahlungspflichtig werden',
     'team.dashboard.dev_activate_cta' => 'Zu Testzwecken aktivieren',
+
+    'team.branding.heading' => 'Firmen-Branding',
+    'team.branding.text' => 'Firmenname, Logo, Adresse und Kartendesign gelten für alle Mitarbeiter-Visitenkarten einheitlich und werden ausschließlich hier festgelegt.',
+    'team.branding.logo_label' => 'Firmenlogo',
+    'team.branding.address_label' => 'Firmenadresse',
+    'team.branding.design_label' => 'Kartendesign',
+    'team.branding.submit' => 'Branding speichern',
+    'team.branding.success' => 'Firmen-Branding wurde gespeichert.',
+
     'team.dashboard.members_heading' => 'Mitglieder',
     'team.dashboard.table.name' => 'Name',
     'team.dashboard.table.email' => 'E-Mail',
@@ -422,6 +432,8 @@ return [
     'onboarding.step2.heading' => 'Was machst du?',
     'onboarding.step2.help' => 'Firmenname, Position und eine kurze Beschreibung – alles optional.',
     'onboarding.step2.bio_placeholder' => 'z. B. Ich unterstütze kleine Unternehmen bei der Digitalisierung.',
+    'onboarding.step2.bio_placeholder_team' => 'z. B. Ich bin für den Kundenservice zuständig.',
+    'onboarding.step2.company_fixed' => 'fest',
 
     'onboarding.step3.heading' => 'Wie können deine Kunden dich erreichen?',
     'onboarding.step3.help' => 'Fülle nur aus, was für dich relevant ist – nicht jede Kontaktmöglichkeit ist nötig.',
@@ -429,12 +441,15 @@ return [
 
     'onboarding.step4.heading' => 'Wo finden dich deine Kunden?',
     'onboarding.step4.help' => 'Optional – nicht jedes Unternehmen braucht eine öffentliche Adresse.',
+    'onboarding.step4.team_help' => 'Die Firmenadresse ist vom Inhaber fest hinterlegt. Du kannst optional noch angeben, wo genau man dich findet.',
     'onboarding.step4.current_label' => 'Aktuell hinterlegt:',
     'onboarding.step4.show_address_label' => 'Adresse auf der Visitenkarte anzeigen (inkl. Routen-Link)',
     'onboarding.step4.street_label' => 'Straße',
     'onboarding.step4.postal_code_label' => 'PLZ',
     'onboarding.step4.city_label' => 'Ort',
     'onboarding.step4.country_label' => 'Land',
+    'onboarding.step4.workplace_label' => 'Mein Arbeitsplatz',
+    'onboarding.step4.workplace_placeholder' => 'z. B. Büro 204, 3. Stock',
 
     'onboarding.step5.heading' => 'Möchtest du Social Media hinzufügen?',
     'onboarding.step5.help' => 'Ganz optional – du kannst diesen Schritt auch überspringen.',
@@ -443,6 +458,7 @@ return [
     'onboarding.step6.help' => 'Optional – lade ein Profilbild und/oder ein Firmenlogo hoch.',
     'onboarding.step6.photo_label' => 'Profilbild',
     'onboarding.step6.logo_label' => 'Firmenlogo',
+    'onboarding.step6.logo_fixed' => 'Das Firmenlogo ist vom Inhaber fest hinterlegt.',
 
     'onboarding.step7.heading' => 'Wie soll deine Visitenkarte aussehen?',
     'onboarding.step7.help' => 'Klicke auf eine Vorschau, um das Design auszuwählen.',

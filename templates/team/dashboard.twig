@@ -41,6 +41,50 @@
         {% endif %}
     </div>
 
+    <div class="card">
+        <h2 style="margin-top:0;">{{ trans('team.branding.heading') }}</h2>
+        <p class="muted-link">{{ trans('team.branding.text') }}</p>
+
+        <form method="post" action="/team/branding" enctype="multipart/form-data">
+            <label>{{ trans('team.branding.logo_label') }}</label>
+            {% if organization.logo_path %}
+                <div style="margin-bottom:0.5rem;">
+                    <img src="/{{ organization.logo_path }}" alt="" style="max-height:80px; border-radius:8px;">
+                </div>
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
+                    <input type="checkbox" name="remove_logo" value="1">
+                    {{ trans('card.edit.logo_remove') }}
+                </label>
+            {% endif %}
+            <input type="file" name="logo" accept="image/png,image/jpeg,image/webp">
+
+            <label style="margin-top:1.5rem;">{{ trans('team.branding.address_label') }}</label>
+            {% if organization.address %}
+                <p class="muted-link">{{ trans('onboarding.step4.current_label') }} {{ organization.address }}</p>
+            {% endif %}
+            <input type="text" name="street" placeholder="{{ trans('onboarding.step4.street_label') }}">
+            <input type="text" name="postal_code" placeholder="{{ trans('onboarding.step4.postal_code_label') }}" style="margin-top:0.6rem;">
+            <input type="text" name="city" placeholder="{{ trans('onboarding.step4.city_label') }}" style="margin-top:0.6rem;">
+            <input type="text" name="country" placeholder="{{ trans('onboarding.step4.country_label') }}" style="margin-top:0.6rem;">
+
+            <label style="margin-top:1.5rem;">{{ trans('team.branding.design_label') }}</label>
+            <div class="onboarding-design-grid">
+                {% for design in ['classic', 'modern', 'professional', 'playful'] %}
+                    <label class="onboarding-design-option {% if (organization.design|default('classic')) == design %}active{% endif %}">
+                        <input type="radio" name="design" value="{{ design }}" {% if (organization.design|default('classic')) == design %}checked{% endif %} style="position:absolute; opacity:0; pointer-events:none;">
+                        <div class="onboarding-design-thumb-wrap">
+                            <iframe src="/card/preview?design={{ design }}" tabindex="-1"></iframe>
+                            <div class="onboarding-design-thumb-overlay"></div>
+                        </div>
+                        <div class="onboarding-design-label">{{ trans('card.edit.design_' ~ design) }}</div>
+                    </label>
+                {% endfor %}
+            </div>
+
+            <button type="submit" style="margin-top:1.5rem;">{{ trans('team.branding.submit') }}</button>
+        </form>
+    </div>
+
     <div class="card" style="overflow-x:auto;">
         <h2 style="margin-top:0;">{{ trans('team.dashboard.members_heading') }}</h2>
         <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
@@ -87,4 +131,8 @@
             <button type="submit">{{ trans('team.dashboard.invite_submit') }}</button>
         </form>
     </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/assets/onboarding.js" defer></script>
 {% endblock %}

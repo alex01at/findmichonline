@@ -69,6 +69,8 @@ final class BusinessCard
                     CASE WHEN u.plan = 'pro' OR u.trial_ends_at > NOW()
                               OR o.subscription_status = 'active' OR o.trial_ends_at > NOW()
                          THEN 'pro' ELSE 'free' END AS owner_plan,
+                    o.id AS org_id, o.owner_user_id AS org_owner_user_id, o.name AS org_name,
+                    o.logo_path AS org_logo_path, o.address AS org_address, o.design AS org_design,
                     cat.name_de AS category_name_de, cat.name_en AS category_name_en
              FROM business_cards c
              JOIN users u ON u.id = c.user_id
@@ -107,9 +109,9 @@ final class BusinessCard
         if ($existing === null) {
             $stmt = $this->db->prepare(
                 'INSERT INTO business_cards
-                    (user_id, slug, display_name, job_title, company, category_id, email, phone, whatsapp, website, address, bio, opening_hours, logo_path, photo_path, linkedin_url, instagram_url, facebook_url, youtube_url, booking_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
+                    (user_id, slug, display_name, job_title, company, category_id, email, phone, whatsapp, website, address, workplace, bio, opening_hours, logo_path, photo_path, linkedin_url, instagram_url, facebook_url, youtube_url, booking_url, design, use_custom_colors, color_background, color_header, color_content, color_footer, is_published, created_at, updated_at)
                  VALUES
-                    (:user_id, :slug, :display_name, :job_title, :company, :category_id, :email, :phone, :whatsapp, :website, :address, :bio, :opening_hours, :logo_path, :photo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :booking_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
+                    (:user_id, :slug, :display_name, :job_title, :company, :category_id, :email, :phone, :whatsapp, :website, :address, :workplace, :bio, :opening_hours, :logo_path, :photo_path, :linkedin_url, :instagram_url, :facebook_url, :youtube_url, :booking_url, :design, :use_custom_colors, :color_background, :color_header, :color_content, :color_footer, :is_published, NOW(), NOW())'
             );
         } else {
             $stmt = $this->db->prepare(
@@ -124,6 +126,7 @@ final class BusinessCard
                     whatsapp = :whatsapp,
                     website = :website,
                     address = :address,
+                    workplace = :workplace,
                     bio = :bio,
                     opening_hours = :opening_hours,
                     logo_path = :logo_path,
@@ -158,6 +161,7 @@ final class BusinessCard
             'website' => $data['website'],
             'design' => $data['design'],
             'address' => $data['address'],
+            'workplace' => $data['workplace'] ?? null,
             'bio' => $data['bio'],
             'opening_hours' => $data['opening_hours'],
             'logo_path' => $data['logo_path'],

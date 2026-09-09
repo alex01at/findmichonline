@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kartenlink\App\Controller;
 
 use Kartenlink\App\Model\BusinessCard;
+use Kartenlink\App\Model\Organization;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\LogoUploader;
 use Kartenlink\App\Support\Session;
@@ -84,9 +85,15 @@ final class OnboardingController
 
         $user = $this->auth->user();
         $card = $this->cards->findByUserId((int) $user['id']);
+        $isTeamMember = $this->isTeamMember();
 
         if ($card !== null && $card['onboarding_completed_at'] !== null) {
             header('Location: /dashboard');
+            exit;
+        }
+
+        if ($step === 7 && $isTeamMember) {
+            header('Location: /onboarding/8');
             exit;
         }
 
@@ -110,9 +117,15 @@ final class OnboardingController
         $user = $this->auth->user();
         $userId = (int) $user['id'];
         $card = $this->cards->findByUserId($userId);
+        $isTeamMember = $this->isTeamMember();
 
         if ($card !== null && $card['onboarding_completed_at'] !== null) {
             header('Location: /dashboard');
+            exit;
+        }
+
+        if ($step === 7 && $isTeamMember) {
+            header('Location: /onboarding/8');
             exit;
         }
 
@@ -122,7 +135,7 @@ final class OnboardingController
             exit;
         }
 
-        ['errors' => $errors, 'fields' => $fields, 'old' => $old] = $this->collectStepData($step, $card, $userId);
+        ['errors' => $errors, 'fields' => $fields, 'old' => $old] = $this->collectStepData($step, $card, $userId, $isTeamMember);
 
         if ($errors !== []) {
             $this->renderStep($step, $card, $errors, $old);
@@ -133,10 +146,11 @@ final class OnboardingController
         $this->cards->upsertForUser($userId, $data);
 
         $savedCard = $this->cards->findByUserId($userId);
-        $newStep = min(self::TOTAL_STEPS, max($maxReachable, $step + 1));
+        $rawNext = ($step === 6 && $isTeamMember) ? 8 : $step + 1;
+        $newStep = min(self::TOTAL_STEPS, max($maxReachable, $rawNext));
         $this->cards->updateOnboardingStep((int) $savedCard['id'], $newStep);
 
-        header('Location: /onboarding/' . ($step + 1));
+        header('Location: /onboarding/' . $rawNext);
         exit;
     }
 
@@ -203,10 +217,20 @@ final class OnboardingController
             return;
         }
 
-        $requestedDesign = $_GET['design'] ?? null;
-        $design = ($requestedDesign !== null && in_array($requestedDesign, BusinessCard::AVAILABLE_DESIGNS, true))
-            ? $requestedDesign
-            : (in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic');
+        $isTeamMember = $this->isTeamMember();
+        if ($isTeamMember) {
+            // Show the wizard's own live preview with the real org branding
+            // throughout, not just on the final published card - a team
+            // member never gets a say in the design, so ?design= from the
+            // (never-shown-to-them) step-7 thumbnails is ignored too.
+            $card = Organization::applyBranding($card, $this->auth->organization());
+        } else {
+            $requestedDesign = $_GET['design'] ?? null;
+            $design = ($requestedDesign !== null && in_array($requestedDesign, BusinessCard::AVAILABLE_DESIGNS, true))
+                ? $requestedDesign
+                : (in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic');
+            $card['design'] = $design;
+        }
 
         // Free users previewing a Pro-only design see it exactly as a real
         // visitor would (gray/plain) - same owner_plan gate the templates
@@ -214,7 +238,7 @@ final class OnboardingController
         // than the raw stored plan so an active trial is reflected too.
         $card['owner_plan'] = $this->auth->plan();
 
-        echo $this->view->render("card/designs/{$design}.twig", [
+        echo $this->view->render("card/designs/{$card['design']}.twig", [
             'card' => $card,
             'meta_description' => '',
             'og_image_url' => null,
@@ -229,7 +253,7 @@ final class OnboardingController
     /**
      * @return array{errors: string[], fields: array<string, mixed>, old: array<string, mixed>}
      */
-    private function collectStepData(int $step, ?array $card, int $userId): array
+    private function collectStepData(int $step, ?array $card, int $userId, bool $isTeamMember): array
     {
         $errors = [];
         $fields = [];
@@ -253,7 +277,14 @@ final class OnboardingController
                 break;
 
             case 2:
-                $fields['company'] = trim($_POST['company'] ?? '') ?: null;
+                // Team members show the organization's fixed company name as
+                // plain text (no input field at all) - never read from POST,
+                // so the row simply keeps whatever it already had (null for
+                // a new card, since Organization::applyBranding() is what
+                // actually supplies the displayed value everywhere).
+                if (!$isTeamMember) {
+                    $fields['company'] = trim($_POST['company'] ?? '') ?: null;
+                }
                 $fields['job_title'] = trim($_POST['job_title'] ?? '') ?: null;
                 $fields['bio'] = trim($_POST['bio'] ?? '') ?: null;
                 break;
@@ -276,6 +307,16 @@ final class OnboardingController
                 break;
 
             case 4:
+                // Team members never set their own address - the organization's
+                // fixed address (set by the owner) is applied at render time.
+                // The only thing they can add is an optional workplace note
+                // (room/desk), stored separately so it survives independent
+                // of the org address and re-fills cleanly on revisit.
+                if ($isTeamMember) {
+                    $old['workplace'] = trim($_POST['workplace'] ?? '');
+                    $fields['workplace'] = $old['workplace'] !== '' ? $old['workplace'] : null;
+                    break;
+                }
                 if (isset($_POST['skip']) || !isset($_POST['show_address'])) {
                     $fields['address'] = null;
                     break;
@@ -320,7 +361,9 @@ final class OnboardingController
                         $errors[] = $this->translator->trans($e->getMessage());
                     }
                 }
-                if (isset($_FILES['logo']) && $_FILES['logo']['error'] !== UPLOAD_ERR_NO_FILE) {
+                // Company logo is fixed by the organization owner - a team
+                // member never gets a logo upload field, so nothing to read here.
+                if (!$isTeamMember && isset($_FILES['logo']) && $_FILES['logo']['error'] !== UPLOAD_ERR_NO_FILE) {
                     try {
                         $uploaded = $this->logoUploader->upload($userId, $_FILES['logo']);
                         if ($uploaded !== null) {
@@ -377,6 +420,7 @@ final class OnboardingController
                 'whatsapp' => $card['whatsapp'],
                 'website' => $card['website'],
                 'address' => $card['address'],
+                'workplace' => $card['workplace'],
                 'bio' => $card['bio'],
                 'opening_hours' => $card['opening_hours'],
                 'logo_path' => $card['logo_path'],
@@ -407,6 +451,7 @@ final class OnboardingController
             'whatsapp' => null,
             'website' => null,
             'address' => null,
+            'workplace' => null,
             'bio' => null,
             'opening_hours' => null,
             'logo_path' => null,
@@ -426,14 +471,34 @@ final class OnboardingController
         ];
     }
 
+    private function isTeamMember(): bool
+    {
+        return $this->auth->organization() !== null && !$this->auth->isOrgOwner();
+    }
+
+    private function displayStep(int $rawStep, bool $skipDesign): int
+    {
+        return $skipDesign && $rawStep > 7 ? $rawStep - 1 : $rawStep;
+    }
+
+    private function displayTotal(bool $skipDesign): int
+    {
+        return $skipDesign ? self::TOTAL_STEPS - 1 : self::TOTAL_STEPS;
+    }
+
     private function renderStep(int $step, ?array $card, array $errors, array $old): void
     {
+        $isTeamMember = $this->isTeamMember();
+        $org = $isTeamMember ? $this->auth->organization() : null;
+
         $context = [
             'card' => $card,
             'old' => $old,
             'errors' => $errors,
-            'step' => $step,
-            'total_steps' => self::TOTAL_STEPS,
+            'step' => $this->displayStep($step, $isTeamMember),
+            'total_steps' => $this->displayTotal($isTeamMember),
+            'is_team_member' => $isTeamMember,
+            'organization' => $org,
         ];
 
         if ($step === 1) {

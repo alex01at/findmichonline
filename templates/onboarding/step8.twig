@@ -18,7 +18,7 @@
             <p id="onboarding-slug-status" class="onboarding-slug-status" data-available-text="{{ trans('onboarding.step8.available') }}" data-taken-text="{{ trans('onboarding.step8.taken') }}"></p>
 
             <div class="onboarding-nav">
-                <a class="btn onboarding-back-btn" href="/onboarding/7">← {{ trans('onboarding.back') }}</a>
+                <a class="btn onboarding-back-btn" href="/onboarding/{{ is_team_member ? 6 : 7 }}">← {{ trans('onboarding.back') }}</a>
                 <button type="submit">{{ trans('onboarding.next') }} →</button>
             </div>
         </form>
