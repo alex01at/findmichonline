@@ -11,75 +11,100 @@
         </div>
     {% endif %}
 
+    {% set plan_key = in_organization ? 'dashboard.plan_firma' : (user.plan == 'pro' ? 'dashboard.plan_pro' : (trial_days_left is not null ? 'dashboard.plan_trial' : 'dashboard.plan_free')) %}
+    {% set plan_badge_class = in_organization ? 'plan-badge-firma' : ((user.plan == 'pro' or trial_days_left is not null) ? 'plan-badge-pro' : '') %}
+
     <div class="card">
-        <h1>{{ trans('dashboard.welcome', {name: user.name}) }}</h1>
-        <p>{{ trans('dashboard.email_label', {email: user.email}) }}</p>
-        <p>
-            {{ trans('dashboard.plan_label', {plan: trans(in_organization ? 'dashboard.plan_firma' : (user.plan == 'pro' ? 'dashboard.plan_pro' : (trial_days_left is not null ? 'dashboard.plan_trial' : 'dashboard.plan_free')))}) }}
-            &middot; <a href="/pricing">{{ trans('dashboard.view_pricing') }}</a>
-            {% if in_organization %}&middot; <a href="/team">{{ trans('dashboard.view_team') }}</a>{% endif %}
+        <div class="dashboard-header">
+            <div class="dashboard-header-identity">
+                {% if card.photo_path %}
+                    <img class="dashboard-avatar" src="/{{ card.photo_path }}" alt="">
+                {% else %}
+                    <div class="dashboard-avatar">{{ user.name|first|upper }}</div>
+                {% endif %}
+                <div>
+                    <h1>{{ trans('dashboard.welcome', {name: user.name}) }}</h1>
+                    <p class="muted-link">{{ trans('dashboard.email_label', {email: user.email}) }}</p>
+                </div>
+            </div>
+            <span class="plan-badge {{ plan_badge_class }}">{{ trans(plan_key) }}</span>
+        </div>
+
+        <p style="margin-top:1.2rem;">
+            {{ trans('dashboard.status_label') }}
+            {% if card.is_published %}
+                {{ trans('dashboard.status_published') }} <a href="/{{ card.slug }}" target="_blank">/{{ card.slug }}</a>
+            {% else %}
+                {{ trans('dashboard.status_unpublished') }}
+            {% endif %}
         </p>
 
-        {% if card %}
-            <p>
-                {{ trans('dashboard.status_label') }}
-                {% if card.is_published %}
-                    {{ trans('dashboard.status_published') }} <a href="/{{ card.slug }}" target="_blank">/{{ card.slug }}</a>
-                {% else %}
-                    {{ trans('dashboard.status_unpublished') }}
-                {% endif %}
-            </p>
+        <div class="quick-actions">
             <a class="btn" href="/card/edit">{{ trans('dashboard.edit_card') }}</a>
-        {% else %}
-            <p>{{ trans('dashboard.no_card') }}</p>
-            <a class="btn" href="/card/edit">{{ trans('dashboard.create_card') }}</a>
-        {% endif %}
-    </div>
-
-    {% if card %}
-        <div class="card" style="margin-top:1.5rem;">
-            <h1 style="font-size:1.2rem;">{{ trans('dashboard.stats_heading') }}</h1>
-            {% if can_view_stats %}
-                <p style="font-size:2.2rem; font-weight:700; margin:0.3rem 0 0 0;">{{ card.view_count }}</p>
-                <p class="muted-link" style="margin-top:0.1rem;">{{ trans('dashboard.stats_views_label') }}</p>
-
-                <p style="font-weight:600; margin-top:1.5rem;">{{ trans('dashboard.stats_clicks_heading') }}</p>
-                <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
-                    <tbody>
-                        {% if card.phone %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">📞 {{ trans('card.public.call') }}</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_phone }}</td></tr>
-                        {% endif %}
-                        {% if card.email %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">✉️ {{ trans('card.public.email_action') }}</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_email }}</td></tr>
-                        {% endif %}
-                        {% if card.website %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">🌐 {{ trans('card.public.website_action') }}</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_website }}</td></tr>
-                        {% endif %}
-                        {% if card.address %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">📍 {{ trans('card.public.route') }}</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_address }}</td></tr>
-                        {% endif %}
-                        {% if card.linkedin_url %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">LinkedIn</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_linkedin }}</td></tr>
-                        {% endif %}
-                        {% if card.instagram_url %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">Instagram</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_instagram }}</td></tr>
-                        {% endif %}
-                        {% if card.facebook_url %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">Facebook</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_facebook }}</td></tr>
-                        {% endif %}
-                        {% if card.youtube_url %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">YouTube</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_youtube }}</td></tr>
-                        {% endif %}
-                        {% if card.booking_url %}
-                            <tr style="border-top:1px solid var(--border);"><td style="padding:0.5rem 0;">📅 {{ trans('card.public.booking_button') }}</td><td style="padding:0.5rem 0; text-align:right; font-weight:600;">{{ card.clicks_booking }}</td></tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="muted-link" style="margin-top:0.5rem;">
-                    {{ trans('dashboard.stats_locked_text') }} → <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a>
-                </p>
+            {% if card.is_published %}
+                <a class="btn btn-secondary" href="/{{ card.slug }}" target="_blank">{{ trans('dashboard.view_card') }}</a>
+            {% endif %}
+            <a class="btn btn-secondary" href="/card/qr.png" target="_blank">{{ trans('dashboard.view_qr') }}</a>
+            <a class="btn btn-secondary" href="/pricing">{{ trans('dashboard.view_pricing') }}</a>
+            {% if in_organization %}
+                <a class="btn btn-secondary" href="/team">{{ trans('dashboard.view_team') }}</a>
             {% endif %}
         </div>
-    {% endif %}
+    </div>
+
+    <div class="dashboard-layout">
+        <div class="dashboard-preview-col">
+            <div class="phone-mockup">
+                <div class="phone-mockup-frame">
+                    <iframe src="/card/preview" loading="lazy" title="{{ trans('dashboard.preview_label') }}"></iframe>
+                </div>
+            </div>
+            <p class="phone-mockup-label">{{ trans('dashboard.preview_label') }}</p>
+        </div>
+
+        <div class="dashboard-stats-col">
+            <div class="card">
+                <h2 style="font-size:1.1rem; margin-top:0;">{{ trans('dashboard.stats_heading') }}</h2>
+                {% if can_view_stats %}
+                    <div class="stat-tile-grid">
+                        <div class="stat-tile stat-tile-primary">
+                            <span class="stat-value">{{ card.view_count }}</span>
+                            <span class="stat-label">{{ trans('dashboard.stats_views_label') }}</span>
+                        </div>
+                        {% if card.phone %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_phone }}</span><span class="stat-label">📞 {{ trans('card.public.call') }}</span></div>
+                        {% endif %}
+                        {% if card.email %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_email }}</span><span class="stat-label">✉️ {{ trans('card.public.email_action') }}</span></div>
+                        {% endif %}
+                        {% if card.website %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_website }}</span><span class="stat-label">🌐 {{ trans('card.public.website_action') }}</span></div>
+                        {% endif %}
+                        {% if card.address %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_address }}</span><span class="stat-label">📍 {{ trans('card.public.route') }}</span></div>
+                        {% endif %}
+                        {% if card.linkedin_url %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_linkedin }}</span><span class="stat-label">LinkedIn</span></div>
+                        {% endif %}
+                        {% if card.instagram_url %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_instagram }}</span><span class="stat-label">Instagram</span></div>
+                        {% endif %}
+                        {% if card.facebook_url %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_facebook }}</span><span class="stat-label">Facebook</span></div>
+                        {% endif %}
+                        {% if card.youtube_url %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_youtube }}</span><span class="stat-label">YouTube</span></div>
+                        {% endif %}
+                        {% if card.booking_url %}
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_booking }}</span><span class="stat-label">📅 {{ trans('card.public.booking_button') }}</span></div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="muted-link" style="margin-top:0.5rem;">
+                        {{ trans('dashboard.stats_locked_text') }} → <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
