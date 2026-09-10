@@ -1,0 +1,50 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('landing.' ~ profession ~ '.title') }}{% endblock %}
+{% block meta_description %}{{ trans('landing.' ~ profession ~ '.meta_description') }}{% endblock %}
+{% block robots %}index, follow{% endblock %}
+{% block main_class %}landing{% endblock %}
+
+{% block body %}
+    <div class="hero">
+        <span class="eyebrow">{{ trans('landing.' ~ profession ~ '.hero_eyebrow') }}</span>
+        <h1>{{ trans('landing.' ~ profession ~ '.hero_heading') }}</h1>
+        <p>{{ trans('landing.' ~ profession ~ '.hero_text') }}</p>
+        <div class="cta-row">
+            <a class="btn btn-light" href="{{ cta_href }}">{{ trans('landing.' ~ profession ~ '.cta_button') }}</a>
+        </div>
+    </div>
+
+    <div class="section-heading">
+        <h2>{{ trans('landing.pain_heading') }}</h2>
+    </div>
+    <div class="card" style="max-width:760px; margin:0 auto;">
+        <p style="margin:0;">{{ trans('landing.' ~ profession ~ '.pain_text') }}</p>
+    </div>
+
+    <div class="section-heading" style="margin-top:3rem;">
+        <h2>{{ trans('landing.use_case_heading') }}</h2>
+    </div>
+    <div class="card" style="max-width:760px; margin:0 auto;">
+        <p style="margin:0;">{{ trans('landing.' ~ profession ~ '.use_case_text') }}</p>
+    </div>
+
+    <div class="section-heading" style="margin-top:3rem;">
+        <h2>{{ trans('landing.features_heading') }}</h2>
+    </div>
+    <div class="feature-grid">
+        {% for n in [1, 2, 3] %}
+            <div class="feature-card">
+                <span class="icon">{{ icons[n - 1] }}</span>
+                <h3>{{ trans('landing.' ~ profession ~ '.feature_' ~ n ~ '_title') }}</h3>
+                <p>{{ trans('landing.' ~ profession ~ '.feature_' ~ n ~ '_text') }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="cta-banner" style="margin-top:3.5rem;">
+        <h2>{{ trans('landing.' ~ profession ~ '.cta_heading') }}</h2>
+        <p>{{ trans('landing.' ~ profession ~ '.cta_text') }}</p>
+        <a class="btn" href="{{ cta_href }}">{{ trans('landing.' ~ profession ~ '.cta_button') }}</a>
+    </div>
+{% endblock %}

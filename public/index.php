@@ -22,6 +22,7 @@ use Kartenlink\App\Controller\CardController;
 use Kartenlink\App\Controller\ContactController;
 use Kartenlink\App\Controller\DashboardController;
 use Kartenlink\App\Controller\HomeController;
+use Kartenlink\App\Controller\LandingController;
 use Kartenlink\App\Controller\LegalController;
 use Kartenlink\App\Controller\OnboardingController;
 use Kartenlink\App\Controller\PricingController;
@@ -215,6 +216,11 @@ $router->get('/datenschutz', fn () => $legal->show('datenschutz'));
 $contact = new ContactController($view, $translator, $mailer, $config['mail']['contact_address']);
 $router->get('/kontakt', fn () => $contact->show());
 $router->post('/kontakt', fn () => $contact->submit());
+
+$landing = new LandingController($view);
+foreach (array_keys(LandingController::PROFESSIONS) as $profession) {
+    $router->get('/digitale-visitenkarte-' . $profession, fn () => $landing->show(['profession' => $profession]));
+}
 
 $account = new AccountController($db, $auth, $translator);
 $router->post('/account/plan', function () use ($account, $requireAuth) {

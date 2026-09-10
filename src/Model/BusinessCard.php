@@ -17,6 +17,9 @@ final class BusinessCard
         'billing', 'lang', 'webhook', 'account', 'c', 'public', 'admin',
         'forgot-password', 'reset-password', 'onboarding', 'qr', 'go',
         'vcard', 'impressum', 'datenschutz', 'kontakt', 'team',
+        'digitale-visitenkarte-handwerker', 'digitale-visitenkarte-makler',
+        'digitale-visitenkarte-fotografen', 'digitale-visitenkarte-selbststaendige',
+        'digitale-visitenkarte-unternehmen',
     ];
 
     public function __construct(private PDO $db)
