@@ -230,6 +230,19 @@ final class OnboardingController
                 ? $requestedDesign
                 : (in_array($card['design'], BusinessCard::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic');
             $card['design'] = $design;
+
+            // Only ever sent by the org-owner's palette thumbnails on
+            // /team/branding, so they can preview a curated palette before
+            // saving it - looked up by key rather than trusting raw hex
+            // values from the query string.
+            $palette = Organization::COLOR_PRESETS[$_GET['palette'] ?? ''] ?? null;
+            if ($palette !== null) {
+                $card['use_custom_colors'] = true;
+                $card['color_background'] = $palette['color_background'];
+                $card['color_header'] = $palette['color_header'];
+                $card['color_content'] = $palette['color_content'];
+                $card['color_footer'] = $palette['color_footer'];
+            }
         }
 
         // Free users previewing a Pro-only design see it exactly as a real

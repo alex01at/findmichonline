@@ -68,6 +68,7 @@ final class TeamController
             'min_seats' => self::MIN_SEATS,
             'trial_days_left' => $trialDaysLeft,
             'stripe_configured' => $this->stripe->isFirmaConfigured(),
+            'color_presets' => Organization::COLOR_PRESETS,
         ]);
     }
 
@@ -198,6 +199,11 @@ final class TeamController
             $design = 'classic';
         }
 
+        $colorPreset = $_POST['color_preset'] ?? null;
+        if ($colorPreset !== null && !array_key_exists($colorPreset, Organization::COLOR_PRESETS)) {
+            $colorPreset = null;
+        }
+
         $street = trim($_POST['street'] ?? '');
         $postalCode = trim($_POST['postal_code'] ?? '');
         $city = trim($_POST['city'] ?? '');
@@ -222,7 +228,7 @@ final class TeamController
             }
         }
 
-        $this->organizations->updateBranding($orgId, $logoPath, $address, $design);
+        $this->organizations->updateBranding($orgId, $logoPath, $address, $design, $colorPreset);
 
         Session::flash('success', $this->translator->trans('team.branding.success'));
         $this->redirect('/team');

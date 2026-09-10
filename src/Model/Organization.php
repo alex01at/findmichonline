@@ -8,6 +8,40 @@ use PDO;
 
 final class Organization
 {
+    /**
+     * Curated color palettes only ever selectable from the org branding form
+     * (/team/branding) - never offered in the regular per-user editor, which
+     * keeps its own free-form color pickers. This is what makes them an
+     * exclusive Firma-plan perk rather than just "custom colors", which Pro
+     * already has. Header/background share one light tone because every
+     * design template assumes a custom header is light enough for the fixed
+     * dark body text color it uses (none of them adapt text color to a
+     * custom header) - a dark header here would make the name illegible.
+     */
+    public const COLOR_PRESETS = [
+        'graphite' => [
+            'name' => 'Graphite',
+            'color_background' => '#eef0f2',
+            'color_header' => '#eef0f2',
+            'color_content' => '#384049',
+            'color_footer' => '#384049',
+        ],
+        'bordeaux' => [
+            'name' => 'Bordeaux',
+            'color_background' => '#f7eeee',
+            'color_header' => '#f7eeee',
+            'color_content' => '#7a2331',
+            'color_footer' => '#7a2331',
+        ],
+        'forest' => [
+            'name' => 'Forest',
+            'color_background' => '#eef3ee',
+            'color_header' => '#eef3ee',
+            'color_content' => '#2f5233',
+            'color_footer' => '#2f5233',
+        ],
+    ];
+
     public function __construct(private PDO $db)
     {
     }
@@ -66,15 +100,16 @@ final class Organization
         $stmt->execute(['seats' => $seats, 'id' => $id]);
     }
 
-    public function updateBranding(int $id, ?string $logoPath, ?string $address, string $design): void
+    public function updateBranding(int $id, ?string $logoPath, ?string $address, string $design, ?string $colorPreset): void
     {
         $stmt = $this->db->prepare(
-            'UPDATE organizations SET logo_path = :logo_path, address = :address, design = :design WHERE id = :id'
+            'UPDATE organizations SET logo_path = :logo_path, address = :address, design = :design, color_preset = :color_preset WHERE id = :id'
         );
         $stmt->execute([
             'logo_path' => $logoPath,
             'address' => $address,
             'design' => $design,
+            'color_preset' => $colorPreset,
             'id' => $id,
         ]);
     }
@@ -99,6 +134,15 @@ final class Organization
         $card['design'] = in_array($org['design'] ?? null, BusinessCard::AVAILABLE_DESIGNS, true)
             ? $org['design']
             : 'classic';
+
+        $preset = self::COLOR_PRESETS[$org['color_preset'] ?? ''] ?? null;
+        if ($preset !== null) {
+            $card['use_custom_colors'] = true;
+            $card['color_background'] = $preset['color_background'];
+            $card['color_header'] = $preset['color_header'];
+            $card['color_content'] = $preset['color_content'];
+            $card['color_footer'] = $preset['color_footer'];
+        }
 
         return $card;
     }

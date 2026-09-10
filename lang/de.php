@@ -307,6 +307,12 @@ return [
     'team.branding.logo_label' => 'Firmenlogo',
     'team.branding.address_label' => 'Firmenadresse',
     'team.branding.design_label' => 'Kartendesign',
+    'team.branding.palette_label' => 'Exklusives Firmen-Farbschema',
+    'team.branding.palette_hint' => 'Nur für den Firma-Plan – diese kuratierten Farbschemata stehen einzelnen Pro-Accounts nicht zur Verfügung.',
+    'team.branding.palette_default' => 'Standardfarben',
+    'team.branding.palette.graphite' => 'Graphite',
+    'team.branding.palette.bordeaux' => 'Bordeaux',
+    'team.branding.palette.forest' => 'Forest',
     'team.branding.submit' => 'Branding speichern',
     'team.branding.success' => 'Firmen-Branding wurde gespeichert.',
 

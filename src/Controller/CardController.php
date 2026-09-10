@@ -635,6 +635,7 @@ final class CardController
             'logo_path' => $card['org_logo_path'],
             'address' => $card['org_address'],
             'design' => $card['org_design'],
+            'color_preset' => $card['org_color_preset'],
         ]);
     }
 

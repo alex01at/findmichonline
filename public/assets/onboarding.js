@@ -52,6 +52,43 @@
 })();
 
 (function () {
+    // Only present on /team/branding: the design grid and the palette grid
+    // each fix one axis and preview the other, so picking a palette must
+    // refresh the (fixed-design) palette thumbnails, and picking a design
+    // must refresh the (fixed-palette) design thumbnails - the design-radio
+    // change listener above already exists for the plain onboarding wizard
+    // and just no-ops here (#onboarding-preview-frame doesn't exist on this
+    // page), so this runs independently rather than replacing it.
+    var paletteRadios = document.querySelectorAll('input[name="color_preset"]');
+    var previewFrames = document.querySelectorAll('.branding-preview-frame');
+    if (!paletteRadios.length || !previewFrames.length) return;
+
+    function currentValue(name, fallback) {
+        var checked = document.querySelector('input[name="' + name + '"]:checked');
+        return checked ? checked.value : fallback;
+    }
+
+    function refreshPreviews() {
+        var design = currentValue('design', 'classic');
+        var palette = currentValue('color_preset', '');
+        previewFrames.forEach(function (frame) {
+            var designOption = frame.closest('[data-design]');
+            var paletteOption = frame.closest('[data-palette]');
+            var d = designOption ? designOption.dataset.design : design;
+            var p = paletteOption ? paletteOption.dataset.palette : palette;
+            frame.src = '/card/preview?design=' + d + '&palette=' + p;
+        });
+    }
+
+    document.querySelectorAll('input[name="design"]').forEach(function (radio) {
+        radio.addEventListener('change', refreshPreviews);
+    });
+    paletteRadios.forEach(function (radio) {
+        radio.addEventListener('change', refreshPreviews);
+    });
+})();
+
+(function () {
     var input = document.getElementById('slug');
     var status = document.getElementById('onboarding-slug-status');
     if (!input || !status) return;

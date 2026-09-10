@@ -71,6 +71,7 @@ final class BusinessCard
                          THEN 'pro' ELSE 'free' END AS owner_plan,
                     o.id AS org_id, o.owner_user_id AS org_owner_user_id, o.name AS org_name,
                     o.logo_path AS org_logo_path, o.address AS org_address, o.design AS org_design,
+                    o.color_preset AS org_color_preset,
                     cat.name_de AS category_name_de, cat.name_en AS category_name_en
              FROM business_cards c
              JOIN users u ON u.id = c.user_id
