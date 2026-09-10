@@ -33,7 +33,11 @@ final class AuthController
 
     public function showRegister(): void
     {
-        if ($this->auth->check()) {
+        // A demo account is still a real, logged-in session (auth->check()
+        // is true) - but its whole purpose is to funnel into a real
+        // registration, so it must not be bounced back to the dashboard here.
+        $user = $this->auth->check() ? $this->auth->user() : null;
+        if ($user !== null && empty($user['is_demo'])) {
             $this->redirect('/dashboard');
         }
 
@@ -83,7 +87,8 @@ final class AuthController
 
     public function showLogin(): void
     {
-        if ($this->auth->check()) {
+        $user = $this->auth->check() ? $this->auth->user() : null;
+        if ($user !== null && empty($user['is_demo'])) {
             $this->redirect('/dashboard');
         }
 
@@ -117,7 +122,8 @@ final class AuthController
 
     public function showForgotPassword(): void
     {
-        if ($this->auth->check()) {
+        $user = $this->auth->check() ? $this->auth->user() : null;
+        if ($user !== null && empty($user['is_demo'])) {
             $this->redirect('/dashboard');
         }
 
