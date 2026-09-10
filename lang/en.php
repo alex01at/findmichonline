@@ -19,6 +19,7 @@ return [
     'home.subtitle' => 'Create your personal business card with your own link and QR code. Share all your contact details with one click or scan – always up to date, multilingual, and editable anytime.',
     'home.cta_start' => 'Start for free',
     'home.cta_login' => 'I already have an account',
+    'home.cta_demo' => 'View demo',
     'home.hero_note' => 'Start for free. Upgrade to Pro anytime.',
     'home.meta_description' => 'findmichonline: create your digital business card for free with your own short link, custom design (Classic/Modern), a shareable QR code, vCard download, and multilingual display. Ready in minutes — no printing costs.',
 
@@ -129,7 +130,9 @@ return [
     'dashboard.plan_free' => 'Free',
     'dashboard.plan_trial' => 'Pro (trial)',
     'dashboard.trial_banner' => '🎉 You have {days} day(s) left in your free Pro trial.',
+    'dashboard.demo_banner' => '🕑 Demo mode - this account expires in about {minutes} minutes and will be deleted automatically.',
     'dashboard.plan_pro' => 'Pro',
+    'dashboard.plan_demo' => 'Demo',
     'dashboard.plan_firma' => 'Firma (via team)',
     'dashboard.view_pricing' => 'View pricing',
     'dashboard.view_team' => 'My team',
@@ -351,6 +354,11 @@ return [
     'billing.error.not_configured' => 'Stripe is not configured yet.',
     'billing.error.checkout_failed' => 'Stripe Checkout could not be started. Please try again later.',
     'billing.error.portal_failed' => 'The subscription management page could not be opened. Please try again later.',
+
+    'demo.started' => 'Welcome to demo mode! Look around freely - nothing here is saved permanently.',
+    'demo.rate_limited' => 'Too many demo requests from your connection. Please try again later.',
+    'demo.action_not_allowed' => 'This action is not available in demo mode. Sign up for free to use it.',
+    'demo.register_cta' => 'Create a real account',
 
     'account.errors.invalid_plan' => 'Invalid plan.',
     'account.plan_updated_pro' => "You're now on the Pro plan.",

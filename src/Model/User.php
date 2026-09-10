@@ -54,6 +54,23 @@ final class User
         $stmt->execute(['days' => $days, 'id' => $id]);
     }
 
+    public function markAsDemo(int $id, string $ip, int $hours): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET is_demo = 1, demo_ip = :ip, demo_expires_at = DATE_ADD(NOW(), INTERVAL :hours HOUR) WHERE id = :id'
+        );
+        $stmt->execute(['ip' => $ip, 'hours' => $hours, 'id' => $id]);
+    }
+
+    public function countRecentDemoSignups(string $ip): int
+    {
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM users WHERE is_demo = 1 AND demo_ip = :ip AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)'
+        );
+        $stmt->execute(['ip' => $ip]);
+        return (int) $stmt->fetchColumn();
+    }
+
     public function assignToOrganization(int $id, ?int $organizationId): void
     {
         $stmt = $this->db->prepare('UPDATE users SET organization_id = :organization_id WHERE id = :id');

@@ -79,6 +79,15 @@ final class TeamController
             $this->redirect('/team');
         }
 
+        // Demo accounts are a real but time-limited user row, cleaned up by
+        // deleting the users row directly - an owned organization would
+        // block that delete (FK RESTRICT on organizations.owner_user_id),
+        // so demo accounts must never be able to create one.
+        if (!empty($user['is_demo'])) {
+            Session::flash('error', $this->translator->trans('demo.action_not_allowed'));
+            $this->redirect('/team');
+        }
+
         $name = trim($_POST['name'] ?? '');
         if ($name === '') {
             Session::flash('error', $this->translator->trans('team.errors.name_required'));

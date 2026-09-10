@@ -29,8 +29,13 @@ final class DashboardController
         }
 
         $trialDaysLeft = null;
-        if (($user['plan'] ?? 'free') !== 'pro' && Auth::hasActiveTrial($user)) {
+        if (empty($user['is_demo']) && ($user['plan'] ?? 'free') !== 'pro' && Auth::hasActiveTrial($user)) {
             $trialDaysLeft = (int) ceil((strtotime($user['trial_ends_at']) - time()) / 86400);
+        }
+
+        $demoMinutesLeft = null;
+        if (!empty($user['is_demo']) && !empty($user['demo_expires_at'])) {
+            $demoMinutesLeft = max(0, (int) ceil((strtotime($user['demo_expires_at']) - time()) / 60));
         }
 
         echo $this->view->render('dashboard/index.twig', [
@@ -38,6 +43,7 @@ final class DashboardController
             'card' => $card,
             'can_view_stats' => $this->auth->can('view_stats'),
             'trial_days_left' => $trialDaysLeft,
+            'demo_minutes_left' => $demoMinutesLeft,
         ]);
     }
 }

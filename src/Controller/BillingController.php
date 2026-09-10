@@ -24,6 +24,12 @@ final class BillingController
         }
 
         $user = $this->auth->user();
+
+        if (!empty($user['is_demo'])) {
+            Session::flash('error', $this->translator->trans('demo.action_not_allowed'));
+            $this->redirect('/pricing');
+        }
+
         $interval = ($_POST['interval'] ?? '') === 'yearly' ? 'yearly' : 'monthly';
 
         try {

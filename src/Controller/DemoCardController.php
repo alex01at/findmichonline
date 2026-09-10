@@ -19,7 +19,7 @@ use Kartenlink\App\Support\View;
  */
 final class DemoCardController
 {
-    private const BASE_DEFAULTS = [
+    public const BASE_DEFAULTS = [
         'id' => 0,
         'job_title' => null, 'company' => null, 'category_id' => null,
         'email' => null, 'phone' => null, 'whatsapp' => null, 'website' => null,
@@ -32,7 +32,7 @@ final class DemoCardController
     ];
 
     /** persona key => card field overrides on top of BASE_DEFAULTS */
-    private const PERSONAS = [
+    public const PERSONAS = [
         'default' => [
             'slug' => 'anna-berger', 'display_name' => 'Anna Berger', 'job_title' => 'UX-Beraterin',
             'company' => 'Berger Design Studio', 'phone' => '+43 660 1234567', 'email' => 'anna@bergerdesign.at',

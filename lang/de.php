@@ -19,6 +19,7 @@ return [
     'home.subtitle' => 'Erstelle deine persönliche Visitenkarte mit eigenem Link und QR-Code. Teile alle deine Kontaktdaten mit einem Klick oder Scan – aktuell, mehrsprachig und jederzeit änderbar.',
     'home.cta_start' => 'Kostenlos starten',
     'home.cta_login' => 'Ich habe bereits ein Konto',
+    'home.cta_demo' => 'Demo ansehen',
     'home.hero_note' => 'Kostenlos starten. Jederzeit auf Pro upgraden.',
     'home.meta_description' => 'findmichonline: Erstelle kostenlos deine digitale Visitenkarte mit eigenem Kurzlink, individuellem Design (Classic/Modern), QR-Code zum Teilen, vCard-Download und mehrsprachiger Darstellung. In wenigen Minuten startklar – ganz ohne Druckkosten.',
 
@@ -129,7 +130,9 @@ return [
     'dashboard.plan_free' => 'Free',
     'dashboard.plan_trial' => 'Pro (Testphase)',
     'dashboard.trial_banner' => '🎉 Du testest Pro noch {days} Tag(e) kostenlos.',
+    'dashboard.demo_banner' => '🕑 Demo-Modus – dieser Account läuft in ca. {minutes} Minuten ab und wird automatisch gelöscht.',
     'dashboard.plan_pro' => 'Pro',
+    'dashboard.plan_demo' => 'Demo',
     'dashboard.plan_firma' => 'Firma (via Team)',
     'dashboard.view_pricing' => 'Tarife ansehen',
     'dashboard.view_team' => 'Mein Team',
@@ -352,6 +355,11 @@ return [
     'billing.error.not_configured' => 'Stripe ist noch nicht konfiguriert.',
     'billing.error.checkout_failed' => 'Der Stripe-Checkout konnte nicht gestartet werden. Bitte versuche es später erneut.',
     'billing.error.portal_failed' => 'Die Abo-Verwaltung konnte nicht geöffnet werden. Bitte versuche es später erneut.',
+
+    'demo.started' => 'Willkommen im Demo-Modus! Schau dich frei um – nichts davon bleibt dauerhaft gespeichert.',
+    'demo.rate_limited' => 'Zu viele Demo-Anfragen von deiner Verbindung. Bitte versuch es später erneut.',
+    'demo.action_not_allowed' => 'Diese Aktion ist im Demo-Modus nicht möglich. Registriere dich kostenlos, um sie zu nutzen.',
+    'demo.register_cta' => 'Jetzt echten Account anlegen',
 
     'account.errors.invalid_plan' => 'Ungültiger Tarif.',
     'account.plan_updated_pro' => 'Du bist jetzt im Pro-Tarif.',

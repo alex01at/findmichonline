@@ -21,6 +21,7 @@ use Kartenlink\App\Controller\BillingController;
 use Kartenlink\App\Controller\CardController;
 use Kartenlink\App\Controller\ContactController;
 use Kartenlink\App\Controller\DashboardController;
+use Kartenlink\App\Controller\DemoController;
 use Kartenlink\App\Controller\HomeController;
 use Kartenlink\App\Controller\DemoCardController;
 use Kartenlink\App\Controller\LandingController;
@@ -116,6 +117,9 @@ $router->get('/forgot-password', fn () => $authController->showForgotPassword())
 $router->post('/forgot-password', fn () => $authController->forgotPassword());
 $router->get('/reset-password/{token}', fn (array $params) => $authController->showResetPassword($params));
 $router->post('/reset-password/{token}', fn (array $params) => $authController->resetPassword($params));
+
+$demo = new DemoController($db, $auth, $translator);
+$router->post('/demo/start', fn () => $demo->start());
 
 $dashboard = new DashboardController($db, $view, $auth);
 $router->get('/dashboard', function () use ($dashboard, $requireAuth) {

@@ -4,15 +4,20 @@
 {% block main_class %}wide{% endblock %}
 
 {% block body %}
-    {% if trial_days_left is not null %}
+    {% if demo_minutes_left is not null %}
+        <div class="flash success" style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+            <span>{{ trans('dashboard.demo_banner', {minutes: demo_minutes_left}) }}</span>
+            <a href="/register" style="font-weight:600;">{{ trans('demo.register_cta') }}</a>
+        </div>
+    {% elseif trial_days_left is not null %}
         <div class="flash success" style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
             <span>{{ trans('dashboard.trial_banner', {days: trial_days_left}) }}</span>
             <a href="/pricing" style="font-weight:600;">{{ trans('dashboard.view_pricing') }}</a>
         </div>
     {% endif %}
 
-    {% set plan_key = in_organization ? 'dashboard.plan_firma' : (user.plan == 'pro' ? 'dashboard.plan_pro' : (trial_days_left is not null ? 'dashboard.plan_trial' : 'dashboard.plan_free')) %}
-    {% set plan_badge_class = in_organization ? 'plan-badge-firma' : ((user.plan == 'pro' or trial_days_left is not null) ? 'plan-badge-pro' : '') %}
+    {% set plan_key = user.is_demo ? 'dashboard.plan_demo' : (in_organization ? 'dashboard.plan_firma' : (user.plan == 'pro' ? 'dashboard.plan_pro' : (trial_days_left is not null ? 'dashboard.plan_trial' : 'dashboard.plan_free'))) %}
+    {% set plan_badge_class = user.is_demo ? 'plan-badge-demo' : (in_organization ? 'plan-badge-firma' : ((user.plan == 'pro' or trial_days_left is not null) ? 'plan-badge-pro' : '')) %}
 
     <div class="card">
         <div class="dashboard-header">
