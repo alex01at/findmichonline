@@ -128,3 +128,17 @@ document.querySelectorAll('.tab-btn').forEach(function (btn) {
         if (e.key === 'Escape' && !lightbox.hidden) lightbox.hidden = true;
     });
 })();
+
+(function () {
+    var tabs = document.querySelectorAll('#design-showcase-tabs .design-tab-btn');
+    var frame = document.getElementById('design-showcase-frame');
+    if (!tabs.length || !frame) return;
+
+    tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            tabs.forEach(function (t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+            frame.src = '/demo-card/' + tab.dataset.design;
+        });
+    });
+})();

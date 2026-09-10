@@ -22,15 +22,17 @@
         <p>{{ trans('home.designs_subtitle') }}</p>
     </div>
 
-    <div class="phone-mockup-row">
+    <div class="design-tabs" id="design-showcase-tabs">
         {% for design in ['classic', 'modern', 'professional', 'playful'] %}
-            <div class="phone-mockup">
-                <div class="phone-mockup-frame">
-                    <iframe src="/demo-card/{{ design }}" loading="lazy" title="{{ trans('card.edit.design_' ~ design) }}"></iframe>
-                </div>
-                <p class="phone-mockup-label">{{ trans('card.edit.design_' ~ design) }}</p>
-            </div>
+            <button type="button" class="design-tab-btn {% if loop.first %}active{% endif %}" data-design="{{ design }}">{{ trans('card.edit.design_' ~ design) }}</button>
         {% endfor %}
+    </div>
+    <div class="phone-mockup-row">
+        <div class="phone-mockup">
+            <div class="phone-mockup-frame">
+                <iframe id="design-showcase-frame" src="/demo-card/classic" loading="lazy" title="{{ trans('home.designs_heading') }}"></iframe>
+            </div>
+        </div>
     </div>
 
     <div class="section-heading" style="margin-top:3.5rem;">
@@ -123,14 +125,14 @@
         </div>
     </div>
 
-    <div class="cta-banner" style="margin-top:3.5rem;">
+    <div class="cta-banner cta-banner-muted" style="margin-top:3.5rem;">
         <h2 style="font-size:1.2rem;">{{ trans('home.pricing_teaser_heading') }}</h2>
         <p>{{ trans('home.pricing_teaser_text') }}</p>
         <p class="muted-link">{{ trans('home.pricing_teaser_firma') }}</p>
         <a class="btn" href="/pricing">{{ trans('home.pricing_teaser_cta') }}</a>
     </div>
 
-    <div class="cta-banner">
+    <div class="cta-banner cta-banner-primary">
         <h2>{{ trans('home.final_cta_heading') }}</h2>
         <p>{{ trans('home.final_cta_text') }}</p>
         <a class="btn" href="/register">{{ trans('home.final_cta_button') }}</a>
