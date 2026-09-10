@@ -13,13 +13,13 @@ use Kartenlink\App\Support\View;
  */
 final class LandingController
 {
-    /** profession key => [feature icons (3), CTA link target] */
+    /** profession key => [feature icons (3), CTA link target, demo card design shown in the phone mockup] */
     public const PROFESSIONS = [
-        'handwerker' => ['icons' => ['📱', '📞', '💬'], 'cta_href' => '/register'],
-        'makler' => ['icons' => ['🏠', '📅', '💬'], 'cta_href' => '/register'],
-        'fotografen' => ['icons' => ['🖼️', '📱', '📅'], 'cta_href' => '/register'],
-        'selbststaendige' => ['icons' => ['🔗', '💾', '📅'], 'cta_href' => '/register'],
-        'unternehmen' => ['icons' => ['🏢', '🎨', '💶'], 'cta_href' => '/team'],
+        'handwerker' => ['icons' => ['📱', '📞', '💬'], 'cta_href' => '/register', 'demo_design' => 'classic'],
+        'makler' => ['icons' => ['🏠', '📅', '💬'], 'cta_href' => '/register', 'demo_design' => 'professional'],
+        'fotografen' => ['icons' => ['🖼️', '📱', '📅'], 'cta_href' => '/register', 'demo_design' => 'playful'],
+        'selbststaendige' => ['icons' => ['🔗', '💾', '📅'], 'cta_href' => '/register', 'demo_design' => 'modern'],
+        'unternehmen' => ['icons' => ['🏢', '🎨', '💶'], 'cta_href' => '/team', 'demo_design' => 'professional'],
     ];
 
     public function __construct(private View $view)
@@ -39,6 +39,7 @@ final class LandingController
             'profession' => $profession,
             'icons' => self::PROFESSIONS[$profession]['icons'],
             'cta_href' => self::PROFESSIONS[$profession]['cta_href'],
+            'demo_design' => self::PROFESSIONS[$profession]['demo_design'],
         ]);
     }
 }

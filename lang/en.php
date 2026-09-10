@@ -22,6 +22,8 @@ return [
     'home.hero_note' => 'Start for free. Upgrade to Pro anytime.',
     'home.meta_description' => 'findmichonline: create your digital business card for free with your own short link, custom design (Classic/Modern), a shareable QR code, vCard download, and multilingual display. Ready in minutes — no printing costs.',
 
+    'home.designs_heading' => 'What your card can look like',
+    'home.designs_subtitle' => 'Four finished designs, live and real - not a mockup, exactly what your visitors will see.',
     'home.features_heading' => 'Everything your business card needs',
     'home.features_subtitle' => 'From the first contact to a saved address book entry – findmichonline covers it all.',
     'home.badge_pro' => 'Pro',

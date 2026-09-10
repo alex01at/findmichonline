@@ -22,6 +22,7 @@ use Kartenlink\App\Controller\CardController;
 use Kartenlink\App\Controller\ContactController;
 use Kartenlink\App\Controller\DashboardController;
 use Kartenlink\App\Controller\HomeController;
+use Kartenlink\App\Controller\DemoCardController;
 use Kartenlink\App\Controller\LandingController;
 use Kartenlink\App\Controller\LegalController;
 use Kartenlink\App\Controller\OnboardingController;
@@ -193,6 +194,7 @@ $router->get('/card/qr.svg', function () use ($qrCode, $requireAuth) {
     $requireAuth();
     $qrCode->svg();
 });
+$router->get('/qr/demo.svg', fn () => $qrCode->demoSvg());
 $router->get('/qr/{slug}.png', fn (array $params) => $qrCode->publicPng($params));
 $router->get('/qr/{slug}.svg', fn (array $params) => $qrCode->publicSvg($params));
 $router->get('/go/{slug}/{type}', fn (array $params) => $card->trackClick($params));
@@ -221,6 +223,9 @@ $landing = new LandingController($view);
 foreach (array_keys(LandingController::PROFESSIONS) as $profession) {
     $router->get('/digitale-visitenkarte-' . $profession, fn () => $landing->show(['profession' => $profession]));
 }
+
+$demoCard = new DemoCardController($view);
+$router->get('/demo-card/{design}', fn (array $params) => $demoCard->show($params));
 
 $account = new AccountController($db, $auth, $translator);
 $router->post('/account/plan', function () use ($account, $requireAuth) {

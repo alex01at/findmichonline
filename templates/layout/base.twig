@@ -457,6 +457,47 @@
             margin-left: 0.4rem;
             vertical-align: middle;
         }
+        .phone-mockup-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+        .phone-mockup {
+            width: 250px;
+            flex-shrink: 0;
+        }
+        .phone-mockup-frame {
+            border: 10px solid #1f2430;
+            border-radius: 34px;
+            overflow: hidden;
+            background: #1f2430;
+            box-shadow: 0 20px 45px rgba(20, 25, 40, 0.18);
+        }
+        .phone-mockup-frame::before {
+            content: '';
+            display: block;
+            height: 18px;
+            margin: 0 auto;
+            width: 70px;
+            background: #000;
+            border-radius: 0 0 10px 10px;
+        }
+        .phone-mockup-frame iframe {
+            display: block;
+            width: 100%;
+            height: 540px;
+            border: none;
+            background: #fff;
+        }
+        .phone-mockup-label {
+            text-align: center;
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-weight: 600;
+        }
         .steps {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

@@ -42,6 +42,12 @@ final class QrCodeController
         $this->respondPublic($params['slug'], 'svg');
     }
 
+    /** Fixed QR for the marketing-page demo cards (DemoCardController) - no real card behind it. */
+    public function demoSvg(): void
+    {
+        $this->render('dein-name', 'svg');
+    }
+
     private function respondOwn(string $format): void
     {
         $user = $this->auth->user();

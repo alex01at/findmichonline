@@ -22,6 +22,8 @@ return [
     'home.hero_note' => 'Kostenlos starten. Jederzeit auf Pro upgraden.',
     'home.meta_description' => 'findmichonline: Erstelle kostenlos deine digitale Visitenkarte mit eigenem Kurzlink, individuellem Design (Classic/Modern), QR-Code zum Teilen, vCard-Download und mehrsprachiger Darstellung. In wenigen Minuten startklar – ganz ohne Druckkosten.',
 
+    'home.designs_heading' => 'So kann deine Karte aussehen',
+    'home.designs_subtitle' => 'Vier fertige Designs, live und in echt – kein Mockup, sondern genau das, was deine Besucher sehen.',
     'home.features_heading' => 'Alles, was deine Visitenkarte braucht',
     'home.features_subtitle' => 'Vom ersten Kontakt bis zum gespeicherten Kontakteintrag – findmichonline deckt alles ab.',
     'home.badge_pro' => 'Pro',

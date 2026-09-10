@@ -18,6 +18,22 @@
     </div>
 
     <div class="section-heading">
+        <h2>{{ trans('home.designs_heading') }}</h2>
+        <p>{{ trans('home.designs_subtitle') }}</p>
+    </div>
+
+    <div class="phone-mockup-row">
+        {% for design in ['classic', 'modern', 'professional', 'playful'] %}
+            <div class="phone-mockup">
+                <div class="phone-mockup-frame">
+                    <iframe src="/demo-card/{{ design }}" loading="lazy" title="{{ trans('card.edit.design_' ~ design) }}"></iframe>
+                </div>
+                <p class="phone-mockup-label">{{ trans('card.edit.design_' ~ design) }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="section-heading" style="margin-top:3.5rem;">
         <h2>{{ trans('home.features_heading') }}</h2>
         <p>{{ trans('home.features_subtitle') }}</p>
     </div>
