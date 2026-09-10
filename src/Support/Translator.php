@@ -7,7 +7,6 @@ namespace Kartenlink\App\Support;
 final class Translator
 {
     public const SUPPORTED_LOCALES = ['de', 'en'];
-    public const DEFAULT_LOCALE = 'de';
 
     /** @var array<string, string> */
     private array $translations;
@@ -33,15 +32,39 @@ final class Translator
         return $text;
     }
 
+    /**
+     * German only if the browser actually lists German among its preferred
+     * languages (at any priority) - every other case, including a language
+     * we don't have translations for (French, Spanish, ...) or a missing/
+     * unparseable header, falls back to English rather than German.
+     */
     public static function detectLocale(?string $acceptLanguageHeader): string
     {
-        if ($acceptLanguageHeader !== null) {
-            $preferred = strtolower(substr($acceptLanguageHeader, 0, 2));
-            if (in_array($preferred, self::SUPPORTED_LOCALES, true)) {
-                return $preferred;
+        if ($acceptLanguageHeader === null || trim($acceptLanguageHeader) === '') {
+            return 'en';
+        }
+
+        $entries = [];
+        foreach (explode(',', $acceptLanguageHeader) as $part) {
+            $part = trim($part);
+            if ($part === '') {
+                continue;
+            }
+            $pieces = explode(';q=', $part);
+            $tag = strtolower(trim($pieces[0]));
+            $quality = isset($pieces[1]) ? (float) $pieces[1] : 1.0;
+            $entries[] = [$tag, $quality];
+        }
+
+        usort($entries, fn (array $a, array $b) => $b[1] <=> $a[1]);
+
+        foreach ($entries as [$tag, $quality]) {
+            $primary = substr($tag, 0, 2);
+            if (in_array($primary, self::SUPPORTED_LOCALES, true)) {
+                return $primary;
             }
         }
 
-        return self::DEFAULT_LOCALE;
+        return 'en';
     }
 }
