@@ -291,6 +291,14 @@ return [
     'pricing.note_dev_mode' => 'Stripe ist noch nicht konfiguriert. Der Tarif wird zu Testzwecken direkt umgeschaltet, ohne echte Zahlung.',
     'pricing.cancel_scheduled' => 'Dein Abo endet zum Ende der aktuellen Abrechnungsperiode.',
 
+    'pricing.comparison_heading' => 'Alle Funktionen im Überblick',
+    'pricing.comparison.feature_col' => 'Funktion',
+    'pricing.comparison.whatsapp' => 'WhatsApp-Kontakt',
+    'pricing.comparison.social_links' => 'Social-Media-Verlinkung',
+    'pricing.comparison.exclusive_palettes' => 'Exklusive Firmen-Farbschemata',
+    'pricing.comparison.team_management' => 'Zentrale Team-Verwaltung',
+    'pricing.comparison.shared_branding' => 'Einheitliches Firmen-Branding (Logo, Adresse, Design)',
+
     'pricing.firma.name' => 'Firma',
     'pricing.firma.price' => '0,49 € / Mitarbeiter / Monat',
     'pricing.firma.min_note' => 'mind. 5 Mitarbeiter = 2,45 € / Monat',

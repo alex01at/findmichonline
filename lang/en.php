@@ -291,6 +291,14 @@ return [
     'pricing.note_dev_mode' => 'Stripe is not configured yet. The plan is switched directly for testing, without a real payment.',
     'pricing.cancel_scheduled' => 'Your subscription ends at the end of the current billing period.',
 
+    'pricing.comparison_heading' => 'All features at a glance',
+    'pricing.comparison.feature_col' => 'Feature',
+    'pricing.comparison.whatsapp' => 'WhatsApp contact',
+    'pricing.comparison.social_links' => 'Social media links',
+    'pricing.comparison.exclusive_palettes' => 'Exclusive company color palettes',
+    'pricing.comparison.team_management' => 'Central team management',
+    'pricing.comparison.shared_branding' => 'Consistent company branding (logo, address, design)',
+
     'pricing.firma.name' => 'Firma',
     'pricing.firma.price' => '€0.49 / employee / month',
     'pricing.firma.min_note' => 'min. 5 employees = €2.45 / month',

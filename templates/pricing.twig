@@ -117,6 +117,49 @@
         </div>
     </div>
 
+    <div class="section-heading" style="margin-top:3.5rem;">
+        <h2>{{ trans('pricing.comparison_heading') }}</h2>
+    </div>
+    <div class="card" style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.92rem;">
+            <thead>
+                <tr style="text-align:left; border-bottom:1px solid var(--border);">
+                    <th style="padding:0.6rem;">{{ trans('pricing.comparison.feature_col') }}</th>
+                    <th style="padding:0.6rem; text-align:center;">{{ trans('pricing.free.name') }}</th>
+                    <th style="padding:0.6rem; text-align:center;">{{ trans('pricing.pro.name') }}</th>
+                    <th style="padding:0.6rem; text-align:center;">{{ trans('pricing.firma.name') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in [
+                    {label: 'pricing.feature.card', free: true, pro: true, firma: true},
+                    {label: 'pricing.feature.qr', free: true, pro: true, firma: true},
+                    {label: 'pricing.feature.classic_design', free: true, pro: true, firma: true},
+                    {label: 'pricing.comparison.whatsapp', free: true, pro: true, firma: true},
+                    {label: 'pricing.comparison.social_links', free: true, pro: true, firma: true},
+                    {label: 'pricing.feature.pro_designs', free: false, pro: true, firma: true},
+                    {label: 'pricing.feature.custom_colors', free: false, pro: true, firma: true},
+                    {label: 'pricing.feature.vcard', free: false, pro: true, firma: true},
+                    {label: 'pricing.feature.view_stats', free: false, pro: true, firma: true},
+                    {label: 'pricing.feature.no_branding', free: false, pro: true, firma: true},
+                    {label: 'pricing.feature.gallery', free: false, pro: true, firma: true},
+                    {label: 'pricing.feature.offerings', free: false, pro: true, firma: true},
+                    {label: 'pricing.feature.booking_link', free: false, pro: true, firma: true},
+                    {label: 'pricing.comparison.exclusive_palettes', free: false, pro: false, firma: true},
+                    {label: 'pricing.comparison.team_management', free: false, pro: false, firma: true},
+                    {label: 'pricing.comparison.shared_branding', free: false, pro: false, firma: true},
+                ] %}
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:0.6rem;">{{ trans(row.label) }}</td>
+                        <td style="padding:0.6rem; text-align:center;">{% if row.free %}<span style="color:var(--success); font-weight:700;">✓</span>{% else %}<span class="muted-link" style="margin:0;">–</span>{% endif %}</td>
+                        <td style="padding:0.6rem; text-align:center;">{% if row.pro %}<span style="color:var(--success); font-weight:700;">✓</span>{% else %}<span class="muted-link" style="margin:0;">–</span>{% endif %}</td>
+                        <td style="padding:0.6rem; text-align:center;">{% if row.firma %}<span style="color:var(--success); font-weight:700;">✓</span>{% else %}<span class="muted-link" style="margin:0;">–</span>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
     <p class="muted-link" style="text-align:center; margin-top:2rem;">
         {{ stripe_configured ? trans('pricing.note_stripe') : trans('pricing.note_dev_mode') }}
     </p>
