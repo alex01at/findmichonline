@@ -50,6 +50,14 @@
         {% endfor %}
     </div>
 
+    {% if profession == 'unternehmen' %}
+        <div class="price-highlight" style="margin-top:3rem;">
+            <p class="price-highlight-eyebrow">{{ trans('landing.unternehmen.price_eyebrow') }}</p>
+            <p class="price-highlight-amount">{{ trans('landing.unternehmen.price_amount') }}</p>
+            <p class="price-highlight-note">{{ trans('landing.unternehmen.price_note') }}</p>
+        </div>
+    {% endif %}
+
     <div class="cta-banner cta-banner-primary" style="margin-top:3.5rem;">
         <h2>{{ trans('landing.' ~ profession ~ '.cta_heading') }}</h2>
         <p>{{ trans('landing.' ~ profession ~ '.cta_text') }}</p>

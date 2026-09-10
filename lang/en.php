@@ -15,7 +15,7 @@ return [
     'nav.admin' => 'Admin',
 
     'home.hero_eyebrow' => 'Digital business card, no paper needed',
-    'home.heading' => 'Connect in seconds – no paper required',
+    'home.heading' => 'Your digital business card. Simple. Professional. Always up to date.',
     'home.subtitle' => 'Create your personal business card with your own link and QR code. Share all your contact details with one click or scan – always up to date, multilingual, and editable anytime.',
     'home.cta_start' => 'Start for free',
     'home.cta_login' => 'I already have an account',
@@ -50,9 +50,6 @@ return [
     'home.feature.offerings_text' => 'List your services, products, or packages with title, description, and price right on your card.',
     'home.feature.booking_title' => 'Appointment booking',
     'home.feature.booking_text' => 'Link your booking calendar (e.g. Calendly) as a button right on your card.',
-    'home.feature.firma_title' => 'For teams & companies',
-    'home.feature.firma_text' => 'One main account manages any number of employee accounts with full Pro access and shared branding - starting at 5 employees for €0.49 per employee/month.',
-    'home.feature.firma_link' => 'Learn more →',
 
     'home.steps_heading' => 'How it works',
     'home.step1_title' => 'Sign up',
@@ -64,8 +61,15 @@ return [
 
     'home.pricing_teaser_heading' => 'Start for free, upgrade anytime',
     'home.pricing_teaser_text' => 'Free is plenty to get started. Pro adds custom colors, vCard download, visitor stats, and more – starting at €1.99/month.',
-    'home.pricing_teaser_firma' => 'For teams: the Firma plan gives every employee full Pro access, managed from one main account – starting at 5 people for €0.49 per employee/month.',
     'home.pricing_teaser_cta' => 'See all plans',
+
+    'home.teams.eyebrow' => 'For teams & companies',
+    'home.teams.heading' => 'Digital business cards for your whole team',
+    'home.teams.point_1' => 'One central management.',
+    'home.teams.point_2' => 'Consistent branding.',
+    'home.teams.point_3' => 'Every employee gets their own digital business card.',
+    'home.teams.price' => 'From €0.49 per employee/month',
+    'home.teams.cta' => 'See Teams',
 
     'home.final_cta_heading' => 'Ready for your own business card?',
     'home.final_cta_text' => 'Get started now – free, no risk.',
@@ -585,4 +589,7 @@ return [
     'landing.unternehmen.cta_heading' => 'Ready to set up your team?',
     'landing.unternehmen.cta_text' => 'Create your company, set your branding, invite employees - ready in minutes.',
     'landing.unternehmen.cta_button' => 'Create company',
+    'landing.unternehmen.price_eyebrow' => 'The price',
+    'landing.unternehmen.price_amount' => '€0.49 per employee / month',
+    'landing.unternehmen.price_note' => 'Minimum 5 employees, scales up anytime after that. Cancel monthly, no setup fee.',
 ];

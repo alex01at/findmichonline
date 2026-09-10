@@ -15,7 +15,7 @@ return [
     'nav.admin' => 'Admin',
 
     'home.hero_eyebrow' => 'Digitale Visitenkarte statt Papier',
-    'home.heading' => 'Vernetze dich in Sekunden – ganz ohne Papier',
+    'home.heading' => 'Deine digitale Visitenkarte. Einfach. Professionell. Immer aktuell.',
     'home.subtitle' => 'Erstelle deine persönliche Visitenkarte mit eigenem Link und QR-Code. Teile alle deine Kontaktdaten mit einem Klick oder Scan – aktuell, mehrsprachig und jederzeit änderbar.',
     'home.cta_start' => 'Kostenlos starten',
     'home.cta_login' => 'Ich habe bereits ein Konto',
@@ -50,9 +50,6 @@ return [
     'home.feature.offerings_text' => 'Liste deine Dienstleistungen, Produkte oder Pakete mit Titel, Beschreibung und Preis direkt auf deiner Karte.',
     'home.feature.booking_title' => 'Terminbuchung',
     'home.feature.booking_text' => 'Verlinke deinen Buchungskalender (z. B. Calendly) direkt als Button auf deiner Karte.',
-    'home.feature.firma_title' => 'Für Teams & Unternehmen',
-    'home.feature.firma_text' => 'Ein Hauptaccount verwaltet beliebig viele Mitarbeiter-Konten mit vollem Pro-Zugriff und einheitlichem Branding – ab 5 Mitarbeitern für 0,49 € pro Mitarbeiter im Monat.',
-    'home.feature.firma_link' => 'Mehr erfahren →',
 
     'home.steps_heading' => 'So einfach geht\'s',
     'home.step1_title' => 'Registrieren',
@@ -64,8 +61,15 @@ return [
 
     'home.pricing_teaser_heading' => 'Kostenlos starten, jederzeit upgraden',
     'home.pricing_teaser_text' => 'Free reicht für den Einstieg völlig aus. Mit Pro erhältst du eigene Farben, vCard-Download, Besucherstatistik und mehr – schon ab 1,99 € im Monat.',
-    'home.pricing_teaser_firma' => 'Für Teams: Der Firma-Plan gibt jedem Mitarbeiter vollen Pro-Zugriff, verwaltet über einen Hauptaccount – ab 5 Personen für 0,49 € pro Mitarbeiter im Monat.',
     'home.pricing_teaser_cta' => 'Alle Tarife ansehen',
+
+    'home.teams.eyebrow' => 'Für Teams und Unternehmen',
+    'home.teams.heading' => 'Digitale Visitenkarten für dein gesamtes Team',
+    'home.teams.point_1' => 'Eine zentrale Verwaltung.',
+    'home.teams.point_2' => 'Einheitliches Branding.',
+    'home.teams.point_3' => 'Jeder Mitarbeiter erhält seine eigene digitale Visitenkarte.',
+    'home.teams.price' => 'Ab 0,49 € pro Mitarbeiter/Monat',
+    'home.teams.cta' => 'Teams ansehen',
 
     'home.final_cta_heading' => 'Bereit für deine eigene Visitenkarte?',
     'home.final_cta_text' => 'Leg jetzt los – kostenlos und ohne Risiko.',
@@ -586,4 +590,7 @@ return [
     'landing.unternehmen.cta_heading' => 'Bereit, dein Team auszustatten?',
     'landing.unternehmen.cta_text' => 'Firma anlegen, Branding festlegen, Mitarbeiter einladen – in wenigen Minuten startklar.',
     'landing.unternehmen.cta_button' => 'Firma anlegen',
+    'landing.unternehmen.price_eyebrow' => 'Der Preis',
+    'landing.unternehmen.price_amount' => '0,49 € pro Mitarbeiter / Monat',
+    'landing.unternehmen.price_note' => 'Mindestens 5 Mitarbeiter, danach jederzeit erweiterbar. Monatlich kündbar, keine Einrichtungsgebühr.',
 ];

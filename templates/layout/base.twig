@@ -415,7 +415,7 @@
         }
         .hero .cta-secondary:hover { color: #fff; }
         .hero .hero-note {
-            margin: 1.4rem 0 0 0;
+            margin: 1.4rem auto 0 auto;
             font-size: 0.85rem;
             opacity: 0.75;
         }
@@ -625,6 +625,99 @@
         }
         .cta-banner-primary .btn:hover {
             background: #eef1f8;
+        }
+        .teams-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 2.5rem;
+            background: linear-gradient(135deg, #1f2430, #384049);
+            color: #fff;
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            margin: 2rem 0 1rem 0;
+        }
+        .teams-section-text {
+            flex: 1 1 320px;
+        }
+        .teams-section .eyebrow {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .teams-section h2 {
+            margin: 0 0 1.2rem 0;
+            font-size: 1.5rem;
+        }
+        .teams-checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .teams-checklist li {
+            padding-left: 1.6rem;
+            position: relative;
+            opacity: 0.92;
+        }
+        .teams-checklist li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+            color: #7ee0c4;
+        }
+        .teams-section-price {
+            flex: 0 1 260px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.8rem;
+            text-align: center;
+        }
+        .teams-price {
+            margin: 0 0 1.2rem 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+        .teams-section-price .btn {
+            background: #fff;
+            color: #1f2430;
+            width: 100%;
+        }
+        .teams-section-price .btn:hover {
+            background: #eef1f8;
+        }
+        .price-highlight {
+            text-align: center;
+            background: var(--card-bg);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 2.6rem 2rem;
+        }
+        .price-highlight-eyebrow {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--primary);
+        }
+        .price-highlight-amount {
+            margin: 0 0 0.6rem 0;
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+        .price-highlight-note {
+            margin: 0;
+            color: var(--muted);
         }
         .onboarding-progress-wrap {
             margin: 0 0 1.5rem 0;

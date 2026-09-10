@@ -96,11 +96,6 @@
             <h3>{{ trans('home.feature.booking_title') }}<span class="badge-pro">{{ trans('home.badge_pro') }}</span></h3>
             <p>{{ trans('home.feature.booking_text') }}</p>
         </div>
-        <div class="feature-card">
-            <span class="icon">🏢</span>
-            <h3>{{ trans('home.feature.firma_title') }}<span class="badge-pro">{{ trans('home.badge_firma') }}</span></h3>
-            <p>{{ trans('home.feature.firma_text') }} <a href="/pricing">{{ trans('home.feature.firma_link') }}</a></p>
-        </div>
     </div>
 
     <div class="section-heading">
@@ -128,8 +123,23 @@
     <div class="cta-banner cta-banner-muted" style="margin-top:3.5rem;">
         <h2 style="font-size:1.2rem;">{{ trans('home.pricing_teaser_heading') }}</h2>
         <p>{{ trans('home.pricing_teaser_text') }}</p>
-        <p class="muted-link">{{ trans('home.pricing_teaser_firma') }}</p>
         <a class="btn" href="/pricing">{{ trans('home.pricing_teaser_cta') }}</a>
+    </div>
+
+    <div class="teams-section">
+        <div class="teams-section-text">
+            <span class="eyebrow">{{ trans('home.teams.eyebrow') }}</span>
+            <h2>{{ trans('home.teams.heading') }}</h2>
+            <ul class="teams-checklist">
+                <li>{{ trans('home.teams.point_1') }}</li>
+                <li>{{ trans('home.teams.point_2') }}</li>
+                <li>{{ trans('home.teams.point_3') }}</li>
+            </ul>
+        </div>
+        <div class="teams-section-price">
+            <p class="teams-price">{{ trans('home.teams.price') }}</p>
+            <a class="btn" href="/digitale-visitenkarte-unternehmen">{{ trans('home.teams.cta') }}</a>
+        </div>
     </div>
 
     <div class="cta-banner cta-banner-primary">
