@@ -32,7 +32,7 @@
                     <p class="muted-link">{{ trans('dashboard.email_label', {email: user.email}) }}</p>
                 </div>
             </div>
-            <span class="plan-badge {{ plan_badge_class }}">{{ trans(plan_key) }}</span>
+            <span class="plan-badge {{ plan_badge_class }}" {% if user.is_demo %}title="{{ trans('dashboard.plan_demo_hint') }}"{% endif %}>{{ trans(plan_key) }}</span>
         </div>
 
         <p style="margin-top:1.2rem;">
