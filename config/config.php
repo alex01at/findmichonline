@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 use Dotenv\Dotenv;
 
+// Must match Database::connection()'s `SET time_zone = '+00:00'` - both
+// sides of every "time remaining" computation (trial_ends_at,
+// demo_expires_at, ...) need to agree on one timezone. Without this, PHP
+// falls back to whatever the host's php.ini sets (which varies per server -
+// e.g. Europe/Vienna on production vs. UTC in local dev), so strtotime()
+// misreads the UTC datetime strings MySQL now returns.
+date_default_timezone_set('UTC');
+
 $root = dirname(__DIR__);
 
 if (file_exists($root . '/.env')) {
