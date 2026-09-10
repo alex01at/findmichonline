@@ -19,7 +19,8 @@ return [
     'home.subtitle' => 'Erstelle deine persönliche Visitenkarte mit eigenem Link und QR-Code. Teile alle deine Kontaktdaten mit einem Klick oder Scan – aktuell, mehrsprachig und jederzeit änderbar.',
     'home.cta_start' => 'Kostenlos starten',
     'home.cta_login' => 'Ich habe bereits ein Konto',
-    'home.cta_demo' => 'Demo ansehen',
+    'home.cta_demo' => 'Jetzt ausprobieren',
+    'home.cta_demo_note' => 'Ohne Registrierung – schau dir alle Funktionen an.',
     'home.hero_note' => 'Kostenlos starten. Jederzeit auf Pro upgraden.',
     'home.meta_description' => 'findmichonline: Erstelle kostenlos deine digitale Visitenkarte mit eigenem Kurzlink, individuellem Design (Classic/Modern), QR-Code zum Teilen, vCard-Download und mehrsprachiger Darstellung. In wenigen Minuten startklar – ganz ohne Druckkosten.',
 

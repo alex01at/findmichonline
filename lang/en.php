@@ -19,7 +19,8 @@ return [
     'home.subtitle' => 'Create your personal business card with your own link and QR code. Share all your contact details with one click or scan – always up to date, multilingual, and editable anytime.',
     'home.cta_start' => 'Start for free',
     'home.cta_login' => 'I already have an account',
-    'home.cta_demo' => 'View demo',
+    'home.cta_demo' => 'Try it now',
+    'home.cta_demo_note' => 'No sign-up required - explore every feature.',
     'home.hero_note' => 'Start for free. Upgrade to Pro anytime.',
     'home.meta_description' => 'findmichonline: create your digital business card for free with your own short link, custom design (Classic/Modern), a shareable QR code, vCard download, and multilingual display. Ready in minutes — no printing costs.',
 
