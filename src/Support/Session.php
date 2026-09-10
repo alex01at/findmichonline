@@ -6,9 +6,14 @@ namespace Kartenlink\App\Support;
 
 final class Session
 {
+    // "PHPSESSID" is an instant giveaway to tech-detection tools (Wappalyzer
+    // and friends) - a generic name doesn't reveal the stack.
+    private const COOKIE_NAME = 'sid';
+
     public static function start(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_name(self::COOKIE_NAME);
             session_start();
         }
     }
@@ -51,7 +56,7 @@ final class Session
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
-            setcookie('PHPSESSID', '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+            setcookie(self::COOKIE_NAME, '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
         }
         session_destroy();
     }

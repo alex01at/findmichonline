@@ -1,4 +1,10 @@
 Options -Indexes
+ServerSignature Off
+
+<IfModule mod_headers.c>
+    Header unset X-Powered-By
+    Header unset Server
+</IfModule>
 
 <IfModule mod_expires.c>
     ExpiresActive On

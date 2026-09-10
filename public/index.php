@@ -51,6 +51,11 @@ if ($config['app']['env'] !== 'dev') {
     error_reporting(E_ALL);
 }
 
+// Reduce fingerprintability for tools like Wappalyzer - expose_php can only
+// be set in php.ini (PHP_INI_SYSTEM), but the header it controls can still
+// be removed at runtime regardless of that setting.
+header_remove('X-Powered-By');
+
 Session::start();
 
 $locale = Session::get('locale');
