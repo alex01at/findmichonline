@@ -175,6 +175,7 @@ return [
     'card.edit.design_playful' => 'Verspielt',
     'card.edit.design_pro_only' => '(nur mit Pro)',
     'card.edit.design_pro_hint' => 'Dieses Design ist Teil des Pro-Tarifs.',
+    'card.edit.design_trial_hint' => 'Du siehst dies dank deiner kostenlosen Pro-Testphase. Läuft sie ohne Abo ab, wird deine Karte automatisch auf Classic zurückgesetzt.',
     'card.edit.design_fixed_by_org' => 'Das Design wird von deiner Firma vorgegeben.',
     'card.edit.publish_label' => 'Visitenkarte veröffentlichen',
     'card.edit.submit' => 'Speichern',

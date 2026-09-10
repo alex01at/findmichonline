@@ -28,6 +28,8 @@
             </div>
             {% if not design_pro_allowed %}
                 <p class="muted-link" style="margin-top:0.8rem;">{{ trans('card.edit.design_pro_hint') }} <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a></p>
+            {% elseif design_trial_notice %}
+                <p class="muted-link" style="margin-top:0.8rem;">ℹ️ {{ trans('card.edit.design_trial_hint') }} <a href="/pricing">{{ trans('dashboard.stats_locked_cta') }}</a></p>
             {% endif %}
 
             <div class="onboarding-nav">

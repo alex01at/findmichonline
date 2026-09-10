@@ -149,6 +149,24 @@ final class Auth
         return $user !== null && $org !== null && (int) $org['owner_user_id'] === (int) $user['id'];
     }
 
+    /**
+     * True only when a user's Pro access comes from their own temporary
+     * trial clock - not a paid plan, not an org, not a demo account. Used
+     * to explicitly call out "this will go away" wherever a trial user is
+     * currently enjoying a Pro-only feature (e.g. a design other than
+     * Classic), since otherwise they'd have no indication their card will
+     * silently fall back once the trial ends.
+     */
+    public function isOnIndividualTrial(): bool
+    {
+        $user = $this->user();
+        if ($user === null || !empty($user['is_demo']) || $this->organization() !== null) {
+            return false;
+        }
+
+        return ($user['plan'] ?? Features::FREE) !== Features::PRO && self::hasActiveTrial($user);
+    }
+
     private function issueRememberToken(int $userId): void
     {
         $token = bin2hex(random_bytes(32));

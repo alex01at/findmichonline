@@ -175,6 +175,7 @@ return [
     'card.edit.design_playful' => 'Playful',
     'card.edit.design_pro_only' => '(Pro only)',
     'card.edit.design_pro_hint' => 'This design is part of the Pro plan.',
+    'card.edit.design_trial_hint' => "You're seeing this thanks to your free Pro trial. If it ends without a subscription, your card automatically falls back to Classic.",
     'card.edit.design_fixed_by_org' => 'The design is set by your company.',
     'card.edit.publish_label' => 'Publish business card',
     'card.edit.submit' => 'Save',

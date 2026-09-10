@@ -532,6 +532,7 @@ final class OnboardingController
 
         if ($step === 7) {
             $context['design_pro_allowed'] = $this->auth->can('design_pro');
+            $context['design_trial_notice'] = $this->auth->isOnIndividualTrial();
         }
 
         echo $this->view->render("onboarding/step{$step}.twig", $context);

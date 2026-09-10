@@ -19,7 +19,7 @@ final class PricingController
         $user = $this->auth->check() ? $this->auth->user() : null;
 
         $trialDaysLeft = null;
-        if ($user !== null && empty($user['is_demo']) && ($user['plan'] ?? 'free') !== 'pro' && Auth::hasActiveTrial($user)) {
+        if ($this->auth->isOnIndividualTrial()) {
             $trialDaysLeft = (int) ceil((strtotime($user['trial_ends_at']) - time()) / 86400);
         }
 
