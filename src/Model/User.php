@@ -171,6 +171,32 @@ final class User
         $stmt->execute(['id' => $id]);
     }
 
+    public function setInviteToken(int $id, string $tokenHash, int $ttlSeconds): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET invite_token_hash = :hash, invite_token_expires_at = DATE_ADD(NOW(), INTERVAL :ttl SECOND) WHERE id = :id'
+        );
+        $stmt->execute(['hash' => $tokenHash, 'ttl' => $ttlSeconds, 'id' => $id]);
+    }
+
+    public function findByValidInviteTokenHash(string $tokenHash): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM users WHERE invite_token_hash = :hash AND invite_token_expires_at > NOW()'
+        );
+        $stmt->execute(['hash' => $tokenHash]);
+        $user = $stmt->fetch();
+        return $user ?: null;
+    }
+
+    public function clearInviteToken(int $id): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET invite_token_hash = NULL, invite_token_expires_at = NULL WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
     public function findByStripeCustomerId(string $customerId): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE stripe_customer_id = :customer_id');

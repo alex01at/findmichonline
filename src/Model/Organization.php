@@ -88,7 +88,11 @@ final class Organization
     public function listMembers(int $organizationId): array
     {
         $stmt = $this->db->prepare(
-            'SELECT id, name, email, created_at FROM users WHERE organization_id = :organization_id ORDER BY created_at ASC'
+            'SELECT u.id, u.name, u.email, u.created_at, c.onboarding_completed_at
+             FROM users u
+             LEFT JOIN business_cards c ON c.user_id = u.id
+             WHERE u.organization_id = :organization_id
+             ORDER BY u.created_at ASC'
         );
         $stmt->execute(['organization_id' => $organizationId]);
         return $stmt->fetchAll();

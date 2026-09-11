@@ -9,6 +9,8 @@ use Kartenlink\App\Model\Organization;
 use Kartenlink\App\Model\User;
 use Kartenlink\App\Support\Auth;
 use Kartenlink\App\Support\LogoUploader;
+use Kartenlink\App\Support\Mailer;
+use Kartenlink\App\Support\PasswordPolicy;
 use Kartenlink\App\Support\Session;
 use Kartenlink\App\Support\StripeService;
 use Kartenlink\App\Support\Translator;
@@ -21,8 +23,13 @@ final class TeamController
     private const TRIAL_DAYS = 7;
     private const MIN_SEATS = 5;
 
+    // More generous than the 1h password-reset token, since this is a
+    // routine onboarding task rather than a security-critical action.
+    private const INVITE_TOKEN_TTL_DAYS = 7;
+
     private Organization $organizations;
     private User $users;
+    private BusinessCard $cards;
 
     public function __construct(
         private PDO $db,
@@ -30,10 +37,14 @@ final class TeamController
         private View $view,
         private Translator $translator,
         private StripeService $stripe,
-        private LogoUploader $logoUploader
+        private LogoUploader $logoUploader,
+        private LogoUploader $photoUploader,
+        private Mailer $mailer,
+        private string $appUrl
     ) {
         $this->organizations = new Organization($db);
         $this->users = new User($db);
+        $this->cards = new BusinessCard($db);
     }
 
     public function index(): void
@@ -105,34 +116,218 @@ final class TeamController
     {
         $org = $this->auth->organization();
 
-        $email = strtolower(trim($_POST['email'] ?? ''));
+        $email = trim($_POST['email'] ?? '');
         $name = trim($_POST['name'] ?? '');
+        $jobTitle = trim($_POST['job_title'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
 
-        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            Session::flash('error', $this->translator->trans('team.errors.email_invalid'));
+        $result = $this->inviteOne($org, $email, $name, $jobTitle, $phone);
+
+        if (!$result['success']) {
+            Session::flash('error', $result['error']);
             $this->redirect('/team');
         }
-
-        if ($this->users->findByEmail($email) !== null) {
-            Session::flash('error', $this->translator->trans('team.errors.email_taken'));
-            $this->redirect('/team');
-        }
-
-        if ($name === '') {
-            $name = explode('@', $email)[0];
-        }
-
-        $password = bin2hex(random_bytes(6));
-        $userId = $this->users->create($name, $email, password_hash($password, PASSWORD_DEFAULT));
-        $this->users->assignToOrganization($userId, (int) $org['id']);
-
-        $this->syncSeats($org);
 
         Session::flash('success', $this->translator->trans('team.invite.success', [
-            'email' => $email,
-            'password' => $password,
+            'email' => strtolower($email),
         ]));
         $this->redirect('/team');
+    }
+
+    public function inviteCsv(): void
+    {
+        $org = $this->auth->organization();
+
+        if (!isset($_FILES['csv']) || $_FILES['csv']['error'] !== UPLOAD_ERR_OK) {
+            Session::flash('error', $this->translator->trans('team.csv_import.errors.upload_failed'));
+            $this->redirect('/team');
+        }
+
+        $handle = fopen($_FILES['csv']['tmp_name'], 'r');
+        if ($handle === false) {
+            Session::flash('error', $this->translator->trans('team.csv_import.errors.upload_failed'));
+            $this->redirect('/team');
+        }
+
+        // First line is treated as a header (name,email,job_title,phone) and skipped.
+        fgetcsv($handle);
+
+        $successCount = 0;
+        $errorLines = [];
+        $row = 1;
+
+        while (($data = fgetcsv($handle)) !== false) {
+            $row++;
+            if (count(array_filter($data, fn ($v) => trim((string) $v) !== '')) === 0) {
+                continue;
+            }
+
+            [$name, $email, $jobTitle, $phone] = array_pad($data, 4, null);
+            $result = $this->inviteOne($org, (string) $email, (string) $name, (string) $jobTitle, (string) $phone);
+
+            if ($result['success']) {
+                $successCount++;
+            } else {
+                $errorLines[] = $this->translator->trans('team.csv_import.row_error', [
+                    'row' => $row,
+                    'error' => $result['error'],
+                ]);
+            }
+        }
+
+        fclose($handle);
+
+        $total = $successCount + count($errorLines);
+        $summary = $this->translator->trans('team.csv_import.summary', [
+            'success' => $successCount,
+            'total' => $total,
+        ]);
+
+        if ($errorLines !== []) {
+            $summary .= ' ' . implode(' ', $errorLines);
+        }
+
+        Session::flash($errorLines === [] ? 'success' : 'error', $summary);
+        $this->redirect('/team');
+    }
+
+    /** Public, unauthenticated - reached from the link in the invite email. */
+    public function showAcceptInvite(array $params): void
+    {
+        $token = (string) ($params['token'] ?? '');
+        $user = $token !== '' ? $this->users->findByValidInviteTokenHash(hash('sha256', $token)) : null;
+
+        if ($user === null) {
+            http_response_code(404);
+            echo $this->view->render('team/invite_invalid.twig');
+            return;
+        }
+
+        $this->auth->login(['id' => $user['id']]);
+        $this->users->clearInviteToken((int) $user['id']);
+
+        $this->redirect('/team/complete-profile');
+    }
+
+    public function reinvite(array $params): void
+    {
+        $org = $this->auth->organization();
+        $targetId = (int) ($params['userId'] ?? 0);
+        $target = $targetId > 0 ? $this->users->findById($targetId) : null;
+
+        if ($target === null || (int) ($target['organization_id'] ?? 0) !== (int) $org['id']) {
+            http_response_code(403);
+            echo '403 - Kein Zugriff';
+            return;
+        }
+
+        if ($targetId === (int) $org['owner_user_id']) {
+            Session::flash('error', $this->translator->trans('team.reinvite.cannot_target_owner'));
+            $this->redirect('/team');
+        }
+
+        $card = $this->cards->findByUserId($targetId);
+        if ($card !== null && $card['onboarding_completed_at'] !== null) {
+            Session::flash('error', $this->translator->trans('team.reinvite.already_completed'));
+            $this->redirect('/team');
+        }
+
+        $this->sendInviteEmail($targetId, $target['email']);
+
+        Session::flash('success', $this->translator->trans('team.reinvite.success', [
+            'email' => $target['email'],
+        ]));
+        $this->redirect('/team');
+    }
+
+    public function showCompleteProfile(): void
+    {
+        $user = $this->auth->user();
+        $card = $this->cards->findByUserId((int) $user['id']);
+
+        echo $this->view->render('team/complete_profile.twig', [
+            'user' => $user,
+            'card' => $card,
+            'organization' => $this->auth->organization(),
+        ]);
+    }
+
+    public function completeProfile(): void
+    {
+        $user = $this->auth->user();
+        $userId = (int) $user['id'];
+        $card = $this->cards->findByUserId($userId);
+
+        if ($card === null) {
+            $this->redirect('/dashboard');
+        }
+
+        $errors = [];
+
+        $photoPath = $card['photo_path'] ?? null;
+        if (isset($_POST['remove_photo'])) {
+            $this->photoUploader->remove($userId);
+            $photoPath = null;
+        } elseif (isset($_FILES['photo'])) {
+            try {
+                $uploaded = $this->photoUploader->upload($userId, $_FILES['photo']);
+                if ($uploaded !== null) {
+                    $photoPath = $uploaded;
+                }
+            } catch (RuntimeException $e) {
+                $errors[] = $this->translator->trans($e->getMessage());
+            }
+        }
+
+        $linkedinUrl = trim($_POST['linkedin_url'] ?? '');
+        $whatsapp = trim($_POST['whatsapp'] ?? '');
+        $bio = trim($_POST['bio'] ?? '');
+
+        $password = (string) ($_POST['password'] ?? '');
+        $passwordConfirm = (string) ($_POST['password_confirm'] ?? '');
+        if ($password !== '' || $passwordConfirm !== '') {
+            if (!PasswordPolicy::isValid($password)) {
+                $errors[] = $this->translator->trans('auth.register.errors.password_requirements');
+            } elseif ($password !== $passwordConfirm) {
+                $errors[] = $this->translator->trans('auth.register.errors.password_mismatch');
+            }
+        }
+
+        if ($errors !== []) {
+            echo $this->view->render('team/complete_profile.twig', [
+                'user' => $user,
+                'card' => array_merge($card, ['photo_path' => $photoPath]),
+                'organization' => $this->auth->organization(),
+                'errors' => $errors,
+                'old' => $_POST,
+            ]);
+            return;
+        }
+
+        $data = $card;
+        $data['photo_path'] = $photoPath;
+        $data['linkedin_url'] = $linkedinUrl !== '' ? $linkedinUrl : null;
+        $data['whatsapp'] = $whatsapp !== '' ? $whatsapp : null;
+        $data['bio'] = $bio !== '' ? $bio : null;
+        $data['use_custom_colors'] = (bool) $card['use_custom_colors'];
+        $data['is_published'] = (bool) $card['is_published'];
+
+        $this->cards->upsertForUser($userId, $data);
+
+        if ($password !== '') {
+            $this->users->updatePasswordHash($userId, password_hash($password, PASSWORD_DEFAULT));
+        }
+
+        // Mirrors what the final wizard step (publish()) does for a team
+        // member reaching it the old way: mark onboarding done AND publish,
+        // since the admin already supplied everything required for a valid
+        // card (name, job title, company/branding inherited from the org).
+        if ($card['onboarding_completed_at'] === null) {
+            $this->cards->completeOnboarding((int) $card['id']);
+        }
+
+        Session::flash('success', $this->translator->trans('team.complete_profile.success'));
+        $this->redirect('/dashboard');
     }
 
     public function remove(array $params): void
@@ -260,6 +455,95 @@ final class TeamController
 
         Session::flash('success', $this->translator->trans('team.dev_activated'));
         $this->redirect('/team');
+    }
+
+    /**
+     * Creates the user + throwaway-password account, assigns it to the org,
+     * pre-fills its business_cards row with the admin-supplied data (with
+     * onboarding_completed_at left NULL - that's the existing gate that now
+     * routes to /team/complete-profile instead of the wizard), and emails a
+     * magic-link invite. Shared by the single-invite form and the CSV
+     * importer so both go through identical validation/creation logic.
+     *
+     * @return array{success: bool, error: ?string}
+     */
+    private function inviteOne(array $org, string $email, string $name, ?string $jobTitle, ?string $phone): array
+    {
+        $email = strtolower(trim($email));
+        $name = trim($name);
+        $jobTitle = trim((string) $jobTitle);
+        $phone = trim((string) $phone);
+
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'error' => $this->translator->trans('team.errors.email_invalid')];
+        }
+
+        if ($this->users->findByEmail($email) !== null) {
+            return ['success' => false, 'error' => $this->translator->trans('team.errors.email_taken')];
+        }
+
+        if ($name === '') {
+            $name = explode('@', $email)[0];
+        }
+
+        // The employee never sees this password - they get in via the magic
+        // link (or "forgot password" later) until they optionally set a real
+        // one in /team/complete-profile. Keeps password_hash NOT NULL as-is.
+        $throwawayHash = password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT);
+        $userId = $this->users->create($name, $email, $throwawayHash);
+        $this->users->assignToOrganization($userId, (int) $org['id']);
+        $this->syncSeats($org);
+
+        $slug = $this->cards->generateUniqueSlug($name, $userId, BusinessCard::RESERVED_SLUGS);
+        $this->cards->upsertForUser($userId, [
+            'slug' => $slug,
+            'display_name' => $name,
+            'job_title' => $jobTitle !== '' ? $jobTitle : null,
+            'company' => $org['name'],
+            'category_id' => null,
+            'email' => $email,
+            'phone' => $phone !== '' ? $phone : null,
+            'whatsapp' => null,
+            'website' => null,
+            'address' => null,
+            'workplace' => null,
+            'bio' => null,
+            'opening_hours' => null,
+            'logo_path' => null,
+            'photo_path' => null,
+            'linkedin_url' => null,
+            'instagram_url' => null,
+            'facebook_url' => null,
+            'youtube_url' => null,
+            'booking_url' => null,
+            // Irrelevant for an org member - Organization::applyBranding()
+            // overrides this live at every render site regardless of what's
+            // stored here (see BusinessCard.design NOT NULL DEFAULT 'classic').
+            'design' => 'classic',
+            'use_custom_colors' => false,
+            'color_background' => null,
+            'color_header' => null,
+            'color_content' => null,
+            'color_footer' => null,
+            'is_published' => false,
+        ]);
+
+        $this->sendInviteEmail($userId, $email);
+
+        return ['success' => true, 'error' => null];
+    }
+
+    private function sendInviteEmail(int $userId, string $email): void
+    {
+        $token = bin2hex(random_bytes(32));
+        $this->users->setInviteToken($userId, hash('sha256', $token), self::INVITE_TOKEN_TTL_DAYS * 86400);
+
+        $link = $this->appUrl . '/invite/' . $token;
+        $this->mailer->send(
+            $email,
+            $this->translator->trans('team.invite.email_subject'),
+            $this->translator->trans('team.invite.email_body', ['link' => $link])
+        );
     }
 
     private function syncSeats(array $org): void

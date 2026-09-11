@@ -259,7 +259,7 @@ $router->get('/billing/success', function () use ($billing, $requireAuth) {
 $stripeWebhook = new StripeWebhookController($db, $stripe, $config['stripe']['webhook_secret']);
 $router->post('/webhook/stripe', fn () => $stripeWebhook->handle());
 
-$team = new TeamController($db, $auth, $view, $translator, $stripe, $orgLogoUploader);
+$team = new TeamController($db, $auth, $view, $translator, $stripe, $orgLogoUploader, $photoUploader, $mailer, $config['app']['url']);
 $router->get('/team', function () use ($team, $requireAuth) {
     $requireAuth();
     $team->index();
@@ -275,6 +275,23 @@ $router->post('/team/branding', function () use ($team, $requireOrgOwner) {
 $router->post('/team/invite', function () use ($team, $requireOrgOwner) {
     $requireOrgOwner();
     $team->invite();
+});
+$router->post('/team/invite-csv', function () use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->inviteCsv();
+});
+$router->post('/team/reinvite/{userId}', function (array $params) use ($team, $requireOrgOwner) {
+    $requireOrgOwner();
+    $team->reinvite($params);
+});
+$router->get('/invite/{token}', fn (array $params) => $team->showAcceptInvite($params));
+$router->get('/team/complete-profile', function () use ($team, $requireAuth) {
+    $requireAuth();
+    $team->showCompleteProfile();
+});
+$router->post('/team/complete-profile', function () use ($team, $requireAuth) {
+    $requireAuth();
+    $team->completeProfile();
 });
 $router->post('/team/remove/{userId}', function (array $params) use ($team, $requireOrgOwner) {
     $requireOrgOwner();

@@ -1,0 +1,80 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('team.complete_profile.heading') }} – findmichonline{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ trans('team.complete_profile.heading') }}</h1>
+        <p class="muted-link">{{ trans('team.complete_profile.intro', {company: organization.name|default('')}) }}</p>
+
+        {% if errors is defined and errors|length > 0 %}
+            <ul class="errors">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <h2 style="margin-top:1.5rem;">{{ trans('team.complete_profile.readonly_heading') }}</h2>
+        <p class="muted-link" style="margin:0.2rem 0;">{{ trans('team.complete_profile.name_label') }}: {{ card.display_name }}</p>
+        {% if card.job_title %}
+            <p class="muted-link" style="margin:0.2rem 0;">{{ trans('team.complete_profile.job_title_label') }}: {{ card.job_title }}</p>
+        {% endif %}
+        {% if card.phone %}
+            <p class="muted-link" style="margin:0.2rem 0;">{{ trans('team.complete_profile.phone_label') }}: {{ card.phone }}</p>
+        {% endif %}
+        <p class="muted-link" style="margin:0.2rem 0;">{{ trans('team.complete_profile.email_label') }}: {{ card.email }}</p>
+
+        <form method="post" action="/team/complete-profile" enctype="multipart/form-data">
+            <h2 style="margin-top:1.5rem;">{{ trans('team.complete_profile.editable_heading') }}</h2>
+
+            <label for="photo">{{ trans('team.complete_profile.photo_label') }}</label>
+            {% if card.photo_path %}
+                <div style="margin-bottom:0.5rem;">
+                    <img src="/{{ card.photo_path }}" alt="" style="max-height:80px; border-radius:50%;">
+                </div>
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:normal; margin-top:0;">
+                    <input type="checkbox" name="remove_photo" value="1">
+                    {{ trans('card.edit.photo_remove') }}
+                </label>
+            {% endif %}
+            <input type="file" id="photo" name="photo" accept="image/png,image/jpeg,image/webp">
+
+            <label for="linkedin_url" style="margin-top:1rem;">{{ trans('team.complete_profile.linkedin_label') }}</label>
+            <input type="url" id="linkedin_url" name="linkedin_url" value="{{ old.linkedin_url|default(card.linkedin_url) }}" placeholder="https://linkedin.com/in/...">
+
+            <label for="whatsapp" style="margin-top:1rem;">{{ trans('team.complete_profile.whatsapp_label') }}</label>
+            <input type="text" id="whatsapp" name="whatsapp" value="{{ old.whatsapp|default(card.whatsapp) }}" placeholder="+43 660 1234567">
+
+            <label for="bio" style="margin-top:1rem;">{{ trans('team.complete_profile.bio_label') }}</label>
+            <input type="text" id="bio" name="bio" value="{{ old.bio|default(card.bio) }}">
+
+            <h2 style="margin-top:1.5rem;">{{ trans('team.complete_profile.password_heading') }}</h2>
+            <p class="muted-link">{{ trans('team.complete_profile.password_hint') }}</p>
+
+            <label for="password">{{ trans('team.complete_profile.password_label') }}</label>
+            <div class="password-field">
+                <input type="password" id="password" name="password" minlength="8"
+                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                       title="{{ trans('auth.password_requirements_hint') }}">
+                <button type="button" class="password-toggle" data-toggle-for="password" aria-label="{{ trans('auth.password_toggle_show') }}">👁</button>
+            </div>
+            <div class="password-strength" data-strength-for="password"
+                 data-label-weak="{{ trans('auth.password_strength.weak') }}"
+                 data-label-medium="{{ trans('auth.password_strength.medium') }}"
+                 data-label-strong="{{ trans('auth.password_strength.strong') }}">
+                <div class="password-strength-bar"><div class="password-strength-fill"></div></div>
+                <span class="password-strength-label"></span>
+            </div>
+            <p class="password-requirements">{{ trans('auth.password_requirements_hint') }}</p>
+
+            <label for="password_confirm">{{ trans('team.complete_profile.password_confirm_label') }}</label>
+            <div class="password-field">
+                <input type="password" id="password_confirm" name="password_confirm" minlength="8">
+                <button type="button" class="password-toggle" data-toggle-for="password_confirm" aria-label="{{ trans('auth.password_toggle_show') }}">👁</button>
+            </div>
+
+            <button type="submit" style="margin-top:1.5rem;">{{ trans('team.complete_profile.submit') }}</button>
+        </form>
+    </div>
+{% endblock %}

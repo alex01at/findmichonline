@@ -24,7 +24,8 @@ final class DashboardController
         $card = $this->cards->findByUserId((int) $user['id']);
 
         if ($card === null || $card['onboarding_completed_at'] === null) {
-            header('Location: /onboarding');
+            $isTeamMember = $this->auth->organization() !== null && !$this->auth->isOrgOwner();
+            header('Location: ' . ($isTeamMember ? '/team/complete-profile' : '/onboarding'));
             exit;
         }
 

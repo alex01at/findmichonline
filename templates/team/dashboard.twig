@@ -115,6 +115,7 @@
                 <tr style="text-align:left; border-bottom:1px solid var(--border);">
                     <th style="padding:0.5rem;">{{ trans('team.dashboard.table.name') }}</th>
                     <th style="padding:0.5rem;">{{ trans('team.dashboard.table.email') }}</th>
+                    <th style="padding:0.5rem;">{{ trans('team.dashboard.table.status') }}</th>
                     <th style="padding:0.5rem;"></th>
                 </tr>
             </thead>
@@ -128,7 +129,21 @@
                             {% endif %}
                         </td>
                         <td style="padding:0.5rem;">{{ member.email }}</td>
+                        <td style="padding:0.5rem;">
+                            {% if member.id != organization.owner_user_id %}
+                                {% if member.onboarding_completed_at is null %}
+                                    <span class="muted-link">{{ trans('team.dashboard.status_pending') }}</span>
+                                {% else %}
+                                    {{ trans('team.dashboard.status_active') }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
                         <td style="padding:0.5rem; white-space:nowrap;">
+                            {% if member.onboarding_completed_at is null and member.id != organization.owner_user_id %}
+                                <form method="post" action="/team/reinvite/{{ member.id }}" style="display:inline;">
+                                    <button type="submit" style="margin:0 0.4rem 0 0; padding:0.2rem 0.6rem; font-size:0.85rem;">{{ trans('team.dashboard.reinvite_button') }}</button>
+                                </form>
+                            {% endif %}
                             {% if member.id != organization.owner_user_id %}
                                 <form method="post" action="/team/remove/{{ member.id }}" style="display:inline;" onsubmit="return confirm('{{ trans('team.dashboard.confirm_remove') }}');">
                                     <button type="submit" style="margin:0; padding:0.2rem 0.6rem; background:var(--danger); font-size:0.85rem;">{{ trans('team.dashboard.remove_button') }}</button>
@@ -151,7 +166,24 @@
             <label for="invite_name">{{ trans('team.dashboard.invite_name_label') }}</label>
             <input type="text" id="invite_name" name="name" maxlength="255">
 
+            <label for="invite_job_title">{{ trans('team.dashboard.invite_job_title_label') }}</label>
+            <input type="text" id="invite_job_title" name="job_title" maxlength="255">
+
+            <label for="invite_phone">{{ trans('team.dashboard.invite_phone_label') }}</label>
+            <input type="text" id="invite_phone" name="phone" maxlength="60">
+
             <button type="submit">{{ trans('team.dashboard.invite_submit') }}</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-top:0;">{{ trans('team.csv_import.heading') }}</h2>
+        <p class="muted-link">{{ trans('team.csv_import.text') }}</p>
+        <form method="post" action="/team/invite-csv" enctype="multipart/form-data">
+            <label for="csv">{{ trans('team.csv_import.file_label') }}</label>
+            <input type="file" id="csv" name="csv" accept=".csv,text/csv" required>
+
+            <button type="submit">{{ trans('team.csv_import.submit') }}</button>
         </form>
     </div>
 {% endblock %}
