@@ -130,6 +130,59 @@ document.querySelectorAll('.tab-btn').forEach(function (btn) {
 })();
 
 (function () {
+    var toggle = document.getElementById('dashboard-menu-toggle');
+    var panel = document.getElementById('dashboard-menu-panel');
+    if (!toggle || !panel) return;
+
+    function open() {
+        panel.hidden = false;
+        toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function close() {
+        panel.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (panel.hidden) open(); else close();
+    });
+    document.addEventListener('click', function (e) {
+        if (!panel.hidden && !panel.contains(e.target) && e.target !== toggle) close();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !panel.hidden) close();
+    });
+})();
+
+document.querySelectorAll('.copy-btn[data-copy-text]').forEach(function (btn) {
+    var original = btn.textContent;
+    btn.addEventListener('click', function () {
+        var text = btn.dataset.copyText;
+        var done = function () {
+            btn.textContent = btn.dataset.copySuccess || original;
+            setTimeout(function () { btn.textContent = original; }, 1500);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done, done);
+            return;
+        }
+
+        var helper = document.createElement('textarea');
+        helper.value = text;
+        helper.style.position = 'fixed';
+        helper.style.opacity = '0';
+        document.body.appendChild(helper);
+        helper.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(helper);
+        done();
+    });
+});
+
+(function () {
     var tabs = document.querySelectorAll('#design-showcase-tabs .design-tab-btn');
     var frame = document.getElementById('design-showcase-frame');
     if (!tabs.length || !frame) return;

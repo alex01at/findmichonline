@@ -32,13 +32,28 @@
                     <p class="muted-link">{{ trans('dashboard.email_label', {email: user.email}) }}</p>
                 </div>
             </div>
-            <span class="plan-badge {{ plan_badge_class }}" {% if user.is_demo %}title="{{ trans('dashboard.plan_demo_hint') }}"{% endif %}>{{ trans(plan_key) }}</span>
+            <div class="dashboard-header-actions">
+                <span class="plan-badge {{ plan_badge_class }}" {% if user.is_demo %}title="{{ trans('dashboard.plan_demo_hint') }}"{% endif %}>{{ trans(plan_key) }}</span>
+                <div class="dashboard-menu">
+                    <button type="button" class="dashboard-menu-toggle" id="dashboard-menu-toggle" aria-haspopup="true" aria-expanded="false" aria-label="{{ trans('dashboard.more_actions') }}">⋮</button>
+                    <div class="dashboard-menu-panel" id="dashboard-menu-panel" hidden>
+                        <a href="/pricing">{{ trans('dashboard.view_pricing') }}</a>
+                        {% if in_organization %}
+                            <a href="/team">{{ trans('dashboard.view_team') }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <p style="margin-top:1.2rem;">
             {{ trans('dashboard.status_label') }}
             {% if card.is_published %}
-                {{ trans('dashboard.status_published') }} <a href="/{{ card.slug }}" target="_blank">/{{ card.slug }}</a>
+                {{ trans('dashboard.status_published') }}
+                <span class="status-link-row">
+                    <a class="status-link" href="{{ app_url }}/{{ card.slug }}" target="_blank">{{ (app_url ~ '/' ~ card.slug)|replace({'https://': '', 'http://': ''}) }}</a>
+                    <button type="button" class="copy-btn" data-copy-text="{{ app_url }}/{{ card.slug }}" data-copy-success="✓" aria-label="{{ trans('dashboard.copy_link') }}" title="{{ trans('dashboard.copy_link') }}">📋</button>
+                </span>
             {% else %}
                 {{ trans('dashboard.status_unpublished') }}
             {% endif %}
@@ -50,10 +65,6 @@
                 <a class="btn btn-secondary" href="/{{ card.slug }}" target="_blank">{{ trans('dashboard.view_card') }}</a>
             {% endif %}
             <a class="btn btn-secondary" href="/card/qr.png" target="_blank">{{ trans('dashboard.view_qr') }}</a>
-            <a class="btn btn-secondary" href="/pricing">{{ trans('dashboard.view_pricing') }}</a>
-            {% if in_organization %}
-                <a class="btn btn-secondary" href="/team">{{ trans('dashboard.view_team') }}</a>
-            {% endif %}
         </div>
     </div>
 
@@ -77,16 +88,16 @@
                             <span class="stat-label">{{ trans('dashboard.stats_views_label') }}</span>
                         </div>
                         {% if card.phone %}
-                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_phone }}</span><span class="stat-label">📞 {{ trans('card.public.call') }}</span></div>
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_phone }}</span><span class="stat-label">📞 {{ trans('dashboard.stats_calls_label') }}</span></div>
                         {% endif %}
                         {% if card.email %}
-                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_email }}</span><span class="stat-label">✉️ {{ trans('card.public.email_action') }}</span></div>
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_email }}</span><span class="stat-label">✉️ {{ trans('dashboard.stats_email_label') }}</span></div>
                         {% endif %}
                         {% if card.website %}
-                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_website }}</span><span class="stat-label">🌐 {{ trans('card.public.website_action') }}</span></div>
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_website }}</span><span class="stat-label">🌐 {{ trans('dashboard.stats_website_label') }}</span></div>
                         {% endif %}
                         {% if card.address %}
-                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_address }}</span><span class="stat-label">📍 {{ trans('card.public.route') }}</span></div>
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_address }}</span><span class="stat-label">📍 {{ trans('dashboard.stats_address_label') }}</span></div>
                         {% endif %}
                         {% if card.linkedin_url %}
                             <div class="stat-tile"><span class="stat-value">{{ card.clicks_linkedin }}</span><span class="stat-label">LinkedIn</span></div>
@@ -101,7 +112,7 @@
                             <div class="stat-tile"><span class="stat-value">{{ card.clicks_youtube }}</span><span class="stat-label">YouTube</span></div>
                         {% endif %}
                         {% if card.booking_url %}
-                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_booking }}</span><span class="stat-label">📅 {{ trans('card.public.booking_button') }}</span></div>
+                            <div class="stat-tile"><span class="stat-value">{{ card.clicks_booking }}</span><span class="stat-label">📅 {{ trans('dashboard.stats_booking_label') }}</span></div>
                         {% endif %}
                     </div>
                 {% else %}
