@@ -182,6 +182,33 @@ document.querySelectorAll('.copy-btn[data-copy-text]').forEach(function (btn) {
     });
 });
 
+document.querySelectorAll('.faq-accordion').forEach(function (accordion) {
+    var items = accordion.querySelectorAll('.faq-item');
+
+    items.forEach(function (item) {
+        var question = item.querySelector('.faq-question');
+        var answer = item.querySelector('.faq-answer');
+        if (!question || !answer) return;
+
+        question.addEventListener('click', function () {
+            var wasOpen = question.getAttribute('aria-expanded') === 'true';
+
+            items.forEach(function (other) {
+                var otherQuestion = other.querySelector('.faq-question');
+                var otherAnswer = other.querySelector('.faq-answer');
+                if (!otherQuestion || !otherAnswer) return;
+                otherQuestion.setAttribute('aria-expanded', 'false');
+                otherAnswer.hidden = true;
+            });
+
+            if (!wasOpen) {
+                question.setAttribute('aria-expanded', 'true');
+                answer.hidden = false;
+            }
+        });
+    });
+});
+
 (function () {
     var tabs = document.querySelectorAll('#design-showcase-tabs .design-tab-btn');
     var frame = document.getElementById('design-showcase-frame');
